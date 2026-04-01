@@ -15,4 +15,8 @@ public class GlobalException {
     public GlobalException(BankApiConfigProperties config){
         this.config = config;
     }
+
+    private Boolean isDev() {
+        return  config.profileActive().equals("dev");
+    }
 }
