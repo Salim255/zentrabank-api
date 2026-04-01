@@ -22,3 +22,78 @@ spring:
     # Spring can sometimes guess this, but not always (Docker, multi‑module).
     # If wrong or missing → "No suitable driver" error.
     driver-class-name: org.postgresql.Driver
+
+  # Java Persistence API (JPA), which is the standard for
+  # interacting with relational databases in Java.
+  # ✅ Summary:
+  # JPA = the rules for database operations.
+  # Hibernate = the tool that follows the rules and actually talks to the database.
+  jpa:
+    # Hibernate is a Java framework that implements JPA (Java Persistence API).
+    # JPA is just a specification, meaning it defines rules and interfaces for
+    # interacting with relational databases in Java.
+    # Hibernate is one implementation of JPA, i.e.,
+    # it provides the actual code to make JPA work.
+    # Why Hibernate is used:
+    # 1- Object-Relational Mapping (ORM):
+    #     - Converts Java objects (like User, Account) into database tables automatically.
+    #     - You don’t write raw SQL for CRUD operations; Hibernate generates it for you.
+    # 2- Automatic Schema Management:
+    #     - Can create, update, or validate database tables
+    #     automatically (spring.jpa.hibernate.ddl-auto).
+    # 3- Database Independence:
+    #   - Hibernate works with many databases (PostgreSQL, MySQL, Oracle)
+    #   without changing your code.
+    # 4- Querying:
+    #   - Supports JPQL (Java Persistence Query Language), which is object-oriented.
+    hibernate:
+      # Controls how Hibernate handles your database schema.
+      # "validate" = safest option:
+      #   → Hibernate checks that your tables match your entities
+      #   → BUT it does NOT create, update, or delete tables.
+      #
+      # Why this is important:
+      # - Prevents Hibernate from silently modifying your schema.
+      # - Forces you to use Flyway for safe migrations.
+      #
+      # If you use "update" or "create" → Hibernate may DROP or MODIFY tables
+      # and you can LOSE DATA.
+      ddl-auto: update #validate
+
+
+    # A place to pass extra configuration to the JPA provider (usually Hibernate).
+    properties:
+      hibernate:
+        # Makes SQL logs readable by formatting them nicely.
+        # Without this → SQL is printed on one long unreadable line.
+        format_sql: true
+
+        # Tells Hibernate to generate SQL optimized for PostgreSQL.
+        # Without this → Hibernate guesses the dialect and may generate invalid SQL.
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    # Prints SQL queries to the console.
+    # Great for learning and debugging.
+    # If removed → Hibernate still works, but you can't see the SQL.
+    show-sql: true
+
+  flyway:
+    # Enables Flyway migrations.
+    # Flyway is the industry standard for versioning your database schema.
+    # Without this → no migrations run → schema may be outdated or missing.
+    enabled: true
+
+    # Allows Flyway to run even if the database already contains tables.
+    # Useful when connecting to an existing DB.
+    # Without this → Flyway refuses to start on non‑empty databases.
+    baseline-on-migrate: true
+
+
+  server:
+    # Port where your Spring Boot API will run.
+    # Default is 8080, but we set it explicitly for clarity.
+    port: 8080
+    # A Servlet is a Java class that handles HTTP requests and responses.
+    # Every request that comes to your server is handled by a servlet
+    # server.servlet.* → settings for this servlet (context path, session timeout, etc.)
+    servlet:
+      context-path: ${API_PREFIX}
