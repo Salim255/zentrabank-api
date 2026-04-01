@@ -87,7 +87,6 @@ spring:
     # Without this → Flyway refuses to start on non‑empty databases.
     baseline-on-migrate: true
 
-
   server:
     # Port where your Spring Boot API will run.
     # Default is 8080, but we set it explicitly for clarity.
