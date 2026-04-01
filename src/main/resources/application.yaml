@@ -1,5 +1,24 @@
 spring:
   config:
     import: optional:classpath:secrets.properties
+
   application:
     name: bank-api
+
+  datasource:
+    # JDBC URL: tells Spring Boot HOW and WHERE to connect to PostgreSQL.
+    # "jdbc:postgresql" → use PostgreSQL driver
+    # If this is wrong → Spring cannot connect → app fails at startup.
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    # Username for the database.
+    # Loaded from environment variables for SECURITY.
+    # Never hardcode credentials in code → prevents leaks in GitHub.
+    username: ${DB_USERNAME}
+    # Same logic as username: loaded from environment variables.
+    # If missing → authentication error from PostgreSQL.
+    password: ${DB_PASSWORD}
+
+    # Explicitly tells Spring Boot which JDBC driver to use.
+    # Spring can sometimes guess this, but not always (Docker, multi‑module).
+    # If wrong or missing → "No suitable driver" error.
+    driver-class-name: org.postgresql.Driver
