@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.0.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.zentrabank</groupId>
+	<artifactId>bank-api</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name/>
+	<description/>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+	<dependencies>
+        <!-- Spring Data JPA Starter: simplifies database interactions using JPA/Hibernate -->
+        <dependency>
+            <!-- Spring Boot official group -->
+            <groupId>org.springframework.boot</groupId>
+            <!-- Starter for Spring Data JPA -->
+            <!-- - Provides JPA (Java Persistence API) support -->
+            <!-- - Includes Hibernate as the default JPA provider -->
+            <!-- - Lets you define entities (@Entity) and repositories (@Repository) -->
+            <!-- - Automatically implements CRUD and query methods in repositories -->
+            <!-- - Works seamlessly with PostgreSQL or any supported database -->
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL Driver: allows Spring Boot to connect to a PostgreSQL database -->
+        <dependency>
+            <!-- Official PostgreSQL group -->
+            <groupId>org.postgresql</groupId>
+            <!-- The actual JDBC driver that enables database connectivity -->
+            <artifactId>postgresql</artifactId>
+            <!-- Scope runtime: driver is only needed at runtime, not for compilation -->
+            <!-- - Compile scope → needed to compile code (not required here) -->
+            <!-- - Runtime scope → only included when running the app -->
+            <!-- - Test scope → only included during testing -->
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Flyway: manages database migrations and schema versioning -->
+        <dependency>
+            <!-- Official Flyway group -->
+            <groupId>org.flywaydb</groupId>
+            <!-- Core Flyway library -->
+            <!-- - Tracks database schema changes with versioned migration scripts -->
+            <!-- - Automatically applies new migrations on application startup -->
+            <!-- - Ensures all environments (dev, test, prod) have consistent schema -->
+            <!-- - Works with SQL scripts or Java-based migrations -->
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <!-- Project Lombok: reduces boilerplate code in Java classes -->
+        <dependency>
+            <!-- Official Project Lombok group -->
+            <groupId>org.projectlombok</groupId>
+            <!-- Lombok provides annotations like:
+                 - @Getter / @Setter → automatic getters and setters
+                 - @NoArgsConstructor / @AllArgsConstructor → automatic constructors
+                 - @Builder → builder pattern generation
+                 - @ToString, @EqualsAndHashCode → overrides automatically
+               This helps keep your code clean and concise. -->
+            <artifactId>lombok</artifactId>
+            <!-- Optional: Lombok is used at compile-time, not required at runtime -->
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Configuration Processor -->
+        <!--
+            When to use: Always include this in modern Spring Boot apps if you
+            use @ConfigurationProperties.
+            It does not affect runtime, only improves development
+         -->
+        <dependency>
+            <!-- Spring Boot official group -->
+            <groupId>org.springframework.boot</groupId>
+
+            <!-- This processor generates metadata for your @ConfigurationProperties classes -->
+            <!-- - Enables IDE auto-completion for application.properties / application.yml -->
+            <!-- - Helps detect typos or incorrect property types at compile-time -->
+            <!-- - Improves developer experience when using custom config properties -->
+            <artifactId>spring-boot-configuration-processor</artifactId>
+
+            <!-- Optional: this dependency is not needed at runtime, only during compilation -->
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Springdoc OpenAPI Starter for Spring Web MVC -->
+        <!--
+            What this does in your project
+            Auto-generates OpenAPI spec from your @RestController endpoints.
+            Interactive API docs via Swagger UI: /swagger-ui/index.html.
+            No manual config required for basic use.
+            Supports validation annotations from spring-boot-starter-validation
+            to show constraints in the docs.
+         -->
+        <dependency>
+            <!-- Springdoc official group -->
+            <groupId>org.springdoc</groupId>
+
+            <!-- Starter for automatic OpenAPI (Swagger) documentation -->
+            <!-- - Generates OpenAPI 3 specification for your REST endpoints -->
+            <!-- - Provides Swagger UI at /swagger-ui.html or /swagger-ui/index.html -->
+            <!-- - Works automatically with Spring Web / Spring MVC controllers -->
+            <!-- - Helps you test APIs interactively and share documentation with front-end or clients -->
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+
+            <!-- Version of the library -->
+            <version>2.8.5</version>
+        </dependency>
+
+        <!-- Enables validation of incoming request data (DTOs) using annotations like @NotNull, @Email, etc. -->
+        <dependency>
+            <!-- Spring Boot core dependencies group -->
+            <groupId>org.springframework.boot</groupId>
+
+            <!-- Provides Jakarta Bean Validation (Hibernate Validator implementation) -->
+            <!-- Allows usage of annotations such as @Valid, @NotBlank, @Size, @Email -->
+            <!-- Automatically triggers validation in controllers when using @Valid -->
+            <!-- Returns 400 Bad Request if validation fails -->
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Spring Security PasswordEncoder -->
+        <!--
+            What this dependency does
+            This adds security to your application:
+            Authentication (Who are you?)
+            Authorization (What are you allowed to do?)
+        -->
+        <!--
+            - Without it → open API (anyone can access everything)
+            - With it → guarded system (like a bank entrance with security)
+        -->
+        <!-- Spring Boot Security Starter -->
+        <!--
+            Built-in login system (basic)
+            Spring creates:
+            Default user: user
+            Random password (shown in console)
+            Using generated security password: 1234-xxxx...
+        -->
+        <dependency>
+            <!-- Spring Boot official group -->
+            <groupId>org.springframework.boot</groupId>
+
+            <!-- Starter for adding authentication & authorization -->
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Web Starter -->
+        <!-- Without this → you cannot create APIs -->
+        <!--
+           - Spring MVC (core of REST APIs)
+           - @RestController
+           - @RequestMapping, @GetMapping, @PostMapping
+           - Request/Response handling
+         -->
+        <!--
+           - Embedded server (Tomcat)
+           - Your app runs on:
+           - http://localhost:8080
+         -->
+        <!--
+            JSON support (Jackson)
+            Automatically converts:
+            return new User(...);
+
+            ➡️ into JSON:
+         -->
+        <!--
+            HTTP handling
+            Handles requests like:
+            GET /users
+            POST /auth/login
+         -->
+        <dependency>
+            <!-- Spring Boot official group -->
+            <groupId>org.springframework.boot</groupId>
+
+            <!-- Starter for building web applications (REST APIs, MVC) -->
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+
+		<dependency>
+            <!-- Web MVC Test
+			- Provides testing tools for your web APIs:
+				- JUnit
+				- MockMvc for simulating HTTP requests
+				- AssertJ, Mockito
+			-->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+        <!-- Spring Boot Developer Tools -->
+        <!-- When you change your code → app restarts automatically -->
+        <!-- No need to manually stop/start Spring Boot -->
+        <dependency>
+            <!-- Official Spring Boot module -->
+            <groupId>org.springframework.boot</groupId>
+
+            <!-- DevTools provides development-time features -->
+            <artifactId>spring-boot-devtools</artifactId>
+
+            <!-- Only used at runtime (not included in final production build) -->
+            <scope>runtime</scope>
+        </dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
