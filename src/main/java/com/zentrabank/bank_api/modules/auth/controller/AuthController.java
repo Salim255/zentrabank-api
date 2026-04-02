@@ -13,6 +13,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public String Login(){
-        return  "Hello String";
+        return  "Hello from login";
     }
 }
