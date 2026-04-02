@@ -1,10 +1,6 @@
-package com.bankapp.domain.user;
-
-import com.zentrabank.bank_api.modules.auth.entity.UserRole;
+package com.zentrabank.bank_api.modules.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-
 import java.time.Instant;
 import java.util.UUID;
 
