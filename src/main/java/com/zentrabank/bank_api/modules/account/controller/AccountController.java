@@ -9,4 +9,17 @@ public class AccountController {
     public  String createAccount(){
         return "Hello from create account";
     }
+
+    public  String updateAccount(){
+        return  "hello from update account";
+    }
+
+    public  String blockAccount(){
+        return  "Hello from block account";
+    }
+
+    public  String deleteAccount(){
+        return  "Hello from delete account";
+    }
+
 }
