@@ -1,5 +1,6 @@
 package com.bankapp.domain.user;
 
+import com.zentrabank.bank_api.modules.auth.entity.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -47,6 +48,10 @@ public class User {
 
     @Column(nullable = false)
     private boolean emailVerified = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.CUSTOMER;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
