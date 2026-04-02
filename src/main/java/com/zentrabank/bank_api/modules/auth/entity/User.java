@@ -53,6 +53,12 @@ public class User {
     @Column(nullable = false)
     private UserRole role = UserRole.CUSTOMER;
 
+    @Column(nullable = false, unique = true, length = 9)
+    private String loginId;
+
+    @Column(nullable = false)
+    private boolean firstLogin = true;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
