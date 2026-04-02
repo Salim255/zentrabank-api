@@ -87,12 +87,12 @@ spring:
     # Without this → Flyway refuses to start on non‑empty databases.
     baseline-on-migrate: true
 
-  server:
-    # Port where your Spring Boot API will run.
-    # Default is 8080, but we set it explicitly for clarity.
-    port: 8080
-    # A Servlet is a Java class that handles HTTP requests and responses.
-    # Every request that comes to your server is handled by a servlet
-    # server.servlet.* → settings for this servlet (context path, session timeout, etc.)
-    servlet:
-      context-path: ${API_PREFIX}
+server:
+  # Port where your Spring Boot API will run.
+  # Default is 8080, but we set it explicitly for clarity.
+  port: 8080
+  # A Servlet is a Java class that handles HTTP requests and responses.
+  # Every request that comes to your server is handled by a servlet
+  # server.servlet.* → settings for this servlet (context path, session timeout, etc.)
+  servlet:
+    context-path: ${API_PREFIX}
