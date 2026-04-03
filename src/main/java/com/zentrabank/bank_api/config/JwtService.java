@@ -59,12 +59,13 @@ public class JwtService {
 
     /**
      * Generates a short-lived access token
-     * @param userId - the ID of the authenticated user
+     * @param  userData - the ID of the authenticated user
      * @return signed JWT as a String
      */
-    public String generateAccessToken(String userId) {
+    public String generateAccessToken(UserTokenDetailsDto userData) {
         return Jwts.builder()
-                .subject(userId)  // JWT "sub" claim; identifies the user
+                .subject(userData.userId())  // JWT "sub" claim; identifies the user
+                .subject(userData.expireIn())
                 .issuedAt(Date.from(Instant.now())) // "iat" claim; when token was issued
                 .expiration(Date.from(Instant.now())) // "exp" claim; token expiry
                 .signWith(key) // cryptographically signs token; without this, token can be forged
@@ -73,12 +74,13 @@ public class JwtService {
 
     /**
      * Generates a long-lived refresh token
-     * @param userId - the ID of the authenticated user
+     * @param  userData - the ID of the authenticated user
      * @return signed refresh JWT as a String
      */
-    public String generateRefreshToken(String userId) {
+    public String generateRefreshToken(UserTokenDetailsDto userData) {
         return Jwts.builder()
-                .subject(userId) // JWT "sub" claim; identifies the user
+                .subject(userData.userId()) // JWT "sub" claim; identifies the user
+                .subject(userData.expireIn())
                 .issuedAt(Date.from(Instant.now())) // "iat" claim
                 .expiration(fromNow(config.refreshTokenExpiration())) // refresh token expires later than access token
                 .signWith(key) // sign with same secret key
