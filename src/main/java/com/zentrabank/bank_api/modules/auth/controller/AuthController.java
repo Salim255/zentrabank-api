@@ -28,7 +28,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String Login(){
-        return  "Hello from login";
+    public ApiResponseDto<LoginResponseDto> Login(
+            @Valid @RequestBody RegisterDto body,
+            HttpServletResponse response
+    ){
+        return  this.authService.login(body);
     }
 }
