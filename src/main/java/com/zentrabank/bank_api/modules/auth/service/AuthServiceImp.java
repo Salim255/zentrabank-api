@@ -1,6 +1,8 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.exceptions.EmailAlreadyUsedException;
+import com.zentrabank.bank_api.exceptions.WeakPasswordException;
 import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
 import com.zentrabank.bank_api.modules.auth.dto.LoginResponseDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
