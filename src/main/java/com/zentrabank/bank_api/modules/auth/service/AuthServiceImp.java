@@ -39,8 +39,9 @@ public class AuthServiceImp implements AuthService {
     public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload){
         try{
             // 1 Validate user input;
+            this.logger.error("Hello from here befer 👹👹👹👹👹");
             this.registerValidator.validate(payload);
-
+            this.logger.error("Hello from here 👹👹👹👹👹");
             // 2 Generated temp password
             String tmpPassword = this.generateTempPassword();
 
@@ -60,9 +61,21 @@ public class AuthServiceImp implements AuthService {
 
 
             // 5 Save the
-            this.userRepository.save(createdUser);
+            User user = this.userRepository.save(createdUser);
 
-            //
+            // Build RegisterDto
+            RegisterResponseDto response = new RegisterResponseDto(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getRole(),
+                    user.getLoginId(),
+                    tmpPassword,
+                    user.getCreatedAt(),
+                    user.getUpdatedAt()
+            );
+
             return  ApiResponseDto.success(response);
         } catch (DataIntegrityViolationException ex){
             logger.error("Database constraint violation during user registration", ex);

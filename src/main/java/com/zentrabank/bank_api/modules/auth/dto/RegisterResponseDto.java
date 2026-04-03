@@ -1,5 +1,7 @@
 package com.zentrabank.bank_api.modules.auth.dto;
 
+import com.zentrabank.bank_api.modules.user.entity.UserRole;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -8,9 +10,9 @@ public record RegisterResponseDto(
         String email,
         String firstName,
         String lastName,
-        String role,
-        int loginId,
-        int tempPassword,
+        UserRole role,
+        String loginId,
+        String tmpPassword,
         Instant createdAt,
         Instant updatedAt
 ) { }

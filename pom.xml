@@ -31,6 +31,7 @@
 	</properties>
 
 	<dependencies>
+
         <!-- Spring Data JPA Starter: simplifies database interactions using JPA/Hibernate -->
         <dependency>
             <!-- Spring Boot official group -->
@@ -255,6 +256,35 @@
 
 	<build>
 		<plugins>
+            <!--
+                Maven Compiler Plugin:
+                This plugin controls how Maven compiles your Java code.
+
+                WHY WE NEED THIS:
+                - IntelliJ automatically runs Lombok annotation processing.
+                - BUT Maven does NOT run Lombok unless we explicitly configure it.
+                - Without this block, Maven will NOT generate getters/setters/builders,
+                  which causes errors like:
+                     "cannot find symbol: method getEmail()"
+                     "cannot find symbol: method setFirstName()"
+                - This configuration tells Maven:
+                     "Use Lombok as an annotation processor during compilation."
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -66,8 +68,10 @@ public class GlobalExceptionHandler {
         body.put("message", message);
         body.put("data", null);
 
-        if (isDev()){
-            body.put("stack", ex.fillInStackTrace());
+        if (isDev()) {
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            body.put("stack", sw.toString());
         }
 
         logger.error("{}", body);
