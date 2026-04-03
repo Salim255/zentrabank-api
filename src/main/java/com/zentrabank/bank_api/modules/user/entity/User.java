@@ -1,4 +1,4 @@
-package com.zentrabank.bank_api.modules.auth.entity;
+package com.zentrabank.bank_api.modules.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;

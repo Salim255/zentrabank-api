@@ -1,8 +1,7 @@
 package com.zentrabank.bank_api.modules.user.repository;
 
-import com.zentrabank.bank_api.modules.auth.entity.User;
+import com.zentrabank.bank_api.modules.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

@@ -1,18 +1,34 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
+import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
+import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
+@Service
 public class AuthServiceImp implements AuthService {
+    private final Logger logger = LoggerFactory.getLogger(AuthServiceImp.class);
 
     private final UserRepository userRepository;
 
     public AuthServiceImp(UserRepository userRepository){
         this.userRepository = userRepository;
     }
-    public String register(){
-        return "Hello Register";
+
+    @Override
+    public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload){
+        try{
+            RegisterResponseDto response = new RegisterResponseDto("hello");
+            return  ApiResponseDto.success(response);
+        } catch (Exception error){
+            logger.error("Error in create user", error);
+            throw error;
+        }
     }
 
     public  String login(){
