@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -13,7 +15,11 @@ import java.io.IOException;
 // Marks this class as a Spring-managed bean so it can be injected into SecurityConfig
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+    private final JwtService jwtService;
 
+    public JwtAuthFilter(JwtService jwtService){
+        this.jwtService = jwtService;
+    }
     // This method runs ON EVERY REQUEST before it reaches your controller.
     // It is the Spring Boot equivalent of a NestJS Guard.
     @Override
@@ -40,7 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                     // Validate and decode the token using your JwtService
                     // This should return a UserDetails object
-                    var userDetails = jwtService.parseToken(token);
+                    var userDetails = this.jwtService.parseToken(token);
 
                     // Create an Authentication object recognized by Spring Security
                     // This is equivalent to: req.user = user in NestJS

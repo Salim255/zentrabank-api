@@ -1,5 +1,8 @@
 package com.zentrabank.bank_api.config;
 
+import com.zentrabank.bank_api.modules.auth.dto.UserTokenDetailsDto;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.Value;
@@ -16,13 +19,34 @@ public class JwtService {
     private final BankApiConfigProperties config;
     private final SecretKey key;
 
-
     public JwtService(BankApiConfigProperties config){
         this.config = config;
         // Convert secret string from config into a cryptographic SecretKey
         // Required for signing JWTs. Without this, token signing fails.
         this.key = Keys.hmacShaKeyFor(config.jwtSecret().getBytes(StandardCharsets.UTF_8));
     }
+
+    public UserTokenDetailsDto parseToken(String token){
+        // Convert your secret string into a secure HMAC key
+        SecretKey key = Keys.hmacShaKeyFor(this.config.jwtSecret().getBytes(StandardCharsets.UTF_8));
+
+        // 2. Build parser using the new API
+        // Decode and validate the JWT
+        JwtParser parser= Jwts.parser()
+                .verifyWith(key) // your signing key
+                .build();
+
+        // 3. Parse and validate token
+        Claims claims = parser.parseSignedClaims(token).getPayload();
+
+        // Extract fields from the token payload
+        String userId = claims.get("userId", String.class);
+        String expireIn = claims.get("expireIn", String.class);
+
+        // Return strongly typed DTO
+        return new UserTokenDetailsDto(userId, expireIn);
+    };
+
 
     // Helper: converts a Duration (like "15m" or "7d") into a java.util.Date for JWT expiration
     // Why: JJWT requires Date objects; modern Java prefers Duration/Instant
