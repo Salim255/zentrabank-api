@@ -1,6 +1,7 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
 import com.zentrabank.bank_api.modules.user.entity.User;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -31,13 +33,21 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public ApiResponseDto<String> resetPassword(ResetPasswordDto payload){
+    public ApiResponseDto<String> resetPassword(ResetPasswordDto payload, UUID userId){
         try {
-            // 1 Get user password
+            // 1 Get USer
+            User user = this.userRepository.findById(userId).orElseThrow(
+                    () -> new NotFoundException("User not found")
+            );
 
-            // 2 Validate user inout
-            this.authValidator.comparePassword(payload.oldPassword(), );
+            // 2 Get user password
+            String oldHashedPassword = user.getPasswordHash();
+
+            // 3 Validate user inout
+            this.authValidator.comparePassword(payload.oldPassword(), oldHashedPassword);
+
             // 3 Hash passwords
+
             // 4 Compare user's password with db password
 
             return  ApiResponseDto.success("Password updated with success");

@@ -9,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // Marks this class as a configuration class.
 // Spring will scan it and load the beans defined inside.
@@ -34,16 +35,24 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            JwtAuthFilter jwtAuthFilter,
+            JwtAuthEntryPoint jwtAuthEntryPoint
+            ) throws Exception {
         // "http" is the main security builder.
         // You configure all security rules on it.
         http
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // -------------------------------
                 // 1. Disable CSRF
                 // -------------------------------
                 // CSRF protection is useful for browser-based sessions.
                 // But for REST APIs using JWT, it must be disabled.
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthEntryPoint)
+                )
                 // -------------------------------
                 // 2. Disable session creation
                 // -------------------------------

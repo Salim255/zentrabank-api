@@ -73,4 +73,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * Useful for password reset flows, notifications, etc.
      */
     Optional<User> findByEmail(String email);
+
+    Optional<User> findById(UUID id);
 }

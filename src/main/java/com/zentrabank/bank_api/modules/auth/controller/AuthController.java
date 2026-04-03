@@ -4,7 +4,10 @@ import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,9 +22,11 @@ public class AuthController {
     @PatchMapping("/reset-password")
     public ApiResponseDto<String> resetPassword(
       @Valid @RequestBody ResetPasswordDto body,
-       HttpServletResponse response
+       HttpServletResponse response,
+      Authentication auth
     ){
-        return  this.authService.resetPassword(body);
+        UUID userId = (UUID) auth.getPrincipal();
+        return  this.authService.resetPassword(body, userId);
     }
 
     @PostMapping("/register")

@@ -30,6 +30,24 @@ public class GlobalExceptionHandler {
         return  config.profileActive().equals("dev");
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Object> handleForbidden(ForbiddenException ex) {
+
+        // Build the same response structure as all other handlers
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", "error");
+        body.put("message", ex.getMessage());
+        body.put("data", null);
+
+        // Include stack trace only in dev mode
+        if (isDev()) {
+            body.put("stack", ex.getStackTrace());
+        }
+
+        logger.error("{}", body);
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationErrors(MethodArgumentNotValidException ex) {
 
