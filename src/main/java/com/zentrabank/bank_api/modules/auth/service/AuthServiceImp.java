@@ -1,8 +1,16 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
+import com.zentrabank.bank_api.modules.user.repository.UserRepository;
+
 import java.util.Random;
 
 public class AuthServiceImp implements AuthService {
+
+    private final UserRepository userRepository;
+
+    public AuthServiceImp(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
     public String register(){
         return "Hello Register";
     }
