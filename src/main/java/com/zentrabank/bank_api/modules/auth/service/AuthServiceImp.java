@@ -16,7 +16,7 @@ import java.util.Random;
 @Service
 public class AuthServiceImp implements AuthService {
     private final Logger logger = LoggerFactory.getLogger(AuthServiceImp.class);
-    private final AuthValidator registerValidator;
+    private final AuthValidator authValidator;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -27,15 +27,18 @@ public class AuthServiceImp implements AuthService {
     ){
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
-        this.registerValidator = registerValidator;
+        this.authValidator = registerValidator;
     }
 
     @Override
     public ApiResponseDto<String> resetPassword(ResetPasswordDto payload){
         try {
-            // 1 Validate user inout
-            // 2 Hash passwords
-            // 3 Compare user's password with db password
+            // 1 Get user password
+
+            // 2 Validate user inout
+            this.authValidator.comparePassword(payload.oldPassword(), );
+            // 3 Hash passwords
+            // 4 Compare user's password with db password
 
             return  ApiResponseDto.success("Password updated with success");
         } catch (DataIntegrityViolationException ex){
@@ -50,7 +53,7 @@ public class AuthServiceImp implements AuthService {
         try{
             // 1 Validate user input;
             this.logger.error("Hello from here befer 👹👹👹👹👹");
-            this.registerValidator.registerValidate(payload);
+            this.authValidator.registerValidate(payload);
             this.logger.error("Hello from here 👹👹👹👹👹");
             // 2 Generated temp password
             String tmpPassword = this.generateTempPassword();
@@ -100,7 +103,9 @@ public class AuthServiceImp implements AuthService {
     {
         try {
             // 1 Validate input
+
             // 2 Check user exist
+
             // 3 Create tokens
             // Return user  + tokens
             LoginResponseDto response = new LoginResponseDto("Hello from login");

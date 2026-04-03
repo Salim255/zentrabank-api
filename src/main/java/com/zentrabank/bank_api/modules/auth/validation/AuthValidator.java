@@ -7,6 +7,7 @@ import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 
@@ -15,9 +16,14 @@ import org.springframework.stereotype.Component;
 public class AuthValidator {
     private final Logger logger = LoggerFactory.getLogger(AuthValidator.class);
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public void comparePassword(ResetPasswordDto payload){
+    public void comparePassword(String textPassword, String hashedPassword){
+        boolean isMatch = passwordEncoder.matches(textPassword, hashedPassword);
 
+        if (!isMatch){
+
+        }
     }
 
     public void registerValidate(RegisterDto payload) {
