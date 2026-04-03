@@ -7,6 +7,7 @@ import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
 import com.zentrabank.bank_api.modules.auth.dto.LoginResponseDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
+import com.zentrabank.bank_api.modules.auth.validation.RegisterValidator;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import org.slf4j.Logger;
@@ -19,11 +20,12 @@ import java.util.Random;
 @Service
 public class AuthServiceImp implements AuthService {
     private final Logger logger = LoggerFactory.getLogger(AuthServiceImp.class);
-
+    private final RegisterValidator registerValidator;
     private final UserRepository userRepository;
 
-    public AuthServiceImp(UserRepository userRepository){
+    public AuthServiceImp(UserRepository userRepository, RegisterValidator registerValidator){
         this.userRepository = userRepository;
+        this.registerValidator = registerValidator;
     }
 
     @Override
@@ -31,6 +33,7 @@ public class AuthServiceImp implements AuthService {
         try{
             RegisterResponseDto response = new RegisterResponseDto("hello");
             // 1 Validate user input;
+            this.registerValidator.validate(payload);
 
             // 2 Create User class
             User createdUser = new User(payload);
@@ -75,18 +78,4 @@ public class AuthServiceImp implements AuthService {
         int number = min + new Random().nextInt(max - min);
         return String.valueOf(number);
     }
-
-    private void validateRegisterPayload(RegisterDto payload) {
-
-        if (userRepository.existsByEmail(payload.email())) {
-            throw new EmailAlreadyUsedException("Email already exists");
-        }
-
-        if (payload.password().length() < 8) {
-            throw new WeakPasswordException("Password must be at least 8 characters");
-        }
-
-        // Add more business rules here
-    }
-
 }
