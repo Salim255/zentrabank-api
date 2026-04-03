@@ -13,6 +13,7 @@ import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -22,8 +23,14 @@ public class AuthServiceImp implements AuthService {
     private final Logger logger = LoggerFactory.getLogger(AuthServiceImp.class);
     private final RegisterValidator registerValidator;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImp(UserRepository userRepository, RegisterValidator registerValidator){
+    public AuthServiceImp(
+            PasswordEncoder passwordEncoder,
+            UserRepository userRepository,
+            RegisterValidator registerValidator
+    ){
+        this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.registerValidator = registerValidator;
     }
@@ -31,12 +38,31 @@ public class AuthServiceImp implements AuthService {
     @Override
     public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload){
         try{
-            RegisterResponseDto response = new RegisterResponseDto("hello");
             // 1 Validate user input;
             this.registerValidator.validate(payload);
 
-            // 2 Create User class
-            User createdUser = new User(payload);
+            // 2 Generated temp password
+            String tmpPassword = this.generateTempPassword();
+
+            // 3 Hash password
+            String hashed = this.passwordEncoder.encode(tmpPassword);
+
+            // 4 Generate user loginId
+            String userLoginId = this.generateUniqueLoginId();
+
+            // 5 Create User class
+            User createdUser = new User();
+            createdUser.setEmail(payload.email());
+            createdUser.setFirstName(payload.firstName());
+            createdUser.setLastName(payload.lastName());
+            createdUser.setPasswordHash(hashed);
+            createdUser.setLoginId(userLoginId);
+
+
+            // 5 Save the
+            this.userRepository.save(createdUser);
+
+            //
             return  ApiResponseDto.success(response);
         } catch (DataIntegrityViolationException ex){
             logger.error("Database constraint violation during user registration", ex);
