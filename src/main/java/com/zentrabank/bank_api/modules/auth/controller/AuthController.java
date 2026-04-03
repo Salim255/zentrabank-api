@@ -1,5 +1,7 @@
 package com.zentrabank.bank_api.modules.auth.controller;
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
+import com.zentrabank.bank_api.modules.auth.dto.LoginResponseDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
@@ -29,7 +31,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponseDto<LoginResponseDto> Login(
-            @Valid @RequestBody RegisterDto body,
+            @Valid @RequestBody LoginDto body,
             HttpServletResponse response
     ){
         return  this.authService.login(body);

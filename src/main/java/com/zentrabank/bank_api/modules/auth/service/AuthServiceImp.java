@@ -1,6 +1,8 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
+import com.zentrabank.bank_api.modules.auth.dto.LoginResponseDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
@@ -31,8 +33,10 @@ public class AuthServiceImp implements AuthService {
         }
     }
 
-    public  String login(){
-        return  "Hello from login";
+    public  ApiResponseDto<LoginResponseDto> login(LoginDto payload){
+         LoginResponseDto response = new LoginResponseDto("Hello from login");
+         return  ApiResponseDto.success(response);
+
     }
 
     private String generateUniqueLoginId() {
