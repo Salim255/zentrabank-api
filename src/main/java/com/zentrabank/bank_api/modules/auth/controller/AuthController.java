@@ -21,7 +21,7 @@ public class AuthController {
 
     @PatchMapping("/reset-password")
     public String resetPassword(){
-
+            return  "Hello world";
     }
 
     @PostMapping("/register")

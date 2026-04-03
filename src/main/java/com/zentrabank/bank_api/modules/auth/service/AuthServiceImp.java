@@ -33,6 +33,16 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
+    public String resetPassword(String message){
+        try {
+            return  "hell word";
+        } catch (DataIntegrityViolationException ex){
+            logger.error("Database constraint violation during user login", ex);
+            throw  ex;
+        }
+    }
+
+    @Override
     public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload){
         try{
             // 1 Validate user input;
