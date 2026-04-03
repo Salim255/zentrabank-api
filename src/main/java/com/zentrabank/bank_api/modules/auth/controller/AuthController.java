@@ -1,9 +1,6 @@
 package com.zentrabank.bank_api.modules.auth.controller;
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
-import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
-import com.zentrabank.bank_api.modules.auth.dto.LoginResponseDto;
-import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
-import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
+import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -20,10 +17,11 @@ public class AuthController {
     }
 
     @PatchMapping("/reset-password")
-    public String resetPassword(
-      @Valid @RequestBody ResetPasswrdDto boy
+    public ApiResponseDto<String> resetPassword(
+      @Valid @RequestBody ResetPasswordDto body,
+       HttpServletResponse response
     ){
-            return  "Hello world";
+        return  this.authService.resetPassword(body);
     }
 
     @PostMapping("/register")

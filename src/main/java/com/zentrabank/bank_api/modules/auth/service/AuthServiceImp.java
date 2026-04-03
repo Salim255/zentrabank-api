@@ -1,10 +1,8 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
-import com.zentrabank.bank_api.exceptions.EmailAlreadyUsedException;
-import com.zentrabank.bank_api.exceptions.WeakPasswordException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
-import com.zentrabank.bank_api.modules.auth.validation.RegisterValidator;
+import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import org.slf4j.Logger;
@@ -18,14 +16,14 @@ import java.util.Random;
 @Service
 public class AuthServiceImp implements AuthService {
     private final Logger logger = LoggerFactory.getLogger(AuthServiceImp.class);
-    private final RegisterValidator registerValidator;
+    private final AuthValidator registerValidator;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImp(
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
-            RegisterValidator registerValidator
+            AuthValidator registerValidator
     ){
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
@@ -33,21 +31,26 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public String resetPassword(String message){
+    public ApiResponseDto<String> resetPassword(ResetPasswordDto payload){
         try {
-            return  "hell word";
+            // 1 Validate user inout
+            // 2 Hash passwords
+            // 3 Compare user's password with db password
+
+            return  ApiResponseDto.success("Password updated with success");
         } catch (DataIntegrityViolationException ex){
             logger.error("Database constraint violation during user login", ex);
             throw  ex;
         }
     }
 
+
     @Override
     public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload){
         try{
             // 1 Validate user input;
             this.logger.error("Hello from here befer 👹👹👹👹👹");
-            this.registerValidator.validate(payload);
+            this.registerValidator.registerValidate(payload);
             this.logger.error("Hello from here 👹👹👹👹👹");
             // 2 Generated temp password
             String tmpPassword = this.generateTempPassword();
