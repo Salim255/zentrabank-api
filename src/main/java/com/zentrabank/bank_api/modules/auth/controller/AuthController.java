@@ -20,7 +20,9 @@ public class AuthController {
     }
 
     @PatchMapping("/reset-password")
-    public String resetPassword(){
+    public String resetPassword(
+      @Valid @RequestBody ResetPasswrdDto boy
+    ){
             return  "Hello world";
     }
 
