@@ -60,7 +60,7 @@ public class AuthServiceImp implements AuthService {
             // 5 Save the
             User user = this.userRepository.save(createdUser);
 
-            // Build RegisterDto
+            // 6 Build RegisterDto
             RegisterResponseDto response = new RegisterResponseDto(
                    new UserDto( user.getId(),
                        user.getEmail(),
@@ -74,6 +74,7 @@ public class AuthServiceImp implements AuthService {
                    )
             );
 
+            // 7 Return data
             return  ApiResponseDto.success(response);
         } catch (DataIntegrityViolationException ex){
             logger.error("Database constraint violation during user registration", ex);
@@ -85,6 +86,10 @@ public class AuthServiceImp implements AuthService {
     public  ApiResponseDto<LoginResponseDto> login(LoginDto payload)
     {
         try {
+            // 1 Validate input
+            // 2 Check user exist
+            // 3 Create tokens
+            // Return user  + tokens
             LoginResponseDto response = new LoginResponseDto("Hello from login");
             return  ApiResponseDto.success(response);
         } catch (DataIntegrityViolationException ex){

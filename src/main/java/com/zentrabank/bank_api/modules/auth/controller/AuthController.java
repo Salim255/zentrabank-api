@@ -7,10 +7,7 @@ import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -19,8 +16,14 @@ public class AuthController {
     private final AuthService authService;
 
     public AuthController(AuthService authService){
-            this.authService = authService;
+        this.authService = authService;
     }
+
+    @PatchMapping("/reset-password")
+    public String resetPassword(){
+
+    }
+
     @PostMapping("/register")
     public ApiResponseDto<RegisterResponseDto> register(
             @Valid @RequestBody RegisterDto body,
