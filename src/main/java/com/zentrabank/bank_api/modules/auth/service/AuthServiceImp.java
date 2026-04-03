@@ -2,6 +2,7 @@ package com.zentrabank.bank_api.modules.auth.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.exceptions.NotFoundException;
+import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
 import com.zentrabank.bank_api.modules.user.entity.User;
@@ -37,7 +38,7 @@ public class AuthServiceImp implements AuthService {
         try {
             // 1 Get USer
             User user = this.userRepository.findById(userId).orElseThrow(
-                    () -> new NotFoundException("User not found")
+                    () -> new UnauthorizedException("Invalid authentication state")
             );
 
             // 2 Get user password
