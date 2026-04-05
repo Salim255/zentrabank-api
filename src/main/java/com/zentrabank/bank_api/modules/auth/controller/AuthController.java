@@ -1,7 +1,9 @@
 package com.zentrabank.bank_api.modules.auth.controller;
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.common.utils.JwtCookieUtils;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,9 @@ public class AuthController {
             @Valid @RequestBody LoginDto body,
             HttpServletResponse response
     ){
+        ApiResponseDto<LoginResponseDto> responseDto = this.authService.login(body);
+        Cookie cookie = JwtCookieUtils.createJwtCookie(responseDto.data()., false, 24*60*60);
+        response.addCookie(cookie);
         return  this.authService.login(body);
     }
 }
