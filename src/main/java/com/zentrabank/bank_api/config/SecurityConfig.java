@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 // Marks this class as a configuration class.
 // Spring will scan it and load the beans defined inside.
@@ -19,6 +21,30 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 // Without this, the security filter chain would not be activated.
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Allow frontend origin (Angular)
+        config.addAllowedOrigin("http://localhost:4200");
+
+        // Allow sending cookies (VERY IMPORTANT for JWT in cookies)
+        config.setAllowCredentials(true);
+
+        // Allow all headers (Authorization, Content-Type, etc.)
+        config.addAllowedHeader("*");
+
+        // Allow all HTTP methods (GET, POST, PUT, DELETE...)
+        config.addAllowedMethod("*");
+
+        // Apply this config to all endpoints
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,6 +69,8 @@ public class SecurityConfig {
         // "http" is the main security builder.
         // You configure all security rules on it.
         http
+                // Enable CORS with our configuration
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // Ensures your JwtAuthFilter runs before Spring Security’s default authentication filter.
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // All authentication exceptions (invalid/missing token) are handled by your
