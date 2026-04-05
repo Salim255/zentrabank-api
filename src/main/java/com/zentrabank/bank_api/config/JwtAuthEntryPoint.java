@@ -80,29 +80,43 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
 
         // Build a JSON error response manually
-        // Why manually? Because we are inside the filter chain, not a controller.
-        String json = """
-        {
-            "status": "error",
-            "message": "Missing or invalid authentication token",
-            "data": null
-        }
-        """;
-
-        // If you want stack trace in DEV mode only
-        if (isDev()) {
-            json = """
-            {
-                "status": "error",
-                "message": "Missing or invalid authentication token",
-                "data": null,
-                "stack": "%s"
-            }
-            """.formatted(Arrays.toString(authException.getStackTrace()));
-        }
+        String json = getString(authException);
 
         // Write the JSON into the HTTP response body
         // If we don't do this, the client receives an empty response
         response.getWriter().write(json);
+    }
+
+    private String getString(AuthenticationException authException) {
+        String message = authException.getMessage() != null
+                ?  authException.getMessage()
+                :  "Missing or invalid authentication token";;
+
+        String json;
+        // Use SAME message in both modes
+        if (isDev()) {
+            json = """
+        {
+            "status": "error",
+            "message": "%s",
+            "data": null,
+            "stack": "%s"
+        }
+        """.formatted(
+                    message,
+                    Arrays.toString(
+                            authException.getStackTrace()
+                    )
+            );
+        } else {
+            json = """
+        {
+            "status": "error",
+            "message": "%s",
+            "data": null
+        }
+        """.formatted(message);
+        }
+        return json;
     }
 }

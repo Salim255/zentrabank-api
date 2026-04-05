@@ -6,5 +6,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class ForbiddenException extends RuntimeException {
     public ForbiddenException(String message){
         super(message);
+        System.out.println("Hello from fodbiend Exception👹👹👹"+ message);
     }
 }

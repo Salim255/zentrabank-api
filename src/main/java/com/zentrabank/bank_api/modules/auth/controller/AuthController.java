@@ -25,6 +25,12 @@ public class AuthController {
        HttpServletResponse response,
       Authentication auth
     ){
+
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+
         UUID userId = (UUID) auth.getPrincipal();
         return  this.authService.resetPassword(body, userId);
     }
