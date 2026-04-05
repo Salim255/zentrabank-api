@@ -1,11 +1,11 @@
 package com.zentrabank.bank_api.config;
 
+import com.zentrabank.bank_api.common.utils.JwtCookieUtils;
 import com.zentrabank.bank_api.exceptions.ForbiddenException;
 import com.zentrabank.bank_api.modules.auth.dto.UserTokenDetailsDto;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -89,23 +89,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         SecurityContextHolder.clearContext();
 
         try {
-            Cookie[] cookies = request.getCookies();
 
-            String token = null;
-
-            /**
-             * Extract JWT from cookies
-             *
-             * We look for a cookie named "zentra_access_jwt"
-             */
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if ("zentra_access_jwt".equals(cookie.getName())) {
-                        token = cookie.getValue();
-                        break;
-                    }
-                }
-            }
+            // 1 Extract token (delegated)
+            String token = JwtCookieUtils.extractJwt(request);
 
             // If no token found → reject request
             if (token == null) {
@@ -132,7 +118,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             /**
              * Create Authentication object
-             *
+             * Build authentication
              * principal = userId
              * credentials = null (we don't use password here)
              * authorities = null (no roles yet)

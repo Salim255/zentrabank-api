@@ -1,5 +1,48 @@
 package com.zentrabank.bank_api.common.utils;
 
-public class JwtCookieUtils {
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
+public class JwtCookieUtils {
+    /**
+     * Create a JWT cookie with secure defaults
+     *
+     * @param token JWT string
+     * @param secure Whether to use HTTPS only (true in production)
+     * @param maxAgeInSeconds Expiration time in seconds
+     * @return Configured Cookie object
+     */
+    public static Cookie createJwtCookie(String token, boolean secure, int maxAgeInSeconds) {
+        Cookie cookie = new Cookie("jwt", token); // cookie name "jwt"
+
+        cookie.setHttpOnly(true);                  // protect against XSS
+        cookie.setSecure(secure);                  // only over HTTPS in prod
+        cookie.setPath("/");                        // available to all endpoints
+        cookie.setMaxAge(maxAgeInSeconds);         // e.g., 1 day = 24*60*60 seconds
+
+        return cookie;
+    }
+
+    /**
+     * Extract JWT token from cookies
+     */
+    public static String extractJwt(HttpServletRequest request) {
+
+        if (request.getCookies() == null) {
+            return null;
+        }
+
+        /**
+         * Extract JWT from cookies
+         *
+         * We look for a cookie named "zentra_access_jwt"
+         */
+        for (Cookie cookie : request.getCookies()) {
+            if ("zentra_access_jwt".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
+    }
 }
