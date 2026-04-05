@@ -43,16 +43,19 @@ public class SecurityConfig {
         // "http" is the main security builder.
         // You configure all security rules on it.
         http
+                // Ensures your JwtAuthFilter runs before Spring Security’s default authentication filter.
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // All authentication exceptions (invalid/missing token) are handled by your
+                // custom entry point, returning JSON responses.
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthEntryPoint)
+                )
                 // -------------------------------
                 // 1. Disable CSRF
                 // -------------------------------
                 // CSRF protection is useful for browser-based sessions.
                 // But for REST APIs using JWT, it must be disabled.
                 .csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(jwtAuthEntryPoint)
-                )
                 // -------------------------------
                 // 2. Disable session creation
                 // -------------------------------
