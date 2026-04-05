@@ -21,31 +21,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 // Without this, the security filter chain would not be activated.
 @EnableWebSecurity
 public class SecurityConfig {
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-
-        CorsConfiguration config = new CorsConfiguration();
-
-        // Allow frontend origin (Angular)
-        config.addAllowedOrigin("http://localhost:4200");
-
-        // Allow sending cookies (VERY IMPORTANT for JWT in cookies)
-        config.setAllowCredentials(true);
-
-        // Allow all headers (Authorization, Content-Type, etc.)
-        config.addAllowedHeader("*");
-
-        // Allow all HTTP methods (GET, POST, PUT, DELETE...)
-        config.addAllowedMethod("*");
-
-        // Apply this config to all endpoints
-        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-
-        return source;
-    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         // creates a new instance of the BCryptPasswordEncoder
@@ -70,7 +45,8 @@ public class SecurityConfig {
         // You configure all security rules on it.
         http
                 // Enable CORS with our configuration
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // Spring will automatically inject CorsConfigurationSource bean
+                .cors(cors -> {})
                 // Ensures your JwtAuthFilter runs before Spring Security’s default authentication filter.
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // All authentication exceptions (invalid/missing token) are handled by your
