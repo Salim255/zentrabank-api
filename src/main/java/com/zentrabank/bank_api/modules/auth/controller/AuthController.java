@@ -1,6 +1,7 @@
 package com.zentrabank.bank_api.modules.auth.controller;
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.common.utils.JwtCookieUtils;
+import com.zentrabank.bank_api.config.BankApiConfigProperties;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -12,10 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
+    private final BankApiConfigProperties configProperties;
     private final AuthService authService;
 
-    public AuthController(AuthService authService){
+    public AuthController(
+            BankApiConfigProperties configProperties,
+            AuthService authService
+    ){
         this.authService = authService;
+         this.configProperties = configProperties;
     }
 
     @PostMapping("/login")
@@ -28,12 +34,16 @@ public class AuthController {
                 .createJwtCookie(
                         responseDto.data().tokens().accessToken(),
                         false,
-                        24*60*60);
+                        24*60*60,
+                        configProperties.accessJwtName()
+                        );
         Cookie refreshTokenCookie = JwtCookieUtils
                 .createJwtCookie(
                         responseDto.data().tokens().refreshToken(),
                         false,
-                        24*60*60);
+                        24*60*60,
+                        configProperties.refreshJwtName()
+                        );
         response.addCookie(accessToeknCookie);
         response.addCookie(refreshTokenCookie);
 

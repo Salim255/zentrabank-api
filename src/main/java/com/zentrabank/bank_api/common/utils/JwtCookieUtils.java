@@ -12,8 +12,8 @@ public class JwtCookieUtils {
      * @param maxAgeInSeconds Expiration time in seconds
      * @return Configured Cookie object
      */
-    public static Cookie createJwtCookie(String token, boolean secure, int maxAgeInSeconds) {
-        Cookie cookie = new Cookie("jwt", token); // cookie name "jwt"
+    public static Cookie createJwtCookie(String token, boolean secure, int maxAgeInSeconds, String name) {
+        Cookie cookie = new Cookie(name, token); // cookie name "jwt"
 
         cookie.setHttpOnly(true);                  // protect against XSS
         cookie.setSecure(secure);                  // only over HTTPS in prod

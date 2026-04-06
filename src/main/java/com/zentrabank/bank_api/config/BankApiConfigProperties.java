@@ -6,6 +6,8 @@ import java.time.Duration;
 
 @ConfigurationProperties(prefix = "bank-api-secrets")
 public record BankApiConfigProperties(
+        String accessJwtName,
+        String refreshJwtName,
         String profileActive,
         String jwtSecret,
         Duration jwtExpiration,
