@@ -124,15 +124,19 @@ public class AuthServiceImp implements AuthService {
             String refreshToken = this.jwtService.generateRefreshToken(userId);
 
             // Return user  + tokens
-            LoginResponseDto response = new LoggedUserDto(
-                    user.getId().toString(),
-                    user.getEmail(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.isFirstLogin(),
-                    user.getRole()
+            // Built LoginResponseDto
+            LoginResponseDto  result = new LoginResponseDto(
+                    new LoggedUserDto(
+                            user.getId().toString(),
+                            user.getEmail(),
+                            user.getFirstName(),
+                            user.getLastName(),
+                            user.isFirstLogin(),
+                            user.getRole()
+                    ),
+                    new TokenDto(accessToken, refreshToken)
             );
-            return  ApiResponseDto.success(response);
+            return  ApiResponseDto.success(result);
         } catch (DataIntegrityViolationException ex){
             logger.error("Database constraint violation during user login", ex);
             // Unknown constraint → let GlobalExceptionHandler handle it
