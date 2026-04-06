@@ -1,9 +1,6 @@
 package com.zentrabank.bank_api.modules.auth.validation;
 
-import com.zentrabank.bank_api.exceptions.EmailAlreadyUsedException;
-import com.zentrabank.bank_api.exceptions.InvalidEmailException;
-import com.zentrabank.bank_api.exceptions.InvalidPasswordException;
-import com.zentrabank.bank_api.exceptions.NotFoundException;
+import com.zentrabank.bank_api.exceptions.*;
 import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
 import com.zentrabank.bank_api.modules.auth.dto.ResetPasswordDto;
@@ -33,8 +30,18 @@ public class AuthValidator {
 
     public void registerValidate(RegisterDto payload) {
       try {
-          //  Validate email format
+          String firstName = payload.firstName();
+          String lastName = payload.lastName();
           String email = payload.email();
+
+          boolean isInValidEmail = email == null || email.isBlank();
+          boolean isInValidFirstName = firstName == null || firstName.isBlank();
+          boolean isInvalidLastName = lastName == null || lastName.isBlank();
+
+          if (isInValidFirstName || isInvalidLastName || isInValidEmail) {
+              throw new BadRequestException("Invalid field in register user");
+          }
+
           if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
               throw new InvalidEmailException("Email format is invalid");
           }
@@ -54,6 +61,14 @@ public class AuthValidator {
         try{
 
             String email = payload.email();
+            String password = payload.password();
+            boolean isEmailInvalid = email == null || email.isBlank();
+            boolean isPasswordInvalid = password == null || password.isBlank();
+
+            if (isEmailInvalid || isPasswordInvalid){
+                throw new UnauthorizedException("Invalid login credentials");
+            }
+
             if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
                 throw new InvalidEmailException("Email format is invalid");
             }
