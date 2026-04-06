@@ -6,10 +6,7 @@ import com.zentrabank.bank_api.modules.auth.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,8 +24,19 @@ public class AuthController {
             HttpServletResponse response
     ){
         ApiResponseDto<LoginResponseDto> responseDto = this.authService.login(body);
-        Cookie cookie = JwtCookieUtils.createJwtCookie(responseDto.data()., false, 24*60*60);
-        response.addCookie(cookie);
-        return  this.authService.login(body);
+        Cookie accessToeknCookie = JwtCookieUtils
+                .createJwtCookie(
+                        responseDto.data().tokens().accessToken(),
+                        false,
+                        24*60*60);
+        Cookie refreshTokenCookie = JwtCookieUtils
+                .createJwtCookie(
+                        responseDto.data().tokens().refreshToken(),
+                        false,
+                        24*60*60);
+        response.addCookie(accessToeknCookie);
+        response.addCookie(refreshTokenCookie);
+
+        return responseDto;
     }
 }
