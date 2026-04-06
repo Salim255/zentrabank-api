@@ -3,7 +3,6 @@ package com.zentrabank.bank_api.modules.auth.validation;
 import com.zentrabank.bank_api.exceptions.*;
 import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
-import com.zentrabank.bank_api.modules.auth.dto.ResetPasswordDto;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
