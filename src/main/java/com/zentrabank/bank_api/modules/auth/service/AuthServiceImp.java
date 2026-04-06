@@ -1,6 +1,7 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.config.JwtService;
 import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
@@ -22,8 +23,10 @@ public class AuthServiceImp implements AuthService {
     private final AuthValidator authValidator;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthServiceImp(
+            JwtService jwtService,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             AuthValidator registerValidator
@@ -31,6 +34,7 @@ public class AuthServiceImp implements AuthService {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.authValidator = registerValidator;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -63,9 +67,7 @@ public class AuthServiceImp implements AuthService {
     public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload){
         try{
             // 1 Validate user input;
-            this.logger.error("Hello from here befer 👹👹👹👹👹");
             this.authValidator.registerValidate(payload);
-            this.logger.error("Hello from here 👹👹👹👹👹");
             // 2 Generated temp password
             String tmpPassword = this.generateTempPassword();
 
@@ -114,10 +116,10 @@ public class AuthServiceImp implements AuthService {
     {
         try {
             // 1 Validate input
+            User user = this.authValidator.loginValidate(payload);
 
-            // 2 Check user exist
-
-            // 3 Create tokens
+            // 2 Create tokens
+            String accesssToekn = this.jwtService.generateAccessToken(user.getId());
             // Return user  + tokens
             LoginResponseDto response = new LoginResponseDto("Hello from login");
             return  ApiResponseDto.success(response);

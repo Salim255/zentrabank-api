@@ -46,14 +46,25 @@ public class JwtService {
     // -------------------------------
     // GENERATE ACCESS TOKEN
     // -------------------------------
-    public String generateAccessToken(UserTokenDetailsDto user){
+    public String generateAccessToken(String userId){
+        // Method that generates a JWT token using only the userId
         return Jwts.builder()
-                .claim("userId", user.userId())
-                .claim("expireIn", user.expireIn())
+                // Start building the token
+
+                .subject(userId)
+                // Set the subject (standard JWT field for user identity)
+
                 .issuedAt(Date.from(Instant.now()))
+                // Set creation time
+
                 .expiration(fromNow(this.config.jwtExpiration()))
+                // Set expiration time
+
                 .signWith(key)
+                // Sign the token
+
                 .compact();
+                // Return the token
     }
 
     // -------------------------------

@@ -2,6 +2,7 @@ package com.zentrabank.bank_api.modules.auth.validation;
 
 import com.zentrabank.bank_api.exceptions.EmailAlreadyUsedException;
 import com.zentrabank.bank_api.exceptions.InvalidEmailException;
+import com.zentrabank.bank_api.exceptions.InvalidPasswordException;
 import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
@@ -26,7 +27,7 @@ public class AuthValidator {
         boolean isMatch = passwordEncoder.matches(textPassword, hashedPassword);
 
         if (!isMatch){
-
+            throw  new InvalidPasswordException("Invalid login credentials");
         }
     }
 
@@ -49,11 +50,22 @@ public class AuthValidator {
       }
     }
 
-    public void loginValidate(LoginDto payload){
+    public User loginValidate(LoginDto payload){
         try{
-            if(!this.userRepository.existsByEmail(payload.email())) {
-                throw  new NotFoundException("User with this email does not exist");
+
+            String email = payload.email();
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                throw new InvalidEmailException("Email format is invalid");
             }
+
+            User user = this.userRepository.findByEmail(payload.email())
+                    .orElseThrow(() -> new NotFoundException("User with this email does not exist"));
+
+            // Validate password
+            this.comparePassword(payload.password(), user.getPasswordHash());
+
+            // Return user
+            return  user;
         } catch (RuntimeException ex){
             this.logger.error("Error during login validation: {}", ex.getMessage(), ex);
             throw ex;
