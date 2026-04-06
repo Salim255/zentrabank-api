@@ -70,10 +70,9 @@ public class JwtService {
     // -------------------------------
     // GENERATE REFRESH TOKEN
     // -------------------------------
-    public String generateRefreshToken(UserTokenDetailsDto user){
+    public String generateRefreshToken(String userId){
         return Jwts.builder()
-                .claim("userId", user.userId())
-                .claim("expireIn", user.expireIn())
+                .subject(userId)
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(fromNow(config.refreshTokenExpiration()))
                 .signWith(key)

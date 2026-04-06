@@ -117,11 +117,21 @@ public class AuthServiceImp implements AuthService {
         try {
             // 1 Validate input
             User user = this.authValidator.loginValidate(payload);
+            String userId = user.getId().toString();
 
             // 2 Create tokens
-            String accesssToekn = this.jwtService.generateAccessToken(user.getId());
+            String accessToken = this.jwtService.generateAccessToken(userId);
+            String refreshToken = this.jwtService.generateRefreshToken(userId);
+
             // Return user  + tokens
-            LoginResponseDto response = new LoginResponseDto("Hello from login");
+            LoginResponseDto response = new LoggedUserDto(
+                    user.getId().toString(),
+                    user.getEmail(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.isFirstLogin(),
+                    user.getRole()
+            );
             return  ApiResponseDto.success(response);
         } catch (DataIntegrityViolationException ex){
             logger.error("Database constraint violation during user login", ex);
