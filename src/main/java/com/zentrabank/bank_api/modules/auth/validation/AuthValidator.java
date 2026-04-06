@@ -2,9 +2,11 @@ package com.zentrabank.bank_api.modules.auth.validation;
 
 import com.zentrabank.bank_api.exceptions.EmailAlreadyUsedException;
 import com.zentrabank.bank_api.exceptions.InvalidEmailException;
+import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.auth.dto.LoginDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
 import com.zentrabank.bank_api.modules.auth.dto.ResetPasswordDto;
+import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -48,6 +50,13 @@ public class AuthValidator {
     }
 
     public void loginValidate(LoginDto payload){
-
+        try{
+            if(!this.userRepository.existsByEmail(payload.email())) {
+                throw  new NotFoundException("User with this email does not exist");
+            }
+        } catch (RuntimeException ex){
+            this.logger.error("Error during login validation: {}", ex.getMessage(), ex);
+            throw ex;
+        }
     }
 }
