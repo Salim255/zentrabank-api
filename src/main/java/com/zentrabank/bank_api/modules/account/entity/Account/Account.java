@@ -1,6 +1,6 @@
 package com.zentrabank.bank_api.modules.account.entity.Account;
 
-import com.zentrabank.bank_api.modules.account.dto.AccountStatus;
+import com.zentrabank.bank_api.modules.account.dto.AccountStatusDto;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -50,7 +50,7 @@ public class Account {
     // Useful for locking, freezing, or closing accounts without deleting them
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AccountStatus status = AccountStatus.ACTIVE;
+    private AccountStatusDto status = AccountStatusDto.ACTIVE;
 
     // Link to the owner of the account
     // Many accounts can belong to one user
