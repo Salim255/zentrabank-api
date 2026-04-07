@@ -1,7 +1,9 @@
 package com.zentrabank.bank_api.modules.refreshtoken.servce;
 
 import com.zentrabank.bank_api.config.JwtService;
+import com.zentrabank.bank_api.modules.refreshtoken.dto.CreateTokenDto;
 import com.zentrabank.bank_api.modules.refreshtoken.dto.RefreshTokenDto;
+import com.zentrabank.bank_api.modules.refreshtoken.entity.RefreshToken;
 import com.zentrabank.bank_api.modules.refreshtoken.repository.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +22,13 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     }
 
     @Override
-    public RefreshTokenDto createRefreshToken(){
+    public void createRefreshToken(CreateTokenDto payload){
         try {
-            String refreshToken = this.jwtService.generateRefreshToken(userId, user.getRole());
-            RefreshTokenDto token = this.refreshTokenRepository.findBy();
-            return  token;
+            RefreshToken refreshToken = new RefreshToken();
+            refreshToken.setToken(payload.token());
+            refreshToken.setExpiresAt(payload.expiresAt());
+
+            this.refreshTokenRepository.save(refreshToken);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
