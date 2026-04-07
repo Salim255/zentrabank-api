@@ -1,4 +1,5 @@
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
+import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 
