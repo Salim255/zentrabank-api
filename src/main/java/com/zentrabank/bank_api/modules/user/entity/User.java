@@ -1,7 +1,9 @@
 package com.zentrabank.bank_api.modules.user.entity;
+import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,6 +31,13 @@ public class User {
             nullable = false  // ID must always be present
     )
     private UUID id;
+
+    @OneToMany(
+            mappedBy = "user",               // field in BankAccount that owns the relation
+            cascade = CascadeType.ALL,       // any operation on User cascades to accounts
+            orphanRemoval = true             // deleting a BankAccount from the list deletes it from DB
+    )
+    private List<Account> accounts;
 
     @Column(nullable = false, unique = true, length = 150)
     private String email;

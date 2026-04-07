@@ -1,12 +1,12 @@
 package com.zentrabank.bank_api.modules.account.entity.Account;
 
-import com.zentrabank.bank_api.modules.account.dto.AccountStatusDto;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -50,13 +50,25 @@ public class Account {
     // Useful for locking, freezing, or closing accounts without deleting them
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AccountStatusDto status = AccountStatusDto.ACTIVE;
+    private AccountStatus status = AccountStatus.ACTIVE;
 
     // Link to the owner of the account
     // Many accounts can belong to one user
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    // Many-to-One relationship: Many BankAccounts can belong to one User
+    // Example: A user can have multiple accounts (checking, savings, etc.)
+    @ManyToOne(
+            fetch = FetchType.LAZY, // LAZY loading: the User object is only
+            // fetched from DB when explicitly accessed
+            // This improves performance, especially when fetching many accounts
+
+            optional = false // optional=false means every BankAccount MUST have an associated User
+    )
+    @JoinColumn(
+            name = "user_id", // The foreign key column in the 'bank_accounts'
+            // table that references User's primary key
+            nullable = false // Database-level constraint: cannot create a BankAccount without a user
+    )
+    private User user; // The User object that owns this account
 
     // Timestamp of account creation, set automatically
     @Column(nullable = false, updatable = false)
