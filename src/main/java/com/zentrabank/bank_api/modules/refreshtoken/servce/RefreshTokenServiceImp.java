@@ -37,7 +37,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
     @Override
     public void removeRefreshToken(String refreshToken) {
         try {
-
+            this.refreshTokenRepository.deleteByToken(refreshToken);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
