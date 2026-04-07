@@ -4,6 +4,7 @@ import com.zentrabank.bank_api.modules.refreshtoken.dto.CreateTokenDto;
 import com.zentrabank.bank_api.modules.refreshtoken.dto.RefreshTokenDto;
 
 public interface RefreshTokenService {
+    public RefreshTokenDto findTokenByToken(String refreshToken);
     public void createRefreshToken(CreateTokenDto payload);
     public void removeRefreshToken(String refreshToken);
 }

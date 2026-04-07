@@ -6,6 +6,8 @@ import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
+import com.zentrabank.bank_api.modules.refreshtoken.entity.RefreshToken;
+import com.zentrabank.bank_api.modules.refreshtoken.repository.RefreshTokenRepository;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.entity.UserRole;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
@@ -23,15 +25,20 @@ public class AuthServiceImp implements AuthService {
     private final Logger logger = LoggerFactory.getLogger(AuthServiceImp.class);
     private final AuthValidator authValidator;
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private
+
 
     public AuthServiceImp(
+            RefreshTokenRepository refreshTokenRepository,
             JwtService jwtService,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             AuthValidator registerValidator
     ){
+        this.refreshTokenRepository = refreshTokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.authValidator = registerValidator;
@@ -48,19 +55,23 @@ public class AuthServiceImp implements AuthService {
             // 2 Parse token data
             UserTokenDetailsDto tokenData = this.jwtService.parseToken(refreshToken);
 
-            // Get user Id
+            // 3 Get user Id
             UUID userId = tokenData.userId();
             UserRole role = tokenData.role();
 
-            // 3. Check token matches DB
-            String storedToken = this.userRepository.getRefreshToken(userId);
+            // 4 Check token matches DB
+            RefreshToken storedToken = this.refreshTokenRepository
+                    .findByToken(refreshToken).
+                    orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
 
-            if (!refreshToken.equals(storedToken) || storedToken.isBlank()) {
+            if (!refreshToken.equals(storedToken.getToken()) || storedToken.getToken().isBlank()) {
                 throw new UnauthorizedException("Invalid refresh token");
             }
 
-            // 4 Create access token
+            // 5 Create access token
             String accessToken = this.jwtService.generateAccessToken(userId.toString(), role);
+
+            // 6 return access token
             return  new RefreshAccessToken(new TokenDto(accessToken, refreshToken));
         } catch (Exception ex){
             this.logger.error("Error to refresh access token { }", ex);
@@ -156,7 +167,7 @@ public class AuthServiceImp implements AuthService {
             String refreshToken = this.jwtService.generateRefreshToken(userId, user.getRole());
 
             // Store refresh token in DB
-            int updated = this.userRepository.updateRefreshToken(user.getId(), refreshToken);
+            int updated =
 
             if (updated == 0) throw new NotFoundException("User not found");
 
