@@ -19,7 +19,11 @@ import java.util.UUID;
         name = "accounts",
         indexes = {
                 // Index for fast lookup by account number (common query)
-                @Index(name = "idx_account_number", columnList = "accountNumber", unique = true)
+                @Index(
+                        name = "idx_account_number",
+                        columnList = "accountNumber",
+                        unique = true
+                )
         }
 )
 public class Account {
