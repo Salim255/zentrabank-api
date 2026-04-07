@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.account.entity.Account;
 
+import com.zentrabank.bank_api.modules.account.dto.AccountStatus;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
