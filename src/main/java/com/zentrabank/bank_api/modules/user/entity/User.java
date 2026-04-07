@@ -45,15 +45,6 @@ public class User {
     @Column(nullable = false)
     private String passwordHash; // BCrypt hashed password
 
-    // Refresh token is OPTIONAL (nullable = true)
-    // Because admin-created users do NOT have a refresh token yet.
-    @Column(
-            name = "refresh_token_hash",
-            nullable = true,               // explicitly shown
-            columnDefinition = "text"      // refresh tokens are long when hashed
-    )
-    private String refreshTokenHash;
-
     @Column(nullable = false, length = 100)
     private String firstName;
 
