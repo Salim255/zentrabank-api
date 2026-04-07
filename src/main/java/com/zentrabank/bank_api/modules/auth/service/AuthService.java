@@ -9,5 +9,6 @@ import java.util.UUID;
 public interface AuthService {
     public ApiResponseDto<String> resetPassword(ResetPasswordDto payload, UUID userId);
     public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload);
-    public  ApiResponseDto<LoginResponseDto> login(LoginDto payload);
+    public ApiResponseDto<LoginResponseDto> login(LoginDto payload);
+    public String getStoredRefreshToken(UUID userId);
 }

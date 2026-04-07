@@ -26,7 +26,7 @@ public class JwtCookieUtils {
     /**
      * Extract JWT token from cookies
      */
-    public static String extractJwt(HttpServletRequest request) {
+    public static String extractJwt(HttpServletRequest request, String name) {
 
         if (request.getCookies() == null) {
             return null;
@@ -38,7 +38,7 @@ public class JwtCookieUtils {
          * We look for a cookie named "zentra_access_jwt"
          */
         for (Cookie cookie : request.getCookies()) {
-            if ("zentra_access_jwt".equals(cookie.getName())) {
+            if (name.equals(cookie.getName())) {
                 return cookie.getValue();
             }
         }

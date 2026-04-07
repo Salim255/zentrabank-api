@@ -89,7 +89,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         try {
             // 1 Extract token (delegated)
-            String token = JwtCookieUtils.extractJwt(request);
+            String token = JwtCookieUtils.extractJwt(request, "zentra_access_jwt");
 
             // If no token found → reject request
             if (token == null) {

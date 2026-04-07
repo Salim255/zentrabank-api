@@ -47,6 +47,9 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+    @Query(value = "SELECT u.refresh_token_hash FROM users AS u  WHERE u.id = :userId;", nativeQuery = true)
+    String getRefreshToken(UUID userId);
+
     @Modifying // required for update/delete queries.
     @Transactional // ensures the update is committed.
     @Query(

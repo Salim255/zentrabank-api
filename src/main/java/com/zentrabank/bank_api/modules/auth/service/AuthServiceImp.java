@@ -38,6 +38,14 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
+    public String getStoredRefreshToken(String userId){
+        try {
+          return this.userRepository.getRefreshToken(userId);
+        } catch (){
+
+        }
+    }
+    @Override
     public ApiResponseDto<String> resetPassword(ResetPasswordDto payload, UUID userId){
         try {
             // 1 Get USer
