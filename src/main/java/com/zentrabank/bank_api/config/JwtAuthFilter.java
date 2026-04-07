@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.slf4j.Logger;
@@ -19,8 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
-/**
+/*
  * JwtAuthFilter
  *
  * This filter runs BEFORE every request reaches your controllers.
@@ -37,10 +39,8 @@ import java.io.IOException;
  */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-
     private final JwtService jwtService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
-
     private final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
 
     public JwtAuthFilter(JwtService jwtService, JwtAuthEntryPoint jwtAuthEntryPoint) {
@@ -48,11 +48,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.jwtAuthEntryPoint = jwtAuthEntryPoint;
     }
 
-    /**
+    /*
      * shouldNotFilter()
      *
      * This method tells Spring:
-     * 👉 "Do NOT run this filter for these routes"
+     * "Do NOT run this filter for these routes"
      *
      * We skip authentication for public endpoints (login, signup, etc.)
      */
@@ -64,7 +64,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         return path.startsWith("/auth/");
     }
 
-    /**
+    /*
      * doFilterInternal()
      *
      * This method is executed for every protected request.
@@ -84,12 +84,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
         // Always start clean (avoid leaking authentication between requests)
         SecurityContextHolder.clearContext();
 
         try {
-
             // 1 Extract token (delegated)
             String token = JwtCookieUtils.extractJwt(request);
 
@@ -98,42 +96,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 throw new ForbiddenException("Missing authentication token");
             }
 
-            // Debug (use debug level, not error)
-            logger.debug("JWT extracted");
-
-            /**
+            /*
              * Validate and decode the token
-             *
              * JwtService is responsible for:
              *  - checking signature
              *  - checking expiration
              *  - extracting payload
              */
             UserTokenDetailsDto tokenData = jwtService.parseToken(token);
-
-            // If token does not contain userId → invalid
-            if (tokenData.userId() == null) {
-                throw new ForbiddenException("Invalid authentication token");
-            }
-
-            /**
-             * Create Authentication object
-             * Build authentication
-             * principal = userId
-             * credentials = null (we don't use password here)
-             * authorities = null (no roles yet)
-             */
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                            tokenData.userId(),
-                            null,
-                            null
-                    );
+            // Convert single role to GrantedAuthority
+            UsernamePasswordAuthenticationToken auth = getUsernamePasswordAuthenticationToken(tokenData);
 
             // Store authentication so controllers can access it
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            /**
+            /*
              * Continue the request
              *
              * VERY IMPORTANT:
@@ -143,14 +120,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         } catch (ForbiddenException ex) {
 
-            /**
+            /*
              * Authentication failed
              *
              * Clean context to ensure no invalid data remains
              */
             SecurityContextHolder.clearContext();
 
-            /**
+            /*
              * Delegate error handling to JwtAuthEntryPoint
              *
              * Why:
@@ -163,5 +140,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     new org.springframework.security.core.AuthenticationException(ex.getMessage()) {}
             );
         }
+    }
+
+    private static UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(
+            UserTokenDetailsDto tokenData
+    ) {
+        List<SimpleGrantedAuthority> authorities = List.of(
+                new SimpleGrantedAuthority("ROLE_" + tokenData.role().name()) // -> ROLE_ADMIN or ROLE_CUSTOMER
+        );
+
+        // If token does not contain userId → invalid
+        if (tokenData.userId() == null) {
+            throw new ForbiddenException("Invalid authentication token");
+        }
+
+        /*
+         * Create Authentication object
+         * Build authentication
+         * principal = userId
+         * credentials = null (we don't use password here)
+         * authorities = null (no roles yet)
+         */
+        return new UsernamePasswordAuthenticationToken(
+                tokenData.userId(),
+                null,
+                authorities
+        );
     }
 }

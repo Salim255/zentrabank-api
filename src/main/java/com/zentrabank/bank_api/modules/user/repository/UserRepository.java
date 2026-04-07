@@ -1,7 +1,10 @@
 package com.zentrabank.bank_api.modules.user.repository;
 
 import com.zentrabank.bank_api.modules.user.entity.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -44,6 +47,14 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+    @Modifying // required for update/delete queries.
+    @Transactional // ensures the update is committed.
+    @Query(
+            value = "UPDATE users SET refresh_token_hash = :refreshToken WHERE id = :userId;",
+            nativeQuery = true
+    )
+    int updateRefreshToken(UUID userId, String refreshToken );
+
     /**
      * Checks if a loginId already exists in the database.
      * Used when generating a unique 9-digit banking login ID.

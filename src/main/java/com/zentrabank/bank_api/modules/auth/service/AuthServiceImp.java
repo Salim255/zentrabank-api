@@ -120,8 +120,13 @@ public class AuthServiceImp implements AuthService {
             String userId = user.getId().toString();
 
             // 2 Create tokens
-            String accessToken = this.jwtService.generateAccessToken(userId);
-            String refreshToken = this.jwtService.generateRefreshToken(userId);
+            String accessToken = this.jwtService.generateAccessToken(userId, user.getRole());
+            String refreshToken = this.jwtService.generateRefreshToken(userId, user.getRole());
+
+            // Store refresh token in DB
+            int updated = this.userRepository.updateRefreshToken(user.getId(), refreshToken);
+
+            if (updated == 0) throw new NotFoundException("User not found");
 
             // Return user  + tokens
             // Built LoginResponseDto
