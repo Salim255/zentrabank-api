@@ -49,7 +49,7 @@ public class JwtService {
 
             return new UserTokenDetailsDto(userId, expireIn, role);
         } catch (Exception e) {
-            logger.error("Parse token error{} 👹👹👹", e.getMessage());
+            logger.error("Parse token error{}", e.getMessage());
             throw new RuntimeException("Invalid role in token");
         }
 
