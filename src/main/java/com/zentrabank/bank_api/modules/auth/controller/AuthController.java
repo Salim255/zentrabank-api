@@ -19,7 +19,6 @@ import java.util.UUID;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final JwtService jwtService;
     private final BankApiConfigProperties configProperties;
     private final AuthService authService;
 
@@ -28,27 +27,33 @@ public class AuthController {
             BankApiConfigProperties configProperties,
             AuthService authService
     ){
-        this.jwtService  = jwtService;
         this.authService = authService;
         this.configProperties = configProperties;
     }
 
-    @GetMapping("/refresh-token")
-    public ApiResponseDto<LoginResponseDto> refreshToken(
-            HttpServletRequest request
+    @PostMapping("/refresh-token")
+    public ApiResponseDto<RefreshAccessToken> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
     ){
         // 1 Get token
         String refreshToken = JwtCookieUtils.extractJwt(request, "zentra_refresh_jwt");
 
-        // 2 Check token
-        if (refreshToken == null) throw new UnauthorizedException("No refresh token");
+        // 2 Validate and update access token
+        RefreshAccessToken responseData =  this.authService.refreshAccessToken(refreshToken);
 
-        // 3 Parse token data
-        UserTokenDetailsDto tokenData = this.jwtService.parseToken(refreshToken);
+        // 3 Build access token cookie
+        Cookie accessToeknCookie = JwtCookieUtils
+                .createJwtCookie(
+                        responseData.tokens().accessToken(),
+                        false,
+                        24*60*60,
+                        configProperties.accessJwtName()
+                );
 
-        // Get user Id
-        UUID userId = tokenData.userId();
-        UserRole role = tokenData.role();
+        // 4 Add access token to response
+        response.addCookie(accessToeknCookie);
+        return ApiResponseDto.success(responseData);
     }
 
     @PostMapping("/login")

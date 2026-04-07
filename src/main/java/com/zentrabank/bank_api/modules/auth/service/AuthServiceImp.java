@@ -7,6 +7,7 @@ import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
 import com.zentrabank.bank_api.modules.user.entity.User;
+import com.zentrabank.bank_api.modules.user.entity.UserRole;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +39,36 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public String getStoredRefreshToken(String userId){
+    public RefreshAccessToken  refreshAccessToken(String refreshToken){
         try {
-          return this.userRepository.getRefreshToken(userId);
-        } catch (){
 
+            // 1 Check token
+            if (refreshToken == null) throw new UnauthorizedException("No refresh token");
+
+            // 2 Parse token data
+            UserTokenDetailsDto tokenData = this.jwtService.parseToken(refreshToken);
+
+            // Get user Id
+            UUID userId = tokenData.userId();
+            UserRole role = tokenData.role();
+
+            // 3. Check token matches DB
+            String storedToken = this.userRepository.getRefreshToken(userId);
+
+            if (!refreshToken.equals(storedToken) || storedToken.isBlank()) {
+                throw new UnauthorizedException("Invalid refresh token");
+            }
+
+            // 4 Create access token
+            String accessToken = this.jwtService.generateAccessToken(userId.toString(), role);
+            return  new RefreshAccessToken(new TokenDto(accessToken, refreshToken));
+        } catch (Exception ex){
+            this.logger.error("Error to refresh access token { }", ex);
+            throw ex;
         }
     }
+
+
     @Override
     public ApiResponseDto<String> resetPassword(ResetPasswordDto payload, UUID userId){
         try {
