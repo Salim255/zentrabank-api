@@ -5,5 +5,5 @@ import com.zentrabank.bank_api.modules.refreshtoken.dto.RefreshTokenDto;
 
 public interface RefreshTokenService {
     public void createRefreshToken(CreateTokenDto payload);
-    public  void  removeRefreshToken(String refreshToken);
+    public void removeRefreshToken(String refreshToken);
 }
