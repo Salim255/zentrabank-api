@@ -6,6 +6,9 @@ import com.zentrabank.bank_api.modules.refreshtoken.dto.CreateTokenDto;
 import com.zentrabank.bank_api.modules.refreshtoken.dto.RefreshTokenDto;
 import com.zentrabank.bank_api.modules.refreshtoken.entity.RefreshToken;
 import com.zentrabank.bank_api.modules.refreshtoken.repository.RefreshTokenRepository;
+import com.zentrabank.bank_api.modules.user.entity.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RefreshTokenServiceImp implements RefreshTokenService {
+    @PersistenceContext // Injects the JPA EntityManager
+    private EntityManager entityManager;
+
     private final Logger logger = LoggerFactory.getLogger(RefreshTokenServiceImp.class);
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -32,21 +38,29 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
                     orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
             return new RefreshTokenDto(token.getId(), token.getToken(), token.getExpiresAt(), token.isRevoked());
         } catch (Exception ex) {
-            this.logger.error("Error find token { }", ex);
-            throw new RuntimeException(ex);
+            this.logger.error("Error find token { } 🔥🔥🔥", ex);
+            throw ex;
         }
     }
 
     @Override
     public void createRefreshToken(CreateTokenDto payload){
         try {
-            RefreshToken refreshToken = new RefreshToken();
-            refreshToken.setToken(payload.token());
-            refreshToken.setExpiresAt(payload.expiresAt());
+            // Get a reference (proxy) to the User entity WITHOUT querying the database
+            // Hibernate will NOT execute a SELECT here
+            // It simply creates a lightweight proxy object with only the ID set
+            // This is enough because we only need the user_id for the foreign key
+            User userRef = entityManager.getReference(User.class, payload.user_id());
 
-            this.refreshTokenRepository.save(refreshToken);
+            RefreshToken token = RefreshToken
+                    .builder()
+                    .user(userRef)
+                    .token(payload.token())
+                    .expiresAt(payload.expiresAt())
+                    .build();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            this.logger.error("Error on create refresh token { } 🔥🔥🔥", e);
+            throw e;
         }
     }
 

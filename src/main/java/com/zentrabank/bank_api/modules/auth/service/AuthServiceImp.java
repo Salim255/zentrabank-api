@@ -196,6 +196,7 @@ public class AuthServiceImp implements AuthService {
 
             // Create refresh token in DB
             CreateTokenDto tokenPayload = new CreateTokenDto(
+                    user.getId(),
                     refreshToken,
                     this.jwtService.fromNow(config.refreshTokenExpiration()).toInstant()
             );
