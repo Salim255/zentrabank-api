@@ -2,6 +2,7 @@ package com.zentrabank.bank_api.config;
 
 import com.zentrabank.bank_api.common.utils.JwtCookieUtils;
 import com.zentrabank.bank_api.exceptions.ForbiddenException;
+import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.UserTokenDetailsDto;
 
 import jakarta.servlet.FilterChain;
@@ -89,11 +90,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         try {
             // 1 Extract token (delegated)
-            String token = JwtCookieUtils.extractJwt(request, "zentra_access_jwt");
+            String accessToken = JwtCookieUtils.extractJwt(request, "zentra_access_jwt");
+
+            // 2 Get refreshToken for logout
+            String refreshToken = JwtCookieUtils.extractJwt(request, "zentra_refresh_token_jwt");
 
             // If no token found → reject request
-            if (token == null) {
-                throw new ForbiddenException("Missing authentication token");
+            if (accessToken == null || refreshToken ==  null) {
+                throw new UnauthorizedException("Missing authentication token");
             }
 
             /*
@@ -103,9 +107,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
              *  - checking expiration
              *  - extracting payload
              */
-            UserTokenDetailsDto tokenData = jwtService.parseToken(token);
+            UserTokenDetailsDto tokenData = jwtService.parseToken(accessToken);
             // Convert single role to GrantedAuthority
-            UsernamePasswordAuthenticationToken auth = getUsernamePasswordAuthenticationToken(tokenData);
+            UsernamePasswordAuthenticationToken auth = getUsernamePasswordAuthenticationToken(
+                    tokenData,
+                    refreshToken
+            );
 
             // Store authentication so controllers can access it
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -143,7 +150,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private static UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(
-            UserTokenDetailsDto tokenData
+            UserTokenDetailsDto tokenData,
+            String rawToken
     ) {
         List<SimpleGrantedAuthority> authorities = List.of(
                 new SimpleGrantedAuthority("ROLE_" + tokenData.role().name()) // -> ROLE_ADMIN or ROLE_CUSTOMER
@@ -163,7 +171,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
          */
         return new UsernamePasswordAuthenticationToken(
                 tokenData.userId(),
-                null,
+                rawToken, // Store token here fro refresh token,
                 authorities
         );
     }

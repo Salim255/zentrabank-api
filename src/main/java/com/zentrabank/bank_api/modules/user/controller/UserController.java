@@ -1,6 +1,8 @@
 package com.zentrabank.bank_api.modules.user.controller;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.exceptions.ForbiddenException;
+import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
 import com.zentrabank.bank_api.modules.auth.dto.ResetPasswordDto;
@@ -35,7 +37,7 @@ public class UserController {
     ){
 
         if (auth == null || !auth.isAuthenticated()) {
-            throw new RuntimeException("User not authenticated");
+            throw new ForbiddenException("Invalid authentication token");
         }
 
         UUID userId = (UUID) auth.getPrincipal();

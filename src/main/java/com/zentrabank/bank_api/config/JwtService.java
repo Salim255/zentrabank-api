@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.config;
 
+import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.UserTokenDetailsDto;
 import com.zentrabank.bank_api.modules.user.entity.UserRole;
 import io.jsonwebtoken.Claims;
@@ -29,16 +30,35 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(config.jwtSecret().getBytes(StandardCharsets.UTF_8));
     }
 
+    private void validateToken(String token){
+        try {
+            // Parses token, checks signature and expiration
+            Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token);
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            throw new UnauthorizedException("Token expired");
+        } catch (io.jsonwebtoken.security.SignatureException e) {
+            throw new UnauthorizedException("Invalid signature");
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid token");
+        }
+    }
+
     // -------------------------------
     // PARSE TOKEN (NEW JJWT API)
     // -------------------------------
     public UserTokenDetailsDto parseToken(String token){
         try {
-            JwtParser parser = Jwts.parser()
-                    .verifyWith(key)
-                    .build();
+            // Validate token
+            this.validateToken(token);
 
-            Claims claims = parser.parseSignedClaims(token).getPayload();
+            // Parse date
+            Claims claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token).getPayload();
 
             String userIdStr = claims.getSubject();
             UUID userId = UUID.fromString(userIdStr);
@@ -52,7 +72,6 @@ public class JwtService {
             logger.error("Parse token error{}", e.getMessage());
             throw new RuntimeException("Invalid role in token");
         }
-
     }
 
     // -------------------------------
