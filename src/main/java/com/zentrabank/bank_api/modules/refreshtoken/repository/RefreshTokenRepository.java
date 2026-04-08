@@ -1,4 +1,5 @@
 package com.zentrabank.bank_api.modules.refreshtoken.repository;
+import com.zentrabank.bank_api.modules.refreshtoken.dto.CreateTokenDto;
 import com.zentrabank.bank_api.modules.refreshtoken.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

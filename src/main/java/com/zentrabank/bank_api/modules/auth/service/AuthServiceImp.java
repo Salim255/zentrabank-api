@@ -1,13 +1,17 @@
 package com.zentrabank.bank_api.modules.auth.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.config.BankApiConfigProperties;
 import com.zentrabank.bank_api.config.JwtService;
 import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
+import com.zentrabank.bank_api.modules.refreshtoken.dto.CreateTokenDto;
+import com.zentrabank.bank_api.modules.refreshtoken.dto.RefreshTokenDto;
 import com.zentrabank.bank_api.modules.refreshtoken.entity.RefreshToken;
 import com.zentrabank.bank_api.modules.refreshtoken.repository.RefreshTokenRepository;
+import com.zentrabank.bank_api.modules.refreshtoken.servce.RefreshTokenServiceImp;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.entity.UserRole;
 import com.zentrabank.bank_api.modules.user.repository.UserRepository;
@@ -22,23 +26,24 @@ import java.util.UUID;
 
 @Service
 public class AuthServiceImp implements AuthService {
+    private final BankApiConfigProperties config;
     private final Logger logger = LoggerFactory.getLogger(AuthServiceImp.class);
     private final AuthValidator authValidator;
     private final UserRepository userRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private
-
+    private final RefreshTokenServiceImp refreshTokenServiceImp;
 
     public AuthServiceImp(
-            RefreshTokenRepository refreshTokenRepository,
+            BankApiConfigProperties config,
+            RefreshTokenServiceImp refreshTokenServiceImp,
             JwtService jwtService,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             AuthValidator registerValidator
     ){
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.config = config;
+        this.refreshTokenServiceImp = refreshTokenServiceImp;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.authValidator = registerValidator;
@@ -60,11 +65,9 @@ public class AuthServiceImp implements AuthService {
             UserRole role = tokenData.role();
 
             // 4 Check token matches DB
-            RefreshToken storedToken = this.refreshTokenRepository
-                    .findByToken(refreshToken).
-                    orElseThrow(() -> new UnauthorizedException("Invalid refresh token"));
+            RefreshTokenDto storedToken = this.refreshTokenServiceImp.findTokenByToken(refreshToken);
 
-            if (!refreshToken.equals(storedToken.getToken()) || storedToken.getToken().isBlank()) {
+            if (!refreshToken.equals(storedToken.token()) || storedToken.token().isBlank()) {
                 throw new UnauthorizedException("Invalid refresh token");
             }
 
@@ -166,10 +169,13 @@ public class AuthServiceImp implements AuthService {
             String accessToken = this.jwtService.generateAccessToken(userId, user.getRole());
             String refreshToken = this.jwtService.generateRefreshToken(userId, user.getRole());
 
-            // Store refresh token in DB
-            int updated =
+            // Create refresh token in DB
+            CreateTokenDto tokenPayload = new CreateTokenDto(
+                    refreshToken,
+                    this.jwtService.fromNow(config.refreshTokenExpiration()).toInstant()
+            );
 
-            if (updated == 0) throw new NotFoundException("User not found");
+            this.refreshTokenServiceImp.createRefreshToken(tokenPayload);
 
             // Return user  + tokens
             // Built LoginResponseDto

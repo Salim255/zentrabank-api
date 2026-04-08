@@ -95,7 +95,7 @@ public class JwtService {
     // -------------------------------
     // Helper: convert Duration → Date
     // -------------------------------
-    private Date fromNow(Duration duration){
+    public Date fromNow(Duration duration){
         return Date.from(Instant.now().plus(duration));
     }
 }
