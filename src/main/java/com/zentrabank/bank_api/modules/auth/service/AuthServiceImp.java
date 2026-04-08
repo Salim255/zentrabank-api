@@ -48,7 +48,7 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public RegisterResponseDto createSuperAdmin(RegisterDto payload){
+    public void createSuperAdmin(){
         try {
             boolean superAdminExists = userRepository.existsByRole(UserRole.SUPER_ADMIN);
 
@@ -60,6 +60,7 @@ public class AuthServiceImp implements AuthService {
 
                 User superAdmin = User.builder()
                         .email(email)
+                        .loginId(firstName)
                         .passwordHash(passwordEncoder.encode(password))
                         .firstName(firstName)
                         .lastName(lastName)
