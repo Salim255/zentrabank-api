@@ -33,7 +33,16 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    @Override()
+    @Override
+    public void revokeToken(String token){
+        try {
+            this.refreshTokenRepository.revokeToken(token);
+        } catch (Exception ex){
+            this.logger.error("Error in revoke token { }", ex);
+           throw ex;
+        }
+    }
+    @Override
     public void deleteExpiredTokens(){
         try {
             // Step 1: Delete all expired tokens
