@@ -51,6 +51,19 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
+    public RegisterResponseDto  createSuperAdmin(RegisterDto payload){
+        try {
+            boolean superAdminExists = userRepository.existsByRole(UserRole.SUPER_ADMIN);
+
+            if (!superAdminExists){
+
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public RefreshAccessToken  refreshAccessToken(String refreshToken){
         try {
 

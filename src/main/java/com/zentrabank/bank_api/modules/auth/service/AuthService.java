@@ -7,6 +7,7 @@ import java.util.UUID;
 
 
 public interface AuthService {
+    public RegisterResponseDto createSuperAdmin(RegisterDto payload);
     public RefreshAccessToken refreshAccessToken(String refreshToken);
     public ApiResponseDto<String> resetPassword(ResetPasswordDto payload, UUID userId);
     public ApiResponseDto<RegisterResponseDto> register(RegisterDto payload);

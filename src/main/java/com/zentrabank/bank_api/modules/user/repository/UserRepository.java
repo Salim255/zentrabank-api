@@ -1,6 +1,7 @@
 package com.zentrabank.bank_api.modules.user.repository;
 
 import com.zentrabank.bank_api.modules.user.entity.User;
+import com.zentrabank.bank_api.modules.user.entity.UserRole;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -47,6 +48,9 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+
+    boolean existsByRole(UserRole role);
+
     @Query(value = "SELECT u.refresh_token_hash FROM users AS u  WHERE u.id = :userId;", nativeQuery = true)
     String getRefreshToken(UUID userId);
 
