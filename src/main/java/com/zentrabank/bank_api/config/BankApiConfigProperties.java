@@ -6,6 +6,8 @@ import java.time.Duration;
 
 @ConfigurationProperties(prefix = "bank-api-secrets")
 public record BankApiConfigProperties(
+        String superAdminFirstName,
+        String superAdminLastName,
         String superAdminEmail,
         String superAdminPassword,
         String accessJwtName,

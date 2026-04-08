@@ -3,14 +3,11 @@ package com.zentrabank.bank_api.modules.auth.service;
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.config.BankApiConfigProperties;
 import com.zentrabank.bank_api.config.JwtService;
-import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
 import com.zentrabank.bank_api.modules.refreshtoken.dto.CreateTokenDto;
 import com.zentrabank.bank_api.modules.refreshtoken.dto.RefreshTokenDto;
-import com.zentrabank.bank_api.modules.refreshtoken.entity.RefreshToken;
-import com.zentrabank.bank_api.modules.refreshtoken.repository.RefreshTokenRepository;
 import com.zentrabank.bank_api.modules.refreshtoken.servce.RefreshTokenServiceImp;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.entity.UserRole;
@@ -51,12 +48,26 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public RegisterResponseDto  createSuperAdmin(RegisterDto payload){
+    public RegisterResponseDto createSuperAdmin(RegisterDto payload){
         try {
             boolean superAdminExists = userRepository.existsByRole(UserRole.SUPER_ADMIN);
 
             if (!superAdminExists){
+                String email = this.config.superAdminEmail();
+                String password = this.config.superAdminPassword();
+                String firstName = this.config.superAdminFirstName();
+                String lastName = this.config.superAdminLastName();
 
+                User superAdmin = User.builder()
+                        .email(email)
+                        .passwordHash(passwordEncoder.encode(password))
+                        .firstName(firstName)
+                        .lastName(lastName)
+                        .role(UserRole.SUPER_ADMIN)
+                        .build();
+
+                this.userRepository.save(superAdmin);
+                System.out.println("🔥 SUPER_ADMIN created");
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
