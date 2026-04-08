@@ -50,6 +50,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public RefreshTokenDto findTokenByToken(String refreshToken){
         try {
