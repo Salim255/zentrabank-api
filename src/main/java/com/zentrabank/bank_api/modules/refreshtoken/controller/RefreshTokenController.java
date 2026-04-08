@@ -27,13 +27,23 @@ public class RefreshTokenController {
             HttpServletResponse response,
             Authentication auth
     ){
+        // Validate auth
         if (auth == null || !auth.isAuthenticated()) {
             throw new ForbiddenException("Invalid authentication token");
         }
 
-        // 1 Revoke token
+        // Extract refresh token form Authentication
+        String refreshToken = (String) auth.getCredentials();
 
-        this.refreshTokenService.revokeToken();
+        if(refreshToken == null) {
+            throw  new ForbiddenException("No refresh token found");
+        }
+
+        // 1 Revoke token
+        this.refreshTokenService.revokeToken(refreshToken);
+
+        // Clear tokens
+        response.
         return ApiResponseDto.success("Logout with success");
     }
 }

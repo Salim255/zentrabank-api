@@ -4,6 +4,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class JwtCookieUtils {
+    public static void clearJwtCookie(){
+
+    }
     /**
      * Create a JWT cookie with secure defaults
      *
@@ -12,7 +15,12 @@ public class JwtCookieUtils {
      * @param maxAgeInSeconds Expiration time in seconds
      * @return Configured Cookie object
      */
-    public static Cookie createJwtCookie(String token, boolean secure, int maxAgeInSeconds, String name) {
+    public static Cookie createJwtCookie(
+            String token,
+            boolean secure,
+            int maxAgeInSeconds,
+            String name
+    ) {
         Cookie cookie = new Cookie(name, token); // cookie name "jwt"
 
         cookie.setHttpOnly(true);                  // protect against XSS

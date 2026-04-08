@@ -96,7 +96,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String refreshToken = JwtCookieUtils.extractJwt(request, "zentra_refresh_token_jwt");
 
             // If no token found → reject request
-            if (accessToken == null || refreshToken ==  null) {
+            if (accessToken == null) {
                 throw new UnauthorizedException("Missing authentication token");
             }
 
@@ -150,15 +150,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private static UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(
-            UserTokenDetailsDto tokenData,
-            String rawToken
+            UserTokenDetailsDto accessTokenData,
+            String refreshToken
     ) {
         List<SimpleGrantedAuthority> authorities = List.of(
-                new SimpleGrantedAuthority("ROLE_" + tokenData.role().name()) // -> ROLE_ADMIN or ROLE_CUSTOMER
+                new SimpleGrantedAuthority("ROLE_" + accessTokenData.role().name()) // -> ROLE_ADMIN or ROLE_CUSTOMER
         );
 
         // If token does not contain userId → invalid
-        if (tokenData.userId() == null) {
+        if (accessTokenData.userId() == null) {
             throw new ForbiddenException("Invalid authentication token");
         }
 
@@ -170,8 +170,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
          * authorities = null (no roles yet)
          */
         return new UsernamePasswordAuthenticationToken(
-                tokenData.userId(),
-                rawToken, // Store token here fro refresh token,
+                accessTokenData.userId(),
+                refreshToken, // Store token here fro refresh token,
                 authorities
         );
     }
