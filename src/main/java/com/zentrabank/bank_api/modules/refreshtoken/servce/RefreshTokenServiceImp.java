@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 
 @Service
 public class RefreshTokenServiceImp implements RefreshTokenService {
@@ -30,6 +32,22 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
+    @Override()
+    public void deleteExpiredTokens(){
+        try {
+            // Step 1: Delete all expired tokens
+            // These tokens are useless because they are no longer valid anyway
+            this.refreshTokenRepository.deleteByExpiresAtBefore(Instant.now());
+
+            //  Step 2: Delete old revoked tokens
+            // - revoked = already invalid (user logged out or token rotated)
+            // - we keep them temporarily for security/audit
+            // - here we remove ones older than 7 days
+            this.refreshTokenRepository.deleteByRevoked();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override
     public RefreshTokenDto findTokenByToken(String refreshToken){
         try {
