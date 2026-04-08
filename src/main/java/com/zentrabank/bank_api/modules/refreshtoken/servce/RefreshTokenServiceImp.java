@@ -47,6 +47,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
             Instant cutoff = Instant.now().minus(7, ChronoUnit.DAYS);
             this.refreshTokenRepository.deleteByRevokedTrueAndCreatedAtBefore(cutoff);
         } catch (Exception e) {
+            this.logger.error("Error in delete tokens { }", e);
             throw new RuntimeException(e);
         }
     }
