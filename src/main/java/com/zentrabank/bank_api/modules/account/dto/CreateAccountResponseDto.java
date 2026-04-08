@@ -13,8 +13,6 @@ public record CreateAccountResponseDto(
         AccountType accountType,
         AccountStatus accountStatus,
         String currency,
-        boolean overdraftEnabled,
         BigDecimal overdraftLimit
-
 ) {
 }

@@ -11,6 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImp implements AccountService {
@@ -19,11 +22,11 @@ public class AccountServiceImp implements AccountService {
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
 
     @Override
-    public CreateAccountResponseDto createAccount(CreateAccountDto payload) {
+    public CreateAccountResponseDto createAccount(CreateAccountDto payload, UUID userId) {
         try {
 
-            // 1 Get user refrence
-            User user = this.entityManager.getReference(User.class, payload.userId());
+            // 1 Get user reference
+            User user = this.entityManager.getReference(User.class, userId);
 
             // 2 Generate account number
             String accountNumber = accountNumberGenerator();
@@ -34,10 +37,19 @@ public class AccountServiceImp implements AccountService {
                     .type(payload.accountType())
                     .accountNumber(accountNumber)
                     .build();
+
             // 3 Create account
             this.accountRepository.save(newAccount);
 
-
+            return new CreateAccountResponseDto(
+                    newAccount.getId(),
+                    newAccount.getAccountNumber(),
+                    newAccount.getBalance(),
+                    newAccount.getType(),
+                    newAccount.getStatus(),
+                    newAccount.getCurrency(),
+                    newAccount.getOverdraftLimit()
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -58,7 +70,14 @@ public class AccountServiceImp implements AccountService {
         return  "";
     }
 
-    private static  String accountNumberGenerator(){
-        return "123";
+    private String accountNumberGenerator(){
+        String accountNumber;
+        do {
+            // Generate 9-digit number (100000000 → 999999999)
+            int number = ThreadLocalRandom.current().nextInt(100_000_000, 1_000_000_000);
+            accountNumber = String.valueOf(number);
+        } while (this.accountRepository.existsByAccountNumber(accountNumber));
+
+        return accountNumber;
     }
 }
