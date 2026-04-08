@@ -3,6 +3,7 @@ package com.zentrabank.bank_api.modules.transaction.dto;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 public record TransactionDto(
@@ -11,6 +12,7 @@ public record TransactionDto(
         BigDecimal amount,
         String currency,
         String referenceAccountNumber,
-        BigDecimal postTransactionBalance
-) {
-}
+        BigDecimal postTransactionBalance,
+        String description,
+        Instant createdAt
+) { }
