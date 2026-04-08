@@ -1,12 +1,15 @@
 package com.zentrabank.bank_api.modules.refreshtoken.controller;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.common.utils.JwtCookieUtils;
 import com.zentrabank.bank_api.exceptions.ForbiddenException;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.refreshtoken.servce.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.Mapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RefreshTokenController {
 
+    private  final Logger logger = LoggerFactory.getLogger(RefreshTokenController.class);
     private final RefreshTokenService refreshTokenService;
 
     @PatchMapping("/logout")
@@ -36,14 +40,17 @@ public class RefreshTokenController {
         String refreshToken = (String) auth.getCredentials();
 
         if(refreshToken == null) {
+            this.logger.error("Error non refresh token {} 🔥🔥",auth.getCredentials());
             throw  new ForbiddenException("No refresh token found");
         }
 
-        // 1 Revoke token
+        // Revoke token
         this.refreshTokenService.revokeToken(refreshToken);
 
         // Clear tokens
-        response.
+        JwtCookieUtils.clearJwtCookie(response, "zentra_access_jwt");
+        JwtCookieUtils.clearJwtCookie(response, "zentra_refresh_jwt");
+
         return ApiResponseDto.success("Logout with success");
     }
 }

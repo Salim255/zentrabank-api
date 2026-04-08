@@ -16,10 +16,7 @@ import java.util.UUID;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
     @Modifying
     @Transactional
-    @Query(
-            value = "UPDATE refresh_tokens AS rft SET rft.revoked = true WHERE rft.token = :token;",
-            nativeQuery = true
-    )
+    @Query("UPDATE RefreshToken AS rft SET rft.revoked = true WHERE rft.token = :token")
     int revokeToken(@Param("token") String token);
 
     void deleteByRevokedTrueAndCreatedAtBefore(Instant cutoff);

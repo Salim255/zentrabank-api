@@ -93,7 +93,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String accessToken = JwtCookieUtils.extractJwt(request, "zentra_access_jwt");
 
             // 2 Get refreshToken for logout
-            String refreshToken = JwtCookieUtils.extractJwt(request, "zentra_refresh_token_jwt");
+            String refreshToken = JwtCookieUtils.extractJwt(request, "zentra_refresh_jwt");
 
             // If no token found → reject request
             if (accessToken == null) {

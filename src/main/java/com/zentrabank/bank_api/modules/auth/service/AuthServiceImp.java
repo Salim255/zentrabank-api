@@ -51,7 +51,6 @@ public class AuthServiceImp implements AuthService {
     public void createSuperAdmin(){
         try {
             boolean superAdminExists = userRepository.existsByRole(UserRole.SUPER_ADMIN);
-
             if (!superAdminExists){
                 String email = this.config.superAdminEmail();
                 String password = this.config.superAdminPassword();

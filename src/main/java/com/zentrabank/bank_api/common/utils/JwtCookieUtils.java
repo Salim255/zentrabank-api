@@ -16,6 +16,7 @@ public class JwtCookieUtils {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
+
     /**
      * Create a JWT cookie with secure defaults
      *
