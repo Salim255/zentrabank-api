@@ -45,4 +45,21 @@ public class RefreshToken {
     // When token was created
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
+
+    @Column(nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    // JPA: runs BEFORE the entity is inserted into the database
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    // JPA: runs BEFORE the entity is updated in the database
+    protected void onUpdate() {
+        this.updatedAt = Instant.now();
+    }
+
 }

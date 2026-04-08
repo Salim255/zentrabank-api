@@ -58,6 +58,8 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
                     .token(payload.token())
                     .expiresAt(payload.expiresAt())
                     .build();
+
+            this.refreshTokenRepository.save(token);
         } catch (Exception e) {
             this.logger.error("Error on create refresh token { } 🔥🔥🔥", e);
             throw e;
