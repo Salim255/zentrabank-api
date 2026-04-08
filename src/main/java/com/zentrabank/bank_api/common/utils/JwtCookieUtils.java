@@ -2,10 +2,19 @@ package com.zentrabank.bank_api.common.utils;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtCookieUtils {
-    public static void clearJwtCookie(){
-
+    public static void clearJwtCookie(
+            HttpServletResponse response,
+            String name
+    ){
+        Cookie cookie = new Cookie(name, null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
     /**
      * Create a JWT cookie with secure defaults
