@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 
 @Service
@@ -43,7 +44,8 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
             // - revoked = already invalid (user logged out or token rotated)
             // - we keep them temporarily for security/audit
             // - here we remove ones older than 7 days
-            this.refreshTokenRepository.deleteByRevoked();
+            Instant cutoff = Instant.now().minus(7, ChronoUnit.DAYS);
+            this.refreshTokenRepository.deleteByRevokedTrueAndCreatedAtBefore(cutoff);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

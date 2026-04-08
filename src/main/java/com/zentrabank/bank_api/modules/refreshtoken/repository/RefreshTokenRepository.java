@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
-    void
+    void deleteByRevokedTrueAndCreatedAtBefore(Instant cutoff);
     void deleteByExpiresAtBefore(Instant currentTime);
 
     void deleteByToken(String token);
