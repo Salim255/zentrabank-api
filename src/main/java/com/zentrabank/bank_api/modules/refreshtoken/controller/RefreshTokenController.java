@@ -40,7 +40,6 @@ public class RefreshTokenController {
         String refreshToken = (String) auth.getCredentials();
 
         if(refreshToken == null) {
-            this.logger.error("Error non refresh token {} 🔥🔥",auth.getCredentials());
             throw  new ForbiddenException("No refresh token found");
         }
 

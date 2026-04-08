@@ -1,8 +1,10 @@
 package com.zentrabank.bank_api.modules.account.service;
 
+import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
+
 public class AccountServiceImp implements AccountService {
     @Override
-    public String createAccount() {
+    public String createAccount(CreateAccountDto payload) {
         return "";
     }
 
