@@ -39,7 +39,7 @@ public class RefreshTokenServiceImp implements RefreshTokenService {
             this.refreshTokenRepository.revokeToken(token);
         } catch (Exception ex){
             this.logger.error("Error in revoke token { }", ex);
-           throw ex;
+            throw ex;
         }
     }
     @Override
