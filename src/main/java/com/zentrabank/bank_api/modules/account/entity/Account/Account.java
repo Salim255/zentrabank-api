@@ -74,14 +74,7 @@ public class Account {
     )
     private User user; // The User object that owns this account
 
-    // Timestamp of account creation, set automatically
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
 
-
-    // Timestamp of last update, automatically updated via @PreUpdate
-    @Column(nullable = false)
-    private Instant updatedAt = Instant.now();
 
     // Currency of the account (USD, EUR, etc.), required for multi-currency support
     @Column(length = 3, nullable = false)
@@ -98,6 +91,22 @@ public class Account {
     // Maximum overdraft limit if overdraft is enabled
     @Column(nullable = false)
     private BigDecimal overdraftLimit = BigDecimal.ZERO;
+
+    // Timestamp of account creation, set automatically
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt = Instant.now();
+
+
+    // Timestamp of last update, automatically updated via @PreUpdate
+    @Column(nullable = false)
+    private Instant updatedAt = Instant.now();
+
+    @PrePersist
+    // JPA: runs BEFORE the entity is inserted into the database
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+        this.updatedAt = this.createdAt;
+    }
 
     // Lifecycle hook to update `updatedAt` automatically on entity update
     @PreUpdate

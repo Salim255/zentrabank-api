@@ -50,10 +50,6 @@ public class Transaction {
     @Column(length = 3, nullable = false)
     private String currency = "USD";
 
-    // Timestamp when the transaction occurred
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
-
     // Optional reference for transfers (from/to account numbers)
     @Column(length = 20)
     private String referenceAccountNumber;
@@ -66,9 +62,25 @@ public class Transaction {
     @Column(nullable = false)
     private BigDecimal postTransactionBalance;
 
+    // Timestamp when the transaction occurred
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt = Instant.now();
+
+    @Column(nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    // JPA: runs BEFORE the entity is inserted into the database
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+        this.updatedAt = this.createdAt;
+    }
+
+
     // Pre-update hook to automatically update timestamps (if needed)
     @PreUpdate
     public void preUpdate() {
         // could add updatedAt if you track updates for transactions
+        this.updatedAt = Instant.now();
     }
 }

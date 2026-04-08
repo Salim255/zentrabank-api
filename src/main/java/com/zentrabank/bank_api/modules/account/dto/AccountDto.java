@@ -6,6 +6,12 @@ import com.zentrabank.bank_api.modules.account.entity.Account.AccountType;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record CreateAccountResponseDto(
-        AccountDto account
+public record AccountDto(
+        UUID id,
+        String  accountNumber,
+        BigDecimal balance,
+        AccountType accountType,
+        AccountStatus accountStatus,
+        String currency,
+        BigDecimal overdraftLimit
 ) { }

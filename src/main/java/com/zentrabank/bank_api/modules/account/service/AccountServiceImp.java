@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.account.service;
 
+import com.zentrabank.bank_api.modules.account.dto.AccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountResponseDto;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -26,32 +28,34 @@ public class AccountServiceImp implements AccountService {
         try {
 
             // 1 Get user reference
-            User user = this.entityManager.getReference(User.class, userId);
+            User userRef = this.entityManager.getReference(User.class, userId);
 
             // 2 Generate account number
             String accountNumber = accountNumberGenerator();
 
             // 2 Built account
-            Account newAccount = Account.builder()
-                    .user(user)
-                    .type(payload.accountType())
-                    .accountNumber(accountNumber)
-                    .build();
+            Account newAccount = new Account();
+            newAccount.setType(payload.accountType());
+            newAccount.setUser(userRef);
+            newAccount.setAccountNumber(accountNumber);
 
             // 3 Create account
             this.accountRepository.save(newAccount);
 
             return new CreateAccountResponseDto(
-                    newAccount.getId(),
-                    newAccount.getAccountNumber(),
-                    newAccount.getBalance(),
-                    newAccount.getType(),
-                    newAccount.getStatus(),
-                    newAccount.getCurrency(),
-                    newAccount.getOverdraftLimit()
+                    new AccountDto(
+                            newAccount.getId(),
+                            newAccount.getAccountNumber(),
+                            newAccount.getBalance(),
+                            newAccount.getType(),
+                            newAccount.getStatus(),
+                            newAccount.getCurrency(),
+                            newAccount.getOverdraftLimit()
+                    )
             );
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            this.logger.error("Error creating account { }", e);
+            throw e;
         }
     }
 
