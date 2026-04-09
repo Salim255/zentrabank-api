@@ -24,7 +24,6 @@ public class AccountServiceImp implements AccountService {
     private  final  AccountRepository accountRepository;
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
 
-
     @Override
     public void saveAccountChange(Account account) {
         try {

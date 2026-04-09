@@ -11,6 +11,7 @@ import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
 import com.zentrabank.bank_api.modules.transaction.validation.TransactionValidator;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class TransactionServiceImp implements TransactionService {
 
     private final TransactionRepository transactionRepository;
 
+    @Transactional
     public TransactionResponseDto createTransaction(
             CreateTransactionDto payload,
             UUID userId
@@ -57,16 +59,23 @@ public class TransactionServiceImp implements TransactionService {
             // Save change
             accountService.saveAccountChange(account); // update main account
 
-            Account accountRef = entityManager.getReference(Account.class, account.getId());
+            // Update receiver account
+            if (referenceAccount != null) {
+                BigDecimal refNewBalance = referenceAccount.getBalance().add(payload.amount());
+                referenceAccount.setBalance(refNewBalance);
+                accountService.saveAccountChange(referenceAccount);
+            }
 
             // 3 Create transaction
             Transaction transaction = new Transaction();
-            transaction.setAccount(accountRef);
+
+            transaction.setAccount(referenceAccount);
             transaction.setAmount(payload.amount());
-            transaction.setDescription(payload.description());
             transaction.setType(payload.type());
+            transaction.setDescription(payload.description());
             transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
-            transaction.setPostTransactionBalance(BigDecimal.valueOf(2.9000));
+            transaction.setPostTransactionBalance(newBalance);
+            transaction.setCurrency(account.getCurrency());
 
             // 4 Save the transaction
             this.transactionRepository.save(transaction);
