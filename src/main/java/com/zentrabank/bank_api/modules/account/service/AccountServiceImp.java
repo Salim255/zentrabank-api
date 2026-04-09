@@ -24,6 +24,17 @@ public class AccountServiceImp implements AccountService {
     private  final  AccountRepository accountRepository;
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
 
+
+    @Override
+    public void saveAccountChange(Account account) {
+        try {
+            this.accountRepository.save(account);
+        } catch (Exception e) {
+            this.logger.error("Error in update account { }",e);
+            throw e;
+        }
+    }
+
     @Override
     public Account findAccountByAccountNumber(String accountNumber){
         try {

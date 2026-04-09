@@ -7,7 +7,9 @@ import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
 import com.zentrabank.bank_api.modules.transaction.dto.TransactionDto;
 import com.zentrabank.bank_api.modules.transaction.dto.TransactionResponseDto;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
+import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
+import com.zentrabank.bank_api.modules.transaction.validation.TransactionValidator;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ public class TransactionServiceImp implements TransactionService {
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImp.class);
     private final  EntityManager entityManager;
     private final AccountService accountService;
+    private final TransactionValidator transactionValidator;
 
     private final TransactionRepository transactionRepository;
 
@@ -31,10 +34,29 @@ public class TransactionServiceImp implements TransactionService {
             UUID userId
     ){
         try {
-            // 1 Validate transaction payload
 
-            // 2 Get current account reference!
+            // 1 Get current account
             Account account = this.accountService.findAccountByUserId(userId);
+
+            // 2. Validate transaction
+            transactionValidator.validate(payload, account);
+
+            // 3. Get reference account (only for transfers)
+            Account referenceAccount = null;
+            if (payload.type() == TransactionType.TRANSFER) {
+                referenceAccount = accountService.findAccountByAccountNumber(payload.referenceAccountNumber());
+            }
+
+            // 4. Update balances
+            // Get new balance
+            BigDecimal newBalance = account.getBalance().subtract(payload.amount());
+
+            // Update account balance
+            account.setBalance(newBalance);
+
+            // Save change
+            accountService.saveAccountChange(account); // update main account
+
             Account accountRef = entityManager.getReference(Account.class, account.getId());
 
             // 3 Create transaction
