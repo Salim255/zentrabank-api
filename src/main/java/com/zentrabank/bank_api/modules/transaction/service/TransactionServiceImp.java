@@ -42,6 +42,8 @@ public class TransactionServiceImp implements TransactionService {
             throw new RuntimeException(e);
         }
     }
+
+    @Transactional
     public TransactionResponseDto withdrawalOperation(
             CreateTransactionDto payload,
             UUID userId
@@ -69,23 +71,12 @@ public class TransactionServiceImp implements TransactionService {
             // 7 Create transaction
             Transaction transaction = this.buildTransaction(payload, account, newBalance);
 
-            // 10 Save the transaction
+            // 8 Save the transaction
             this.transactionRepository.save(transaction);
 
-            // 11 Response
-            TransactionDto response = new TransactionDto(
-                    transaction.getId(),
-                    transaction.getType(),
-                    transaction.getAmount(),
-                    transaction.getCurrency(),
-                    transaction.getReferenceAccountNumber(),
-                    transaction.getPostTransactionBalance(),
-                    transaction.getDescription(),
-                    transaction.getCreatedAt()
-            );
-
+            // 9 Response
             return new TransactionResponseDto(
-                    response
+                    this.toDto(transaction)
             );
         } catch (Exception e) {
             this.logger.error("Error to withdrawal transaction { }", e);
