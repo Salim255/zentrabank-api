@@ -37,9 +37,62 @@ public class TransactionServiceImp implements TransactionService {
             UUID userId
     ){
         try {
+            // 1 Get current account
+            Account senderAccount = this.accountService.findAccountByUserId(userId);
 
+            // 2 Get receiver account
+            Account receiverAccount = accountService
+                    .findAccountByAccountNumber(payload.referenceAccountNumber());
+
+            // 3. Validate transaction
+            transactionValidator.validateTransfer(payload, senderAccount, receiverAccount);
+
+            // 4. Decide lock order to prevent deadlocks
+            UUID fromAccountId = senderAccount.getId();
+            UUID toAccountId = receiverAccount.getId();
+
+
+            // 5. Decide lock order to prevent deadlocks
+            UUID firstAccountId = fromAccountId.compareTo(toAccountId) < 0 ? fromAccountId : toAccountId;
+            UUID secondAccountId = fromAccountId.compareTo(toAccountId) < 0 ? toAccountId : fromAccountId;
+
+            // 6 Lock accounts for update (pessimistic write)
+            Account firstAccountLocked = this.accountService.lockAccountForUpdate(firstAccountId);
+            Account secondAccountLocked = this.accountService.lockAccountForUpdate(secondAccountId);
+
+            // 7 Map which one is sender and which is receiver
+            // Map sender / receiver from locked entities
+            Account sender = fromAccountId.equals(firstAccountId) ? firstAccountLocked : secondAccountLocked;
+            Account receiver = toAccountId.equals(firstAccountId) ? firstAccountLocked :secondAccountLocked;
+
+            // 5. Update balances
+            // Get new balance
+            BigDecimal amount = payload.amount();
+
+            BigDecimal senderNewBalance = sender.getBalance().subtract(amount);
+            BigDecimal receiverNewBalance = receiver.getBalance().add(amount);
+
+            sender.setBalance(senderNewBalance);
+            receiver.setBalance(receiverNewBalance);
+
+            // 7 Save both accounts
+            this.accountService.saveAccountChange(sender);
+            this.accountService.saveAccountChange(receiver);
+
+
+            // 9 Create transaction (sender side)
+            Transaction transaction = buildTransaction(payload, sender, senderNewBalance);
+            this.transactionRepository.save(transaction);
+
+            // 10 Create transaction (receiver side)
+            Transaction receivertransaction = buildTransaction(payload, sender, senderNewBalance);
+            this.transactionRepository.save(receivertransaction);
+
+            // 11 Return response
+            return new TransactionResponseDto(toDto(transaction));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            this.logger.error("Error during transfer transaction", e);
+            throw e;
         }
     }
 
@@ -97,7 +150,7 @@ public class TransactionServiceImp implements TransactionService {
             this.accountService.lockAccountForUpdate(account.getId());
 
             // 3 Validate transaction
-            transactionValidator.validateWithdrawal(payload, account);
+            transactionValidator.validateDeposit(payload, account);
 
             // 4 Update balances
             // Get new balance
@@ -120,93 +173,7 @@ public class TransactionServiceImp implements TransactionService {
                     this.toDto(transaction)
             );
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Transactional
-    public TransactionResponseDto createTransaction(
-            CreateTransactionDto payload,
-            UUID userId
-    ){
-        try {
-            // 1 Get current account
-            Account account = this.accountService.findAccountByUserId(userId);
-
-            // 2 Lock account for update
-            this.accountService.lockAccountForUpdate(account.getId());
-
-            // 3. Validate transaction
-            transactionValidator.validate(payload, account);
-
-            // 4. Get reference account (only for transfers)
-            Account referenceAccount = null;
-            if (payload.type() == TransactionType.TRANSFER) {
-                referenceAccount = accountService.findAccountByAccountNumber(payload.referenceAccountNumber());
-            }
-
-            // 5. Decide lock order to prevent deadlocks
-            UUID fromAccountId = account.getId();
-            UUID toAccountId = referenceAccount.getId();
-            UUID firstAccountId = fromAccountId.compareTo(toAccountId) < 0 ? fromAccountId : toAccountId;
-            UUID secondAccountId = fromAccountId.compareTo(toAccountId) < 0 ? toAccountId : fromAccountId;
-
-            // 6 Lock accounts for update (pessimistic write)
-            Account firstAccount = this.accountService.lockAccountForUpdate(firstAccountId);
-            Account secondAccount = this.accountService.lockAccountForUpdate(secondAccountId);
-
-            // 7 Map which one is sender and which is receiver
-            Account sender = fromAccountId.equals(firstAccountId) ? firstAccount : secondAccount;
-            Account receiver = toAccountId.equals(firstAccountId) ? firstAccount : secondAccount;
-
-            // 5. Update balances
-            // Get new balance
-            BigDecimal newBalance = account.getBalance().subtract(payload.amount());
-
-            // 6 Update account balance
-            account.setBalance(newBalance);
-
-            // 7 Save change
-            accountService.saveAccountChange(account); // update main account
-
-            // 8 Update receiver account
-            if (referenceAccount != null) {
-                BigDecimal refNewBalance = referenceAccount.getBalance().add(payload.amount());
-                referenceAccount.setBalance(refNewBalance);
-                accountService.saveAccountChange(referenceAccount);
-            }
-
-            // 9 Create transaction
-            Transaction transaction = new Transaction();
-
-            transaction.setAccount(referenceAccount);
-            transaction.setAmount(payload.amount());
-            transaction.setType(payload.type());
-            transaction.setDescription(payload.description());
-            transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
-            transaction.setPostTransactionBalance(newBalance);
-            transaction.setCurrency(account.getCurrency());
-
-            // 10 Save the transaction
-            this.transactionRepository.save(transaction);
-
-            // 11 Response
-            TransactionDto response = new TransactionDto(
-                    transaction.getId(),
-                    transaction.getType(),
-                    transaction.getAmount(),
-                    transaction.getCurrency(),
-                    transaction.getReferenceAccountNumber(),
-                    transaction.getPostTransactionBalance(),
-                    transaction.getDescription(),
-                    transaction.getCreatedAt()
-            );
-
-            return new TransactionResponseDto(
-                    response
-            );
-        } catch (Exception e) {
-            this.logger.error("Error to create transaction { }", e);
+            this.logger.error("Error during deposit transaction", e);
             throw e;
         }
     }

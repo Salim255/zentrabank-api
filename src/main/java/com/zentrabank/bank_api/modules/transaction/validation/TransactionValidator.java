@@ -16,6 +16,29 @@ import java.math.BigDecimal;
 public class TransactionValidator {
     private final AccountService accountService;
 
+    public void validateTransfer(CreateTransactionDto payload, Account sender, Account receiver) {
+
+        if (payload.amount() == null || payload.amount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Amount must be greater than zero");
+        }
+
+        if (receiver == null) {
+            throw new NotFoundException("Receiver account not found");
+        }
+
+        if (sender.getId().equals(receiver.getId())) {
+            throw new BadRequestException("Cannot transfer to the same account");
+        }
+
+        if (sender.getBalance().compareTo(payload.amount()) < 0) {
+            throw new BadRequestException("Insufficient balance");
+        }
+
+        if (!sender.getCurrency().equals(receiver.getCurrency())) {
+            throw new BadRequestException("Currency mismatch");
+        }
+    }
+
     public void validateDeposit(CreateTransactionDto payload, Account account) {
 
         if (payload.amount() == null || payload.amount().compareTo(BigDecimal.ZERO) <= 0) {
@@ -26,12 +49,12 @@ public class TransactionValidator {
             throw new NotFoundException("Account not found");
         }
 
-        // Optional business rules
+        // Business rules
         if (payload.amount().compareTo(new BigDecimal("50000")) > 0) {
             throw new BadRequestException("Deposit limit exceeded");
         }
 
-        // Optional: prevent self-transfer misuse
+        // Prevent self-transfer misuse
         if (payload.referenceAccountNumber() != null) {
             throw new BadRequestException("Deposit should not have a reference account");
         }

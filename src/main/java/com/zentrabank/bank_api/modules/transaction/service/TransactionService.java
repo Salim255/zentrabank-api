@@ -9,5 +9,4 @@ public interface TransactionService {
     public  TransactionResponseDto  transferOperation(CreateTransactionDto payload, UUID userId);
     public TransactionResponseDto withdrawalOperation(CreateTransactionDto payload, UUID userId);
     public TransactionResponseDto depositOperation(CreateTransactionDto payload, UUID userId);
-    public TransactionResponseDto createTransaction(CreateTransactionDto payload, UUID userId);
 }
