@@ -25,6 +25,16 @@ public class AccountServiceImp implements AccountService {
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
 
     @Override
+    public Account lockAccountForUpdate(UUID accountId) {
+        try {
+            return this.accountRepository.findAccountForUpdate(accountId);
+        } catch (Exception e) {
+            this.logger.error("Error to lock account for update { }", e);
+            throw e;
+        }
+    }
+
+    @Override
     public void saveAccountChange(Account account) {
         try {
             this.accountRepository.save(account);

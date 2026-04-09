@@ -5,6 +5,7 @@ import com.zentrabank.bank_api.exceptions.ForbiddenException;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
 import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
 import com.zentrabank.bank_api.modules.transaction.dto.TransactionResponseDto;
+import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.service.TransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,15 @@ public class TransactionController {
         // Get userId
         UUID userId = (UUID) auth.getPrincipal();
 
+        TransactionResponseDto response;
         // Create and return
-        return ApiResponseDto.success(this.transactionService.createTransaction(body, userId));
+
+        switch (body.type()) {
+            case DEPOSIT -> response = transactionService.depositOperation(body, userId);
+            case TRANSFER -> response = transactionService.transferOperation(body, userId);
+            case WITHDRAWAL -> response = transactionService.withdrawalOperation(body, userId);
+            default -> throw new IllegalArgumentException("Unsupported transaction type");
+        }
+        return ApiResponseDto.success(response);
     }
 }

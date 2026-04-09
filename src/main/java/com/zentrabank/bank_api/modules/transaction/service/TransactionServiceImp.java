@@ -30,43 +30,92 @@ public class TransactionServiceImp implements TransactionService {
 
     private final TransactionRepository transactionRepository;
 
+
+
+    public  TransactionResponseDto  transferOperation(
+            CreateTransactionDto payload,
+            UUID userId
+    ){
+        try {
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public TransactionResponseDto withdrawalOperation(
+            CreateTransactionDto payload,
+            UUID userId
+    ){
+        try {
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public TransactionResponseDto depositOperation(
+            CreateTransactionDto payload,
+            UUID userId
+    ){
+        try {
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Transactional
     public TransactionResponseDto createTransaction(
             CreateTransactionDto payload,
             UUID userId
     ){
         try {
-
             // 1 Get current account
             Account account = this.accountService.findAccountByUserId(userId);
 
-            // 2. Validate transaction
+            // 2 Lock account for update
+            this.accountService.lockAccountForUpdate(account.getId());
+
+            // 3. Validate transaction
             transactionValidator.validate(payload, account);
 
-            // 3. Get reference account (only for transfers)
+            // 4. Get reference account (only for transfers)
             Account referenceAccount = null;
             if (payload.type() == TransactionType.TRANSFER) {
                 referenceAccount = accountService.findAccountByAccountNumber(payload.referenceAccountNumber());
             }
 
-            // 4. Update balances
+            // 5. Decide lock order to prevent deadlocks
+            UUID fromAccountId = account.getId();
+            UUID toAccountId = referenceAccount.getId();
+            UUID firstAccountId = fromAccountId.compareTo(toAccountId) < 0 ? fromAccountId : toAccountId;
+            UUID secondAccountId = fromAccountId.compareTo(toAccountId) < 0 ? toAccountId : fromAccountId;
+
+            // 6 Lock accounts for update (pessimistic write)
+            Account firstAccount = this.accountService.lockAccountForUpdate(firstAccountId);
+            Account secondAccount = this.accountService.lockAccountForUpdate(secondAccountId);
+
+            // 7 Map which one is sender and which is receiver
+            Account sender = fromAccountId.equals(firstAccountId) ? firstAccount : secondAccount;
+            Account receiver = toAccountId.equals(firstAccountId) ? firstAccount : secondAccount;
+
+            // 5. Update balances
             // Get new balance
             BigDecimal newBalance = account.getBalance().subtract(payload.amount());
 
-            // Update account balance
+            // 6 Update account balance
             account.setBalance(newBalance);
 
-            // Save change
+            // 7 Save change
             accountService.saveAccountChange(account); // update main account
 
-            // Update receiver account
+            // 8 Update receiver account
             if (referenceAccount != null) {
                 BigDecimal refNewBalance = referenceAccount.getBalance().add(payload.amount());
                 referenceAccount.setBalance(refNewBalance);
                 accountService.saveAccountChange(referenceAccount);
             }
 
-            // 3 Create transaction
+            // 9 Create transaction
             Transaction transaction = new Transaction();
 
             transaction.setAccount(referenceAccount);
@@ -77,10 +126,10 @@ public class TransactionServiceImp implements TransactionService {
             transaction.setPostTransactionBalance(newBalance);
             transaction.setCurrency(account.getCurrency());
 
-            // 4 Save the transaction
+            // 10 Save the transaction
             this.transactionRepository.save(transaction);
 
-            // Response
+            // 11 Response
             TransactionDto response = new TransactionDto(
                     transaction.getId(),
                     transaction.getType(),
