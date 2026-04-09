@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.account.service;
 
+import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.account.dto.AccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountResponseDto;
@@ -22,6 +23,18 @@ public class AccountServiceImp implements AccountService {
     private  final  EntityManager entityManager;
     private  final  AccountRepository accountRepository;
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
+
+    @Override
+    public Account findAccountByUserId(UUID userId){
+        try {
+            return this.accountRepository
+                    .findByUserId(userId)
+                    .orElseThrow(() -> new NotFoundException("No account found for this userId"));
+        } catch (Exception e) {
+            this.logger.error("Error to get account by userId ");
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public CreateAccountResponseDto createAccount(CreateAccountDto payload, UUID userId) {
