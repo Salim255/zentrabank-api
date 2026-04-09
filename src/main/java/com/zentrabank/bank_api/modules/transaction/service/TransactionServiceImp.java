@@ -54,7 +54,7 @@ public class TransactionServiceImp implements TransactionService {
             this.accountService.lockAccountForUpdate(account.getId());
 
             // 3 Validate transaction
-            transactionValidator.validate(payload, account);
+            transactionValidator.validateWithdrawal(payload, account);
 
             // 4 Update balances
             // Get new balance
@@ -67,15 +67,7 @@ public class TransactionServiceImp implements TransactionService {
             accountService.saveAccountChange(account);
 
             // 7 Create transaction
-            Transaction transaction = new Transaction();
-
-            transaction.setAccount(account);
-            transaction.setAmount(payload.amount());
-            transaction.setType(payload.type());
-            transaction.setDescription(payload.description());
-            transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
-            transaction.setPostTransactionBalance(newBalance);
-            transaction.setCurrency(account.getCurrency());
+            Transaction transaction = this.buildTransaction(payload, account, newBalance);
 
             // 10 Save the transaction
             this.transactionRepository.save(transaction);
@@ -197,5 +189,36 @@ public class TransactionServiceImp implements TransactionService {
             this.logger.error("Error to create transaction { }", e);
             throw e;
         }
+    }
+
+    private Transaction buildTransaction(
+            CreateTransactionDto payload,
+            Account account,
+            BigDecimal newBalance
+    ) {
+        Transaction transaction = new Transaction();
+
+        transaction.setAccount(account);
+        transaction.setAmount(payload.amount());
+        transaction.setType(payload.type());
+        transaction.setDescription(payload.description());
+        transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
+        transaction.setPostTransactionBalance(newBalance);
+        transaction.setCurrency(account.getCurrency());
+
+        return transaction;
+    }
+
+    private TransactionDto toDto(Transaction transaction) {
+        return new TransactionDto(
+                transaction.getId(),
+                transaction.getType(),
+                transaction.getAmount(),
+                transaction.getCurrency(),
+                transaction.getReferenceAccountNumber(),
+                transaction.getPostTransactionBalance(),
+                transaction.getDescription(),
+                transaction.getCreatedAt()
+        );
     }
 }
