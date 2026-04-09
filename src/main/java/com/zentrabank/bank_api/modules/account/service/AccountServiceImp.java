@@ -25,6 +25,18 @@ public class AccountServiceImp implements AccountService {
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
 
     @Override
+    public Account findAccountByAccountNumber(String accountNumber){
+        try {
+            return this.accountRepository
+                    .findAccountByAccountNumber(accountNumber)
+                    .orElseThrow(() -> new NotFoundException("Account not found for given account number"));
+        } catch (Exception ex) {
+            this.logger.error("Error to find account by accountId { }", ex);
+            throw ex;
+        }
+    }
+
+    @Override
     public Account findAccountByUserId(UUID userId){
         try {
             return this.accountRepository
@@ -32,7 +44,7 @@ public class AccountServiceImp implements AccountService {
                     .orElseThrow(() -> new NotFoundException("No account found for this userId"));
         } catch (Exception e) {
             this.logger.error("Error to get account by userId ");
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 
