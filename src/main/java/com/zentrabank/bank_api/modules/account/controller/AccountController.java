@@ -37,7 +37,7 @@ public class AccountController {
         UUID userId = (UUID) auth.getPrincipal();
 
         // Create and return
-        return ApiResponseDto.success(this.accountService.createAccount(body, userId)) ;
+        return ApiResponseDto.success(this.accountService.createAccount(body, userId));
     }
 
     public  String updateAccount(){
