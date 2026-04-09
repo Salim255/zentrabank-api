@@ -47,11 +47,60 @@ public class TransactionServiceImp implements TransactionService {
             UUID userId
     ){
         try {
+            // 1 Get current account
+            Account account = this.accountService.findAccountByUserId(userId);
 
+            // 2 Lock accounts for update (pessimistic write)
+            this.accountService.lockAccountForUpdate(account.getId());
+
+            // 3 Validate transaction
+            transactionValidator.validate(payload, account);
+
+            // 4 Update balances
+            // Get new balance
+            BigDecimal newBalance = account.getBalance().subtract(payload.amount());
+
+            // 5 Update account balance
+            account.setBalance(newBalance);
+
+            // 6 Save change
+            accountService.saveAccountChange(account);
+
+            // 7 Create transaction
+            Transaction transaction = new Transaction();
+
+            transaction.setAccount(account);
+            transaction.setAmount(payload.amount());
+            transaction.setType(payload.type());
+            transaction.setDescription(payload.description());
+            transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
+            transaction.setPostTransactionBalance(newBalance);
+            transaction.setCurrency(account.getCurrency());
+
+            // 10 Save the transaction
+            this.transactionRepository.save(transaction);
+
+            // 11 Response
+            TransactionDto response = new TransactionDto(
+                    transaction.getId(),
+                    transaction.getType(),
+                    transaction.getAmount(),
+                    transaction.getCurrency(),
+                    transaction.getReferenceAccountNumber(),
+                    transaction.getPostTransactionBalance(),
+                    transaction.getDescription(),
+                    transaction.getCreatedAt()
+            );
+
+            return new TransactionResponseDto(
+                    response
+            );
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            this.logger.error("Error to withdrawal transaction { }", e);
+            throw e;
         }
     }
+
     public TransactionResponseDto depositOperation(
             CreateTransactionDto payload,
             UUID userId

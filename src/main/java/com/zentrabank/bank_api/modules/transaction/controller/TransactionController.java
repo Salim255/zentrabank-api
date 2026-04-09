@@ -28,7 +28,6 @@ public class TransactionController {
             @Valid @RequestBody CreateTransactionDto body,
             Authentication auth
     ){
-
         // Validate auth
         if (auth == null || !auth.isAuthenticated()) {
             throw new ForbiddenException("Invalid authentication token");
@@ -37,9 +36,8 @@ public class TransactionController {
         // Get userId
         UUID userId = (UUID) auth.getPrincipal();
 
-        TransactionResponseDto response;
         // Create and return
-
+        TransactionResponseDto response;
         switch (body.type()) {
             case DEPOSIT -> response = transactionService.depositOperation(body, userId);
             case TRANSFER -> response = transactionService.transferOperation(body, userId);
