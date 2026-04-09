@@ -6,6 +6,7 @@ import com.zentrabank.bank_api.modules.account.service.AccountService;
 import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
 import com.zentrabank.bank_api.modules.transaction.dto.TransactionResponseDto;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
+import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ public class TransactionServiceImp implements TransactionService {
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImp.class);
     private final  EntityManager entityManager;
     private AccountService accountService;
-    //private final  Transa
+    private final TransactionRepository transactionRepository;
 
     public TransactionResponseDto createTransaction(
             CreateTransactionDto payload,
@@ -31,7 +32,7 @@ public class TransactionServiceImp implements TransactionService {
             Account account = this.accountService.findAccountByUserId(userId);
             Account accountRef = entityManager.getReference(Account.class, account.getId());
 
-            // Create transaction
+            // 3 Create transaction
             Transaction transaction = new Transaction();
             transaction.setAccount(accountRef);
             transaction.setAmount(payload.amount());
@@ -39,7 +40,8 @@ public class TransactionServiceImp implements TransactionService {
             transaction.setType(payload.type());
             transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
 
-
+            // 4 Save the transaction
+            this.transactionRepository.save(transaction);
 
         } catch (Exception e) {
             this.logger.error("Error to create transaction { }", e);
