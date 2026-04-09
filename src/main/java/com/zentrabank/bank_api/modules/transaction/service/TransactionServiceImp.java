@@ -4,6 +4,7 @@ package com.zentrabank.bank_api.modules.transaction.service;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.account.service.AccountService;
 import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
+import com.zentrabank.bank_api.modules.transaction.dto.LockedAccountsDto;
 import com.zentrabank.bank_api.modules.transaction.dto.TransactionDto;
 import com.zentrabank.bank_api.modules.transaction.dto.TransactionResponseDto;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
@@ -47,25 +48,15 @@ public class TransactionServiceImp implements TransactionService {
             // 3. Validate transaction
             transactionValidator.validateTransfer(payload, senderAccount, receiverAccount);
 
-            // 4. Decide lock order to prevent deadlocks
-            UUID fromAccountId = senderAccount.getId();
-            UUID toAccountId = receiverAccount.getId();
+            // 4 Lock accounts safely
+            LockedAccountsDto locked = lockAccounts(senderAccount, receiverAccount);
 
 
-            // 5. Decide lock order to prevent deadlocks
-            UUID firstAccountId = fromAccountId.compareTo(toAccountId) < 0 ? fromAccountId : toAccountId;
-            UUID secondAccountId = fromAccountId.compareTo(toAccountId) < 0 ? toAccountId : fromAccountId;
+           // 5 Blocked accounts
+            Account sender = locked.getSender();
+            Account receiver = locked.getReceiver();
 
-            // 6 Lock accounts for update (pessimistic write)
-            Account firstAccountLocked = this.accountService.lockAccountForUpdate(firstAccountId);
-            Account secondAccountLocked = this.accountService.lockAccountForUpdate(secondAccountId);
-
-            // 7 Map which one is sender and which is receiver
-            // Map sender / receiver from locked entities
-            Account sender = fromAccountId.equals(firstAccountId) ? firstAccountLocked : secondAccountLocked;
-            Account receiver = toAccountId.equals(firstAccountId) ? firstAccountLocked :secondAccountLocked;
-
-            // 5. Update balances
+            // 6 Update balances
             // Get new balance
             BigDecimal amount = payload.amount();
 
@@ -79,13 +70,11 @@ public class TransactionServiceImp implements TransactionService {
             this.accountService.saveAccountChange(sender);
             this.accountService.saveAccountChange(receiver);
 
-
             // 9 Create transaction (sender side)
-            Transaction transaction = buildTransaction(payload, sender, senderNewBalance);
-            this.transactionRepository.save(transaction);
-
             // 10 Create transaction (receiver side)
+            Transaction transaction = buildTransaction(payload, sender, senderNewBalance);
             Transaction receivertransaction = buildTransaction(payload, sender, senderNewBalance);
+            this.transactionRepository.save(transaction);
             this.transactionRepository.save(receivertransaction);
 
             // 11 Return response
@@ -176,6 +165,43 @@ public class TransactionServiceImp implements TransactionService {
             this.logger.error("Error during deposit transaction", e);
             throw e;
         }
+    }
+
+    private LockedAccountsDto lockAccounts(Account senderAccount, Account receiverAccount) {
+
+        // Extract the unique IDs of both accounts
+        // We use IDs because they are comparable and stable identifiers
+        UUID fromAccountId = senderAccount.getId();
+        UUID toAccountId = receiverAccount.getId();
+
+        // Decide a consistent locking order to prevent deadlocks
+        // Why? If two transactions try to lock the same accounts in different orders,
+        // they can block each other forever (deadlock)
+        // Solution: always lock in the SAME order based on ID comparison
+        UUID firstAccountId = fromAccountId.compareTo(toAccountId) < 0 ? fromAccountId : toAccountId;
+        UUID secondAccountId = fromAccountId.compareTo(toAccountId) < 0 ? toAccountId : fromAccountId;
+
+        // Lock the first account in the decided order
+        // This ensures that no other transaction can modify it until we finish
+        Account firstAccountLocked = this.accountService.lockAccountForUpdate(firstAccountId);
+
+        // Lock the second account AFTER the first one
+        // Because all transactions follow the same order,
+        // deadlocks are avoided
+        Account secondAccountLocked = this.accountService.lockAccountForUpdate(secondAccountId);
+
+        // Now we need to map back:
+        // Which locked account is the sender?
+        // If sender's ID matches firstId → sender = first, else sender = second
+        Account sender = fromAccountId.equals(firstAccountId) ? firstAccountLocked : secondAccountLocked;
+
+        // Same logic for receiver:
+        // We check which locked account corresponds to the receiver
+        Account receiver = toAccountId.equals(firstAccountId) ? firstAccountLocked :secondAccountLocked;
+
+        // Return both locked accounts wrapped in a helper object
+        // This makes the method clean and avoids returning multiple values manually
+        return new LockedAccountsDto(sender, receiver);
     }
 
     private Transaction buildTransaction(
