@@ -79,17 +79,46 @@ public class TransactionServiceImp implements TransactionService {
                     this.toDto(transaction)
             );
         } catch (Exception e) {
-            this.logger.error("Error to withdrawal transaction { }", e);
+            this.logger.error("Error during withdrawal transaction", e);
             throw e;
         }
     }
 
+    @Transactional
     public TransactionResponseDto depositOperation(
             CreateTransactionDto payload,
             UUID userId
     ){
         try {
+            // 1 Get current account
+            Account account = this.accountService.findAccountByUserId(userId);
 
+            // 2 Lock accounts for update (pessimistic write)
+            this.accountService.lockAccountForUpdate(account.getId());
+
+            // 3 Validate transaction
+            transactionValidator.validateWithdrawal(payload, account);
+
+            // 4 Update balances
+            // Get new balance
+            BigDecimal newBalance = account.getBalance().add(payload.amount());
+
+            // 5 Update account balance
+            account.setBalance(newBalance);
+
+            // 6 Save change
+            accountService.saveAccountChange(account);
+
+            // 7 Create transaction
+            Transaction transaction = this.buildTransaction(payload, account, newBalance);
+
+            // 8 Save the transaction
+            this.transactionRepository.save(transaction);
+
+            // 9 Response
+            return new TransactionResponseDto(
+                    this.toDto(transaction)
+            );
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
