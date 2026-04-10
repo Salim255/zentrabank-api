@@ -18,6 +18,9 @@ pipeline {
              }
         }
         stage ("TEST"){
+            steps {
+                 sh 'mvn test'
+            }
         }
         stage("INTEGRATION TEST"){
         }
