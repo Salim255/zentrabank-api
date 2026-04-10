@@ -1,56 +1,127 @@
 pipeline {
+
+    // Run on any available Jenkins agent (node)
+    // In production, you might restrict this to a Docker agent or labeled node
     agent any
 
+    // Define tools installed in Jenkins (Global Tool Configuration)
     tools {
-        jdk "JDK21"
-        maven "MAVEN3.9"
+        jdk "JDK21"        // Use Java 21 for compilation (required by your Spring Boot app)
+        maven "MAVEN3.9"   // Use Maven 3.9 to build and manage dependencies
     }
+
     stages {
-        stage ("BUILD"){
-             steps {
-                 sh 'mvn clean install -DskipTests'
-             }
-              post {
-                 success {
-                     echo 'Now Archiving...'
-                     archiveArtifacts artifacts: '**/target/*.war'
-                 }
-             }
-        }
-        stage ("TEST"){
+
+        // -------------------------
+        // 1. Build stage
+        // -------------------------
+        stage ("BUILD") {
             steps {
-                 sh 'mvn test'
+                // Clean previous builds and compile the project
+                // -DskipTests → skip tests here for faster build
+                sh 'mvn clean install -DskipTests'
             }
         }
-        stage("INTEGRATION TEST"){
+
+        // -------------------------
+        // 2. Unit Testing
+        // -------------------------
+        stage ("TEST") {
             steps {
+                // Run unit tests separately
+                // Keeps build fast and isolates test failures
+                sh 'mvn test'
+            }
+        }
+
+        // -------------------------
+        // 3. Integration Testing
+        // -------------------------
+        stage ("INTEGRATION TEST") {
+            steps {
+                // Run integration tests (usually heavier tests)
+                // -DskipUnitTests → avoid re-running unit tests
                 sh 'mvn verify -DskipUnitTests'
             }
         }
-        stage("CODE ANALYSIS WITH CHECKSTYLE"){
-             steps {
+
+        // -------------------------
+        // 4. Static Code Analysis (Checkstyle)
+        // -------------------------
+        stage("CODE ANALYSIS WITH CHECKSTYLE") {
+            steps {
+                // Analyze code style and enforce coding standards
                 sh 'mvn checkstyle:checkstyle'
             }
             post {
                 success {
-                    echo 'Generated Analysis Result'
+                    // Only runs if stage succeeds
+                    echo 'Checkstyle analysis completed successfully'
+                }
+                failure {
+                    echo 'Checkstyle found violations'
                 }
             }
         }
-        stage("CODE ANALYSIS with SONARQUBE"){
+
+        // -------------------------
+        // 5. SonarQube Analysis (placeholder)
+        // -------------------------
+        stage("CODE ANALYSIS WITH SONARQUBE") {
             steps {
-               echo 'Now Archiving... SONARQUBE'
+                // In real setup, this sends code to SonarQube server
+                echo 'Running SonarQube analysis...'
+
+                // Example (when configured):
+                // sh 'mvn sonar:sonar'
             }
         }
-        stage("BUILD DOCKER IMAGES"){
+
+        // -------------------------
+        // 6. Build Docker Image
+        // -------------------------
+        stage("BUILD DOCKER IMAGE") {
             steps {
-                echo 'Now Archiving... DOCKER IMAGES'
+                script {
+                    // Build Docker image from Dockerfile in project root
+                    // -t → tag the image (name:version)
+                    sh 'docker build -t zentra-api:latest .'
+                }
             }
         }
-        stage("ROLLOUT APP"){
-           steps {
-                echo 'Now Archiving... DOCKER IMAGES'
-           }
+
+        // -------------------------
+        // 7. Deploy using Docker Compose
+        // -------------------------
+        stage("ROLLOUT APP") {
+            steps {
+                script {
+                    // Start new containers in detached mode
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+    }
+
+    // -------------------------
+    // Global post actions
+    // -------------------------
+    post {
+
+        success {
+            // Runs if pipeline succeeds
+            echo 'Pipeline completed successfully 🚀'
+        }
+
+        failure {
+            // Runs if pipeline fails
+            echo 'Pipeline failed ❌'
+        }
+
+        always {
+            // Always runs (cleanup, logs, etc.)
+            echo 'Cleaning up...'
+            cleanWs()
         }
     }
 }
