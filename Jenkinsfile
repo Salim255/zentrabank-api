@@ -38,13 +38,19 @@ pipeline {
             }
         }
         stage("CODE ANALYSIS with SONARQUBE"){
-            echo 'Now Archiving... SONARQUBE'
+            steps {
+               echo 'Now Archiving... SONARQUBE'
+            }
         }
         stage("BUILD DOCKER IMAGES"){
-          echo 'Now Archiving... DOCKER IMAGES'
+            steps {
+                echo 'Now Archiving... DOCKER IMAGES'
+            }
         }
         stage("ROLLOUT APP"){
-           echo 'Now Archiving... DOCKER IMAGES'
+           steps {
+                echo 'Now Archiving... DOCKER IMAGES'
+           }
         }
     }
 }
