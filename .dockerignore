@@ -8,7 +8,6 @@
 # -------------------------
 # ☕ JAVA / MAVEN (backend)
 # -------------------------
-target/
 *.log
 
 # Maven wrapper cache
