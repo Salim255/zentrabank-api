@@ -1,0 +1,89 @@
+version: "3.9"  # Docker Compose file format version (3.9 = modern, stable)
+services:
+
+  # -------------------------
+  # DATABASE SERVICE (PostgreSQL)
+  # -------------------------
+  zentrabank-db:
+    container_name: zentrabank-db # Explicit container name (easier debugging)
+    image: postgres:16 # Official PostgreSQL image (version 16)
+    restart: always # Automatically restart container if it crashes or Docker restarts
+
+    environment:
+      # Inject database credentials from environment variables (.env file or system)
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+    volumes:
+      # Persist database data (IMPORTANT)
+      # Prevents data loss when container stops or is recreated
+      - zentrabank-data:/var/lib/postgresql/data # tasks-data => /var/lib/postgresql/data
+
+    networks:
+      # Connect to shared network so other services (backend) can access DB
+      - zentrabank-network
+
+  # -------------------------
+  # FRONTEND (Angular / Client)
+  # -------------------------
+  zentrabank-client:
+    container_name: zentrabank-client # Name for easier container management
+
+    build:
+      context: . # Path to frontend Dockerfile
+      dockerfile: Dockerfile  # Dockerfile used to build the frontend image
+
+    image: zentrabank-client:latest  # Image name + tag
+
+    ports:
+      - "3006:80" # Map host port 3006 → container port 80 (Nginx serves Angular)
+
+    restart: always # Keep frontend running even after failure
+
+    networks:
+      - zentrabank-network  # Same network to communicate with backend if needed
+
+    env_file:
+      - .env  # Load environment variables for frontend (API URLs, configs, etc.)
+
+  # -------------------------
+  # BACKEND (Spring Boot API)
+  # -------------------------
+  zentrabank-server:
+    container_name: zentrabank-server # Backend container name
+    depends_on:
+      # Ensure DB container starts before backend
+      # ⚠️ Note: does NOT guarantee DB is ready (only started)
+      -  zentrabank-db
+    build:
+      context: . # Root directory (where backend Dockerfile exists)
+      dockerfile: Dockerfile
+
+    image: zentrabank-server:latest # Backend image
+
+    ports:
+      - "3007:8080" # Map host port 3007 → backend port 8080
+
+    restart: always  # Restart backend if it crashes
+
+    networks:
+      - zentrabank-network   # Same network for communication with DB & frontend
+
+    env_file:
+      - .env  # Load backend environment variables (DB config, secrets, etc.)
+
+# -------------------------
+# VOLUMES (Data Persistence)
+# -------------------------
+volumes:
+  zentrabank-data:
+  # Named volume to persist PostgreSQL data
+  # Docker manages storage automatically
+
+# -------------------------
+# NETWORKS (Service Communication)
+# -------------------------
+networks:
+  zentrabank-network:
+    driver: bridge  # Default Docker network driver (containers can talk via service names)
