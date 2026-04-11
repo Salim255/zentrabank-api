@@ -78,7 +78,7 @@ services:
     volumes:
       - ${SECRETS_PATH}:/app/config/secrets.properties:ro
     environment:
-        SPRING_CONFIG_IMPORT: ${SPRING_CONFIG_IMPORT}
+        SPRING_CONFIG_IMPORT: "${SPRING_CONFIG_IMPORT}"
 
     #env_file:
     #  - .env  # Load backend environment variables (DB config, secrets, etc.)
