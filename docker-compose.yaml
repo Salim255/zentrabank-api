@@ -27,22 +27,22 @@ services:
   # -------------------------
   # FRONTEND (Angular / Client)
   # -------------------------
-  zentrabank-client:
-    container_name: zentrabank-client # Name for easier container management
+  ##entrabank-client:
+   ## container_name: zentrabank-client # Name for easier container management
 
     # build:
     # context: . # Path to frontend Dockerfile
     # dockerfile: Dockerfile  # Dockerfile used to build the frontend image
 
-    image: zentrabank-client:latest  # Image name + tag
+    ##image: zentrabank-client:latest  # Image name + tag
 
-    ports:
-      - "3006:80" # Map host port 3006 → container port 80 (Nginx serves Angular)
+    ##ports:
+      ##- "3006:80" # Map host port 3006 → container port 80 (Nginx serves Angular)
 
-    restart: always # Keep frontend running even after failure
+    ##restart: always # Keep frontend running even after failure
 
-    networks:
-      - zentrabank-network  # Same network to communicate with backend if needed
+    ##networks:
+      ##- zentrabank-network  # Same network to communicate with backend if needed
 
     #env_file:
     #  - .env  # Load environment variables for frontend (API URLs, configs, etc.)
