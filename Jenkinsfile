@@ -143,7 +143,7 @@ pipeline {
                     // sh 'docker-compose up -d'
                     withCredentials([file(credentialsId: 'ZENTRA_API_SECRETS_FILE', variable: 'SECRETS_FILE')]) {
                         sh """
-                            SECRETS_FILE=$SECRETS_FILE docker compose up -d
+                            SECRETS_FILE=$SECRETS_FILE docker-compose up -d
                         """
                     }
                 }
