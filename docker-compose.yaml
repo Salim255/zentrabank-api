@@ -60,7 +60,7 @@ services:
     #  context: . # Root directory (where backend Dockerfile exists)
     #  dockerfile: Dockerfile
 
-    image: zentrabank-api:latest # Backend image
+    image: crawan/zentrabank-api:latest # Backend image
 
     ports:
       - "3007:8080" # Map host port 3007 → backend port 8080
