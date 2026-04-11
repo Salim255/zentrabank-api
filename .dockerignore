@@ -4,20 +4,6 @@
 .git
 .gitignore
 
-# -------------------------
-# 📦 NODE (frontend)
-# -------------------------
-node_modules
-client/node_modules
-
-# Build outputs (Angular)
-client/dist
-client/.angular
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # -------------------------
 # ☕ JAVA / MAVEN (backend)
@@ -35,11 +21,7 @@ Dockerfile*
 docker-compose*
 .dockerignore
 
-# -------------------------
-# 🔐 ENV / SECRETS
-# -------------------------
-.env
-client/.env
+
 
 # -------------------------
 # 💻 OS / IDE
@@ -65,3 +47,5 @@ temp/
 # 📁 Misc
 # -------------------------
 *.md
+
+secrets.properties
