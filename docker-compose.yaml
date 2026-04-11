@@ -70,6 +70,14 @@ services:
     networks:
       - zentrabank-network   # Same network for communication with DB & frontend
 
+
+    # CI/CD:
+    # Jenkins → copies file
+    # → Docker mounts it to /app/secrets.properties
+    # → Spring loads file:/app/secrets.properties
+    volumes:
+      - ./secrets.properties:/app/secrets.properties
+
     #env_file:
     #  - .env  # Load backend environment variables (DB config, secrets, etc.)
 

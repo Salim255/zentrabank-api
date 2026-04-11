@@ -1,6 +1,8 @@
 spring:
   config:
-    import: optional:classpath:secrets.properties
+    import: >
+      optional:classpath:secrets.properties
+      optional:file:/app/secrets.properties
 
   application:
     name: bank-api
