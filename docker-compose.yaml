@@ -77,6 +77,7 @@ services:
     # → Spring loads file:/app/secrets.properties
     volumes:
       - ${SECRETS_PATH}:/app/config/secrets.properties:ro
+
     environment:
         SPRING_CONFIG_IMPORT: "${SPRING_CONFIG_IMPORT}"
 
