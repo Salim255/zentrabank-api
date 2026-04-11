@@ -99,6 +99,21 @@ pipeline {
         }
 
         // -------------------------
+        // PUSH IMAGES
+        // -------------------------
+        stage("PUSH DOCKER IMAGES") {
+            steps {
+                script {
+                    // Push backend image
+                    sh 'docker push $DOCKER_IMAGE_BACK:latest'
+
+                    // Push frontend image
+                    sh 'docker push $DOCKER_IMAGE_FRONT:latest'
+                }
+            }
+        }
+
+        // -------------------------
         // LOGIN TO DOCKER HUB
         // -------------------------
         stage("DOCKER LOGIN") {
