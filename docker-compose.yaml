@@ -30,9 +30,9 @@ services:
   zentrabank-client:
     container_name: zentrabank-client # Name for easier container management
 
-    build:
-      context: . # Path to frontend Dockerfile
-      dockerfile: Dockerfile  # Dockerfile used to build the frontend image
+    # build:
+    # context: . # Path to frontend Dockerfile
+    # dockerfile: Dockerfile  # Dockerfile used to build the frontend image
 
     image: zentrabank-client:latest  # Image name + tag
 
@@ -50,17 +50,17 @@ services:
   # -------------------------
   # BACKEND (Spring Boot API)
   # -------------------------
-  zentrabank-server:
-    container_name: zentrabank-server # Backend container name
+  zentrabank-api:
+    container_name: zentrabank-api # Backend container name
     depends_on:
       # Ensure DB container starts before backend
-      # ⚠️ Note: does NOT guarantee DB is ready (only started)
+      # Note: does NOT guarantee DB is ready (only started)
       -  zentrabank-db
-    build:
-      context: . # Root directory (where backend Dockerfile exists)
-      dockerfile: Dockerfile
+    #build:
+    #  context: . # Root directory (where backend Dockerfile exists)
+    #  dockerfile: Dockerfile
 
-    image: zentrabank-server:latest # Backend image
+    image: zentrabank-api:latest # Backend image
 
     ports:
       - "3007:8080" # Map host port 3007 → backend port 8080

@@ -10,16 +10,20 @@ pipeline {
         maven "MAVEN3.9"   // Use Maven 3.9 to build and manage dependencies
     }
 
+    environment {
+        DOCKER_IMAGE_BACK = "crawan/zentrabank-api"   // Backend image name
+        DOCKER_IMAGE_FRONT = "crawan/zentrabank-client"  // Frontend image name
+    }
     stages {
 
         // -------------------------
-        // 1. Build stage
+        // BUILD BACKEND
         // -------------------------
         stage ("BUILD") {
             steps {
                 // Clean previous builds and compile the project
                 // -DskipTests → skip tests here for faster build
-                sh 'mvn clean install -DskipTests'
+                sh 'mvn clean install -DskipTests' // Build Spring Boot app
             }
         }
 
@@ -30,7 +34,7 @@ pipeline {
             steps {
                 // Run unit tests separately
                 // Keeps build fast and isolates test failures
-                sh 'mvn test'
+                sh 'mvn test' // Run unit tests
             }
         }
 
@@ -78,14 +82,36 @@ pipeline {
         }
 
         // -------------------------
-        // 6. Build Docker Image
+        // BUILD DOCKER IMAGE
         // -------------------------
         stage("BUILD DOCKER IMAGE") {
             steps {
                 script {
-                    // Build Docker image from Dockerfile in project root
-                    // -t → tag the image (name:version)
-                    sh 'docker build -t zentra-api:latest .'
+                    // Build backend Docker image
+                    sh 'docker build -t $DOCKER_IMAGE_BACK:latest .'
+
+                    // Build frontend Docker image
+                    sh 'docker build -t $DOCKER_IMAGE_FRONT:latest .'
+                }
+            }
+        }
+
+        // -------------------------
+        // LOGIN TO DOCKER HUB
+        // -------------------------
+        stage("DOCKER LOGIN") {
+            steps {
+                script {
+                    // Use Jenkins credentials securely
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+
+                        // Login to Docker Hub
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    }
                 }
             }
         }
