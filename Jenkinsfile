@@ -142,17 +142,23 @@ pipeline {
                     // Start new containers in detached mode
                     // sh 'docker-compose up -d'
                     withCredentials([file(credentialsId: 'ZENTRA_API_SECRETS_FILE', variable: 'SECRETS_FILE')]) {
-                         sh '''
-                                mkdir -p temp_secrets
-                                cp "$SECRETS_FILE" temp_secrets/secrets.properties
+                          sh '''
+                                 echo "SECRETS_FILE = '$SECRETS_FILE'"
+                                 ls -l "$SECRETS_FILE"
 
-                                export SPRING_CONFIG_IMPORT=optional:file:/app/config/secrets.properties
-                                export SECRETS_PATH=$(pwd)/temp_secrets/secrets.properties
+                                 rm -rf temp_secrets
+                                 mkdir -p temp_secrets
 
-                                docker-compose up -d
-                                cat temp_secrets/secrets.properties
-                                rm -rf temp_secrets
-                         '''
+                                 cp "$SECRETS_FILE" temp_secrets/secrets.properties
+
+                                 echo "After copy:"
+                                 ls -l temp_secrets
+
+                                 export SPRING_CONFIG_IMPORT=optional:file:/app/config/secrets.properties
+                                 export SECRETS_PATH=$(pwd)/temp_secrets/secrets.properties
+
+                                 docker-compose up -d
+                             '''
                     }
                 }
             }
