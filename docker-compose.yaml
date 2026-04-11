@@ -44,8 +44,8 @@ services:
     networks:
       - zentrabank-network  # Same network to communicate with backend if needed
 
-    env_file:
-      - .env  # Load environment variables for frontend (API URLs, configs, etc.)
+    #env_file:
+    #  - .env  # Load environment variables for frontend (API URLs, configs, etc.)
 
   # -------------------------
   # BACKEND (Spring Boot API)
@@ -70,8 +70,8 @@ services:
     networks:
       - zentrabank-network   # Same network for communication with DB & frontend
 
-    env_file:
-      - .env  # Load backend environment variables (DB config, secrets, etc.)
+    #env_file:
+    #  - .env  # Load backend environment variables (DB config, secrets, etc.)
 
 # -------------------------
 # VOLUMES (Data Persistence)
