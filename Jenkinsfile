@@ -158,6 +158,11 @@ pipeline {
                                  export SECRETS_PATH=$(pwd)/temp_secrets/secrets.properties
 
                                  docker-compose up -d
+
+
+                                 echo "---- Inside container ----"
+                                 docker exec zentrabank-api printenv | grep SPRING
+                                 docker exec zentrabank-api ls -l /app/config
                              '''
                     }
                 }
