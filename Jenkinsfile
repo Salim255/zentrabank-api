@@ -140,7 +140,12 @@ pipeline {
             steps {
                 script {
                     // Start new containers in detached mode
-                    sh 'docker-compose up -d'
+                    // sh 'docker-compose up -d'
+                    withCredentials([file(credentialsId: 'ZENTRA_API_SECRETS_FILE', variable: 'SECRETS_FILE')]) {
+                        sh """
+                            SECRETS_FILE=$SECRETS_FILE docker compose up -d
+                        """
+                    }
                 }
             }
         }

@@ -18,6 +18,4 @@ public record BankApiConfigProperties(
         Duration refreshTokenExpiration,
         Duration jwtCookieExpireIn,
         String apiPrefix
-){
-
-}
+){ }
