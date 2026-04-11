@@ -165,7 +165,8 @@ pipeline {
                                 ls -l "$SECRETS_PATH"
 
                                 # 4. Run docker-compose from the SAME directory
-
+                                # 4. IMPORTANT: run docker-compose from the SAME directory
+                                cd $(pwd)
                                 docker-compose up -d
 
                                 # 5. Debug inside container
