@@ -7,6 +7,8 @@ FROM eclipse-temurin:21-jre AS runtime
 
 WORKDIR /app
 
+RUN mkdir -p /app/config
+
 # Copy the JAR produced by Jenkins
 COPY target/*.jar app.jar
 
