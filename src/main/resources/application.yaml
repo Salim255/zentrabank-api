@@ -96,5 +96,4 @@ server:
   # Every request that comes to your server is handled by a servlet
   # server.servlet.* → settings for this servlet (context path, session timeout, etc.)
   servlet:
-    #context-path: ${API_PREFIX}
-    context-path: /api/v1
+    context-path: ${API_PREFIX}

@@ -9,11 +9,8 @@ services:
     image: postgres:16 # Official PostgreSQL image (version 16)
     restart: always # Automatically restart container if it crashes or Docker restarts
 
-    environment:
-      # Inject database credentials from environment variables (.env file or system)
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+    env_file:
+      - ./secrets.env
 
     volumes:
       # Persist database data (IMPORTANT)

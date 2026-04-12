@@ -48,3 +48,4 @@ temp/
 *.md
 
 secrets.properties
+secrets-prod.properties
