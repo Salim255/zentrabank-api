@@ -24,6 +24,7 @@ public class CorsConfig {
         // Here we allow Angular running on localhost:4200.
         // In production, replace this with your real domain.
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("https://zentrabank.salimcode.site");
 
         // Allow credentials (VERY IMPORTANT for JWT in cookies)
         // This allows the browser to send cookies (like JWT tokens) with requests.
