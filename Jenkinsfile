@@ -151,7 +151,7 @@ pipeline {
 
                             echo "After copy:"
                             ls -l secrets.env
-
+                            cat secrets.env
                             # Run docker-compose (it will load secrets.env)
                             docker-compose up -d
 
