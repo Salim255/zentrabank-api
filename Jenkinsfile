@@ -90,9 +90,6 @@ pipeline {
                 script {
                     // Build backend Docker image
                     sh 'docker build -t $DOCKER_IMAGE_BACK:latest .'
-
-                    // Build frontend Docker image
-                    sh 'docker build -t $DOCKER_IMAGE_FRONT:latest .'
                 }
             }
         }
@@ -105,9 +102,6 @@ pipeline {
                 script {
                     // Push backend image
                     sh 'docker push $DOCKER_IMAGE_BACK:latest'
-
-                    // Push frontend image
-                    sh 'docker push $DOCKER_IMAGE_FRONT:latest'
                 }
             }
         }
