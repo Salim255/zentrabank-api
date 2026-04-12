@@ -168,7 +168,6 @@ pipeline {
 
                                 # 5. Debug inside container
                                 echo "---- Inside container ----"
-                                docker exec zentrabank-api printenv | grep SPRING
                                 docker exec zentrabank-api ls -l /app/config
 
                                 # 6. Delete temp folder AFTER compose is done
