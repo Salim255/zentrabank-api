@@ -12,7 +12,6 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_BACK = "crawan/zentrabank-api"   // Backend image name
-        DOCKER_IMAGE_FRONT = "crawan/zentrabank-client"  // Frontend image name
     }
     stages {
 

@@ -58,19 +58,45 @@ services:
 
     image: crawan/zentrabank-api:latest # Backend image
 
-    ports:
-      - "3007:8080" # Map host port 3007 → backend port 8080
-
     restart: always  # Restart backend if it crashes
 
+    ports:
+      - "3007:8080" # Map host port 3007 → backend port 8080
+      -
     networks:
       - zentrabank-network   # Same network for communication with DB & frontend
 
     env_file:
       - ./secrets.env
 
-    #env_file:
-    #  - .env  # Load backend environment variables (DB config, secrets, etc.)
+
+  #############################################################
+  # 3) FRONTEND CLIENT (ANGULAR)
+  #############################################################
+  zentrabank-client:
+    image: crawan/zentrabank-client:latest
+
+    restart: always
+
+    ###########################################################
+    # WHY NO "build" IN PRODUCTION?
+    ###########################################################
+    # In production:
+    # - images are built in Jenkins
+    # - pulled from Docker Hub
+    ###########################################################
+
+    ports:
+      - "3006:80"
+
+    ###########################################################
+    # FRONTEND ENV FILE (optional Angular runtime config)
+    ###########################################################
+    env_file:
+      - .env
+
+    networks:
+      - zentrabank-network
 
 # -------------------------
 # VOLUMES (Data Persistence)
