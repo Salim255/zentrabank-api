@@ -62,7 +62,7 @@ services:
 
     ports:
       - "3007:8080" # Map host port 3007 → backend port 8080
-      -
+
     networks:
       - zentrabank-network   # Same network for communication with DB & frontend
 
