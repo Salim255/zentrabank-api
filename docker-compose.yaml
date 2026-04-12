@@ -92,8 +92,6 @@ services:
     ###########################################################
     # FRONTEND ENV FILE (optional Angular runtime config)
     ###########################################################
-    env_file:
-      - .env
 
     networks:
       - zentrabank-network
