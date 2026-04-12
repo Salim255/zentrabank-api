@@ -142,41 +142,23 @@ pipeline {
                     // Start new containers in detached mode
                     // sh 'docker-compose up -d'
                     withCredentials([file(credentialsId: 'ZENTRA_API_SECRETS_FILE', variable: 'SECRETS_FILE')]) {
-                         sh '''
-                                echo "SECRETS_FILE='$SECRETS_FILE'"
-                                ls -l "$SECRETS_FILE"
+                        sh '''
+                            echo "SECRETS_FILE='$SECRETS_FILE'"
+                            ls -l "$SECRETS_FILE"
 
-                                # 1. Create temp folder
-                                rm -rf temp_secrets
-                                mkdir -p temp_secrets
+                            # Copy the secret file into the workspace
+                            cp "$SECRETS_FILE" secrets.env
 
-                                # 2. Copy the secret file EXACTLY as a file
-                                echo "$SECRETS_FILE" > temp_secrets/secrets.properties
+                            echo "After copy:"
+                            ls -l secrets.env
 
-                                echo "After copy:"
-                                ls -l temp_secrets
+                            # Run docker-compose (it will load secrets.env)
+                            docker-compose up -d
 
-                                # 3. Export env vars BEFORE docker-compose
-                                export SECRETS_PATH=$(pwd)/temp_secrets/secrets.properties
-                                echo "SECRETS_PATH='$SECRETS_PATH'"
-                                ls -l "$SECRETS_PATH"
-
-                                # 4. Run docker-compose from the SAME directory
-                                # 4. IMPORTANT: run docker-compose from the SAME directory
-                                cd $(pwd)
-                                docker-compose down -v
-                                docker-compose build --no-cache
-
-                                docker-compose up -d
-
-                                # 5. Debug inside container
-                                echo "---- Inside container ----"
-                                docker exec zentra-deployment-zentrabank-api-1 ls -l /app/config
-
-                                # 6. Delete temp folder AFTER compose is done
-                                sleep 2
-                                rm -rf temp_secrets
-                            '''
+                            # Debug inside container
+                            echo "---- Inside container ----"
+                            docker exec zentrabank-api printenv | grep -E "JWT|DB|API"
+                        '''
                     }
                 }
             }
