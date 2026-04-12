@@ -164,6 +164,9 @@ pipeline {
                                 # 4. Run docker-compose from the SAME directory
                                 # 4. IMPORTANT: run docker-compose from the SAME directory
                                 cd $(pwd)
+                                docker-compose down -v
+                                docker-compose build --no-cache
+
                                 docker-compose up -d
 
                                 # 5. Debug inside container
