@@ -157,7 +157,7 @@ pipeline {
 
                             # Debug inside container
                             echo "---- Inside container ----"
-                            docker exec zentrabank-api printenv | grep -E "JWT|DB|API"
+
                         '''
                     }
                 }
