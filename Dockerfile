@@ -7,6 +7,7 @@ FROM eclipse-temurin:21-jre AS runtime
 
 WORKDIR /app
 
+## needed for secrets
 RUN mkdir -p /app/config
 
 # Copy the JAR produced by Jenkins
