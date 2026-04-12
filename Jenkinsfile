@@ -157,10 +157,7 @@ pipeline {
                                 ls -l temp_secrets
 
                                 # 3. Export env vars BEFORE docker-compose
-                                export SPRING_CONFIG_IMPORT=optional:file:/app/config/secrets.properties
                                 export SECRETS_PATH=$(pwd)/temp_secrets/secrets.properties
-
-                                echo "SPRING_CONFIG_IMPORT='$SPRING_CONFIG_IMPORT'"
                                 echo "SECRETS_PATH='$SECRETS_PATH'"
                                 ls -l "$SECRETS_PATH"
 

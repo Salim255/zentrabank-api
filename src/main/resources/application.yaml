@@ -1,7 +1,7 @@
 spring:
-  config:
+  #config:
     #import: optional:classpath:secrets.properties
-    import: ${SPRING_CONFIG_IMPORT:optional:classpath:secrets.properties}
+    #import: ${SPRING_CONFIG_IMPORT:optional:classpath:secrets.properties}
 
   application:
     name: bank-api
@@ -26,7 +26,7 @@ spring:
 
   # Java Persistence API (JPA), which is the standard for
   # interacting with relational databases in Java.
-  # ✅ Summary:
+  # Summary:
   # JPA = the rules for database operations.
   # Hibernate = the tool that follows the rules and actually talks to the database.
   jpa:

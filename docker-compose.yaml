@@ -76,10 +76,8 @@ services:
     # → Docker mounts it to /app/secrets.properties
     # → Spring loads file:/app/secrets.properties
     volumes:
+      # So Docker makes the file physically exist inside the container.
       - ${SECRETS_PATH}:/app/config/secrets.properties:ro
-
-    environment:
-        SPRING_CONFIG_IMPORT: "${SPRING_CONFIG_IMPORT}"
 
     #env_file:
     #  - .env  # Load backend environment variables (DB config, secrets, etc.)
