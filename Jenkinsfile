@@ -151,7 +151,7 @@ pipeline {
                                 mkdir -p temp_secrets
 
                                 # 2. Copy the secret file EXACTLY as a file
-                                cp "$SECRETS_FILE" temp_secrets/secrets.properties
+                                echo "$SECRETS_FILE" > temp_secrets/secrets.properties
 
                                 echo "After copy:"
                                 ls -l temp_secrets
@@ -165,9 +165,8 @@ pipeline {
                                 # 4. IMPORTANT: run docker-compose from the SAME directory
                                 cd $(pwd)
                                 docker-compose down -v
-                                docker-compose build --no-cache
-
-                                docker-compose up -d
+                                docker volume prune -f
+                                docker-compose up -d --build
 
                                 # 5. Debug inside container
                                 echo "---- Inside container ----"
