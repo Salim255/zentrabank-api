@@ -147,7 +147,7 @@ pipeline {
                             ls -l "$SECRETS_FILE"
 
                             # Copy the secret file into the workspace
-                            cp "$SECRETS_FILE" secrets.env
+                            echo "$SECRETS_FILE" > secrets.env
 
                             echo "After copy:"
                             ls -l secrets.env
