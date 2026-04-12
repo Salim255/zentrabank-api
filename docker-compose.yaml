@@ -1,11 +1,11 @@
 version: "3.9"  # Docker Compose file format version (3.9 = modern, stable)
+name: zentra-deployment
 services:
 
   # -------------------------
   # DATABASE SERVICE (PostgreSQL)
   # -------------------------
   zentrabank-db:
-    container_name: zentrabank-db # Explicit container name (easier debugging)
     image: postgres:16 # Official PostgreSQL image (version 16)
     restart: always # Automatically restart container if it crashes or Docker restarts
 
@@ -51,7 +51,6 @@ services:
   # BACKEND (Spring Boot API)
   # -------------------------
   zentrabank-api:
-    container_name: zentrabank-api # Backend container name
     depends_on:
       # Ensure DB container starts before backend
       # Note: does NOT guarantee DB is ready (only started)
