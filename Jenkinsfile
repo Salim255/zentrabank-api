@@ -13,7 +13,17 @@ pipeline {
     environment {
         DOCKER_IMAGE_BACK = "crawan/zentrabank-api"   // Backend image name
     }
+
     stages {
+
+        // -------------------------
+        // CHECKOUT SOURCE CODE
+        // -------------------------
+        stage("Checkout") {
+            steps {
+                checkout scm
+            }
+        }
 
         // -------------------------
         // BUILD BACKEND
@@ -33,8 +43,7 @@ pipeline {
             steps {
                 // Run unit tests separately
                 // Keeps build fast and isolates test failures
-                //sh 'mvn test' // Run unit tests
-                 echo 'Running SonarQube analysis...'
+                sh 'mvn test' // Run unit tests
             }
         }
 
@@ -46,7 +55,7 @@ pipeline {
                 // Run integration tests (usually heavier tests)
                 // -DskipUnitTests → avoid re-running unit tests
                 // sh 'mvn verify -DskipUnitTests'
-                 echo 'Running SonarQube analysis...'
+                echo 'Integration tests placeholder...'
             }
         }
 
@@ -83,30 +92,6 @@ pipeline {
         }
 
         // -------------------------
-        // BUILD DOCKER IMAGE
-        // -------------------------
-        stage("BUILD DOCKER IMAGE") {
-            steps {
-                script {
-                    // Build backend Docker image
-                    sh 'docker build -t $DOCKER_IMAGE_BACK:latest .'
-                }
-            }
-        }
-
-        // -------------------------
-        // PUSH IMAGES
-        // -------------------------
-        stage("PUSH DOCKER IMAGES") {
-            steps {
-                script {
-                    // Push backend image
-                    sh 'docker push $DOCKER_IMAGE_BACK:latest'
-                }
-            }
-        }
-
-        // -------------------------
         // LOGIN TO DOCKER HUB
         // -------------------------
         stage("DOCKER LOGIN") {
@@ -127,6 +112,40 @@ pipeline {
         }
 
         // -------------------------
+        // BUILD DOCKER IMAGE
+        // -------------------------
+        stage("BUILD DOCKER IMAGE") {
+            steps {
+                script {
+                    // Build backend Docker image
+                    // 🔥 ADDED: version tagging with BUILD_NUMBER for traceability
+                    sh '''
+                        docker build \
+                          -t $DOCKER_IMAGE_BACK:$BUILD_NUMBER \
+                          -t $DOCKER_IMAGE_BACK:latest \
+                          .
+                    '''
+                }
+            }
+        }
+
+        // -------------------------
+        // PUSH IMAGES
+        // -------------------------
+        stage("PUSH DOCKER IMAGES") {
+            steps {
+                script {
+                    // Push backend image
+                    // 🔥 ADDED: push both version + latest
+                    sh '''
+                        docker push $DOCKER_IMAGE_BACK:$BUILD_NUMBER
+                        docker push $DOCKER_IMAGE_BACK:latest
+                    '''
+                }
+            }
+        }
+
+        // -------------------------
         // 7. Deploy using Docker Compose
         // -------------------------
         stage("ROLLOUT APP") {
@@ -134,23 +153,19 @@ pipeline {
                 script {
                     // Start new containers in detached mode
                     // sh 'docker-compose up -d'
+
                     withCredentials([file(credentialsId: 'ZENTRA_API_SECRETS_FILE', variable: 'SECRETS_FILE')]) {
                         sh '''
-                            echo "SECRETS_FILE='$SECRETS_FILE'"
-                            ls -l "$SECRETS_FILE"
-
                             # Copy the secret file into the workspace
                             cat "$SECRETS_FILE" > secrets.env
 
-                            echo "After copy:"
-                            ls -l secrets.env
-                            cat secrets.env
+
+                            # 🔥 IMPORTANT CHANGE:
+                            # Instead of rebuilding locally, we PULL from Docker Hub
+                            docker-compose pull
+
                             # Run docker-compose (it will load secrets.env)
                             docker-compose up -d
-
-                            # Debug inside container
-                            echo "---- Inside container ----"
-
                         '''
                     }
                 }
@@ -176,7 +191,7 @@ pipeline {
         always {
             // Always runs (cleanup, logs, etc.)
             echo 'Cleaning up...'
-            cleanWs()
+            sh "docker system prune -af || true" // 🔥 ADDED cleanup
         }
     }
 }
