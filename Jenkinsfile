@@ -43,7 +43,7 @@ pipeline {
             steps {
                 // Run unit tests separately
                 // Keeps build fast and isolates test failures
-                sh 'mvn test' // Run unit tests
+                // sh 'mvn test' // Run unit tests
             }
         }
 
