@@ -36,16 +36,6 @@ pipeline {
             }
         }
 
-        // -------------------------
-        // 2. Unit Testing
-        // -------------------------
-        stage ("TEST") {
-            steps {
-                // Run unit tests separately
-                // Keeps build fast and isolates test failures
-                // sh 'mvn test' // Run unit tests
-            }
-        }
 
         // -------------------------
         // 3. Integration Testing
