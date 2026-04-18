@@ -44,11 +44,4 @@ public class UserController {
         return  this.authService.resetPassword(body, userId);
     }
 
-    @PostMapping("/register")
-    public ApiResponseDto<RegisterResponseDto> register(
-            @Valid @RequestBody RegisterDto body,
-            HttpServletResponse response
-    ){
-        return this.authService.register(body);
-    }
 }

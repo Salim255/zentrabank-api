@@ -3,17 +3,13 @@ import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.common.utils.JwtCookieUtils;
 import com.zentrabank.bank_api.config.BankApiConfigProperties;
 import com.zentrabank.bank_api.config.JwtService;
-import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
-import com.zentrabank.bank_api.modules.user.entity.UserRole;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,6 +25,14 @@ public class AuthController {
     ){
         this.authService = authService;
         this.configProperties = configProperties;
+    }
+
+    @PostMapping("/register")
+    public ApiResponseDto<RegisterResponseDto> register(
+            @Valid @RequestBody RegisterDto body,
+            HttpServletResponse response
+    ){
+        return this.authService.register(body);
     }
 
     @PostMapping("/refresh-token")

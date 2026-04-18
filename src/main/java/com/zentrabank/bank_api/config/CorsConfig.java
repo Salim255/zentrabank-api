@@ -19,12 +19,22 @@ public class CorsConfig {
         // This object holds all CORS rules (who can call your API, how, etc.)
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allowed origin (IMPORTANT)
-        // This defines which frontend is allowed to communicate with your backend.
-        // Here we allow Angular running on localhost:4200.
-        // In production, replace this with your real domain.
-        config.addAllowedOrigin("http://localhost:4200");
-        config.addAllowedOrigin("https://zentrabank.salimcode.site");
+        // Allowed origins
+        // IMPORTANT:
+        // We use addAllowedOriginPattern() instead of addAllowedOrigin() because
+        // Spring Security blocks addAllowedOrigin() when credentials are enabled.
+        // With credentials = true (required for cookies / JWT in cookies),
+        // the browser requires an exact, explicit origin match and Spring requires
+        // origin *patterns* instead of fixed origins.
+        // This ensures:
+        //   - Cookies (HttpOnly, Secure, SameSite) are sent correctly
+        //   - Angular's `withCredentials: true` works
+        //   - CORS preflight responses include the correct Access-Control-Allow-Origin
+        //   - No wildcard origins are allowed (more secure)
+        // In short: addAllowedOriginPattern() is the only correct method when
+        // using cookies or authenticated requests across domains.
+        config.addAllowedOriginPattern("http://localhost:4200");
+        config.addAllowedOriginPattern("https://zentrabank.salimcode.site");
 
         // Allow credentials (VERY IMPORTANT for JWT in cookies)
         // This allows the browser to send cookies (like JWT tokens) with requests.
