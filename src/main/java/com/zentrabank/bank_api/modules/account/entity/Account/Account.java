@@ -35,7 +35,7 @@ public class Account {
     private UUID id;
 
     // Unique human-readable account number (bank-wide unique)
-    @Column(nullable = false, unique = true, length = 20)
+    @Column(nullable = false, unique = true, length = 11)
     private String accountNumber;
 
     // Account balance stored as BigDecimal for precise monetary operations
@@ -78,8 +78,11 @@ public class Account {
     private String currency = "USD";
 
     // Optional IBAN for international transfers; unique to prevent duplicates
-    @Column(length = 34, unique = true)
+    @Column(length = 34, unique = true, nullable = false)
     private String iban;
+
+    @Column(length = 11, nullable = false)
+    private  String bic;
 
     // Flag to indicate if overdraft is allowed for this account (common in checking accounts)
     @Column(nullable = false)

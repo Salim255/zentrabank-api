@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImp implements AccountService {
+    private  final IbanBicGenerator ibanBicGenerator;
     private  final  EntityManager entityManager;
     private  final  AccountRepository accountRepository;
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
@@ -78,9 +79,17 @@ public class AccountServiceImp implements AccountService {
             // 2 Generate account number
             String accountNumber = accountNumberGenerator();
 
+            // 3 Generate account IBAN
+            String iban = this.ibanBicGenerator.generateFrenchIban(accountNumber, "re");
+
+            // 4 Generate account BIC
+            String bic = this.ibanBicGenerator.getBic();
+
             // 2 Built account
             Account newAccount = new Account();
             newAccount.setType(payload.accountType());
+            newAccount.setIban(iban);
+            newAccount.setBic(bic);
             newAccount.setUser(userRef);
             newAccount.setAccountNumber(accountNumber);
 
