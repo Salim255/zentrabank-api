@@ -4,14 +4,21 @@ import com.zentrabank.bank_api.modules.account.entity.Account.AccountStatus;
 import com.zentrabank.bank_api.modules.account.entity.Account.AccountType;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 public record AccountDto(
         UUID id,
-        String  accountNumber,
+        String accountNumber,
         BigDecimal balance,
-        AccountType accountType,
-        AccountStatus accountStatus,
+        AccountType type,
+        AccountStatus status,
         String currency,
-        BigDecimal overdraftLimit
+        String iban,
+        String bic,
+        boolean overdraftEnabled,
+        BigDecimal overdraftLimit,
+        Instant createdAt,
+        Instant updatedAt,
+        UUID userId
 ) { }

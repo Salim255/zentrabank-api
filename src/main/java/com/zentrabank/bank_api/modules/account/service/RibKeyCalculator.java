@@ -1,5 +1,9 @@
 package com.zentrabank.bank_api.modules.account.service;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+@Service
 public class RibKeyCalculator {
     public String computeRibKey(String bankCode, String branchCode, String accountNumber) {
 

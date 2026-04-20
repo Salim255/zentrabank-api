@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.account.service;
 
+import com.zentrabank.bank_api.common.constants.BankConstants;
 import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.account.dto.AccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
@@ -20,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImp implements AccountService {
+    private final RibKeyCalculator ribKeyCalculator;
     private  final IbanBicGenerator ibanBicGenerator;
     private  final  EntityManager entityManager;
     private  final  AccountRepository accountRepository;
@@ -79,8 +81,15 @@ public class AccountServiceImp implements AccountService {
             // 2 Generate account number
             String accountNumber = accountNumberGenerator();
 
+            // 3 Generate  rib key
+            String nationalCheck = this.ribKeyCalculator.computeRibKey(
+                    BankConstants.BANK_CODE,
+                    BankConstants.BRANCH_CODE,
+                    accountNumber
+            );
+
             // 3 Generate account IBAN
-            String iban = this.ibanBicGenerator.generateFrenchIban(accountNumber, "re");
+            String iban = this.ibanBicGenerator.generateFrenchIban(accountNumber, nationalCheck);
 
             // 4 Generate account BIC
             String bic = this.ibanBicGenerator.getBic();

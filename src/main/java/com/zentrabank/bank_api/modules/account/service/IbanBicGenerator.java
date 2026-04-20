@@ -1,10 +1,12 @@
 package com.zentrabank.bank_api.modules.account.service;
 
 import com.zentrabank.bank_api.common.constants.BankConstants;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+@Service
 public class IbanBicGenerator {
     // SecureRandom is cryptographically strong → required for banking identifiers
     private static final SecureRandom random = new SecureRandom();
