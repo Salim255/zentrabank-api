@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.profile.controller;
 
+import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.modules.profile.dto.CreateProfileDto;
 import com.zentrabank.bank_api.modules.profile.dto.ProfileDto;
 import com.zentrabank.bank_api.modules.profile.service.ProfileService;
@@ -35,7 +36,7 @@ public class ProfileController {
                             description = "Profile created successfully",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ProfileDto.class)
+                                    schema = @Schema(implementation = ApiResponseDto.class)
                             )
                     ),
                     @ApiResponse(
@@ -45,11 +46,10 @@ public class ProfileController {
                     )
             }
     )
-    public ResponseEntity<ProfileDto> createProfile(
+    public ApiResponseDto<ProfileDto> createProfile(
             @Valid @RequestBody CreateProfileDto dto
     ) {
-        ProfileDto created = profileService.createProfile(dto);
-        return ResponseEntity.status(201).body(created);
+        return profileService.createProfile(dto);
     }
 
     // ---------------------------------------------------------
@@ -75,44 +75,9 @@ public class ProfileController {
                     )
             }
     )
-    public ResponseEntity<ProfileDto> getProfile(
+    public ApiResponseDto<ProfileDto> getProfile(
             @PathVariable UUID id
     ) {
-        return ResponseEntity.ok(profileService.getProfile(id));
-    }
-
-    // ---------------------------------------------------------
-    // UPDATE PROFILE
-    // ---------------------------------------------------------
-    @PutMapping("/{id}")
-    @Operation(
-            summary = "Update an existing profile",
-            description = "Updates customer profile information.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Profile updated successfully",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ProfileDto.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid input data",
-                            content = @Content(mediaType = "application/json")
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Profile not found",
-                            content = @Content(mediaType = "application/json")
-                    )
-            }
-    )
-    public ResponseEntity<ProfileDto> updateProfile(
-            @PathVariable UUID id,
-            @Valid @RequestBody CreateProfileDto dto
-    ) {
-        return ResponseEntity.ok(profileService.updateProfile(id, dto));
+        return profileService.getProfile(id);
     }
 }
