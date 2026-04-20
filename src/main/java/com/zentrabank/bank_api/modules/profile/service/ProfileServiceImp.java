@@ -11,14 +11,17 @@ import com.zentrabank.bank_api.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@Service
 public class ProfileServiceImp implements ProfileService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
     private final ProfileValidator profileValidator;
+    private  final ProfileMapper profileMapper;
 
     private final Logger logger = LoggerFactory.getLogger(ProfileServiceImp.class);
     public ApiResponseDto<ProfileDto> createProfile(CreateProfileDto payload, UUID userId){
@@ -49,9 +52,11 @@ public class ProfileServiceImp implements ProfileService {
         }
     }
 
-    public ApiResponseDto<ProfileDto>  getProfile(UUID profileId){
+    public ApiResponseDto<ProfileDto> getProfile(UUID profileId){
             try {
-
+                Profile profile = this.profileRepository.getReferenceById(profileId);
+                ProfileDto response =  this.profileMapper.toDto(profile);
+                return ApiResponseDto.success(response);
             } catch (Exception e) {
                 this.logger.error(("Error in get profile"));
                 throw e;

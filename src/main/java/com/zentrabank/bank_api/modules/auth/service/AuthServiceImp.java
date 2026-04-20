@@ -156,7 +156,7 @@ public class AuthServiceImp implements AuthService {
 
             // 6 Build RegisterDto
             RegisterResponseDto response = new RegisterResponseDto(
-                   new UserDto( user.getId(),
+                   new UserDto(user.getId(),
                        user.getEmail(),
                        user.getRole(),
                        user.getLoginId(),

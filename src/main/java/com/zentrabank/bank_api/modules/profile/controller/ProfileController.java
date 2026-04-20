@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,9 +48,11 @@ public class ProfileController {
             }
     )
     public ApiResponseDto<ProfileDto> createProfile(
-            @Valid @RequestBody CreateProfileDto dto
+            @Valid @RequestBody CreateProfileDto dto,
+            Authentication auth
     ) {
-        return profileService.createProfile(dto);
+        UUID userId = (UUID) auth.getPrincipal();
+        return profileService.createProfile(dto, userId);
     }
 
     // ---------------------------------------------------------
