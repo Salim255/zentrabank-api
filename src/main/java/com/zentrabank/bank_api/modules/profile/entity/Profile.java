@@ -1,10 +1,7 @@
 package com.zentrabank.bank_api.modules.profile.entity;
 
 import com.zentrabank.bank_api.modules.user.entity.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
@@ -19,6 +16,8 @@ public class Profile {
     private String zipCode;
     private String phoneNumber;
     private String phoneType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private String employmentStatus;
     @OneToOne(
             fetch = FetchType.LAZY,
