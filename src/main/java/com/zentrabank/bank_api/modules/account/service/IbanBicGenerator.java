@@ -41,4 +41,24 @@ public class IbanBicGenerator {
     // ------------------------------------------------------------
     // GENERATE BIC (SWIFT)
     // ------------------------------------------------------------
+    public String generateBic(){
+        // Bank code: 4 letters
+        // Why? SWIFT standard requires 4-letter bank identifier.
+        String bankCode = randomLetters(4);
+
+        // Country code: FR (France)
+        // Why? Your bank is French → BIC must reflect country.
+        String countryCode = "FR";
+
+        // Location code: 2 alphanumeric characters
+        // Why? Identifies region or city.
+        String locationCode = randomLettersOrDigits(2);
+
+        // Branch code: XXX (default)
+        // Why? XXX = primary office. Optional but recommended.
+        String branchCode = "XXX";
+
+        // Final BIC = AAAA BB CC DDD
+        return bankCode + countryCode + locationCode + branchCode;
+    }
 }
