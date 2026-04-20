@@ -69,16 +69,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * Spring Data JPA automatically generates:
      * SELECT COUNT(*) > 0 FROM users WHERE login_id = ?
      */
-    boolean existsByLoginId(String loginId);
+    boolean existsByUserName(String loginId);
 
-    /**
-     * Find a user by loginId.
-     * Used during authentication (login).
-     *
-     * Spring Data JPA generates:
-     * SELECT * FROM users WHERE login_id = ?
-     */
-    Optional<User> findByLoginId(String loginId);
+
 
     /**
      * Check if an email is already used.
@@ -90,7 +83,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * Find a user by email.
      * Useful for password reset flows, notifications, etc.
      */
-    Optional<User> findByEmail(String email);
+    Optional<User> findByUserName(String userName);
 
     Optional<User> findById(UUID id);
 }

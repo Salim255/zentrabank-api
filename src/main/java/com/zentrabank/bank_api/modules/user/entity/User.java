@@ -52,8 +52,9 @@ public class User {
     @Column(nullable = false)
     private UserRole role = UserRole.CUSTOMER;
 
-    @Column(nullable = false, unique = true, length = 9)
-    private String loginId;
+    // Unique username chosen by the user (used for login)
+    @Column(nullable = false, unique = true, length = 30)
+    private String userName;
 
     @Column(nullable = false)
     private boolean firstLogin = true;

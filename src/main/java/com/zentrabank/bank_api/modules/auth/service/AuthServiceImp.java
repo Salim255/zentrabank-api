@@ -54,13 +54,13 @@ public class AuthServiceImp implements AuthService {
             if (!superAdminExists){
                 String email = this.config.superAdminEmail();
                 String password = this.config.superAdminPassword();
-                String firstName = this.config.superAdminFirstName();
+                String userName = this.config.superAdminUserName();
 
                 User superAdmin = User.builder()
                         .email(email)
-                        .loginId(firstName)
                         .passwordHash(passwordEncoder.encode(password))
                         .role(UserRole.SUPER_ADMIN)
+                        .userName(userName)
                         .build();
 
                 this.userRepository.save(superAdmin);
@@ -136,20 +136,16 @@ public class AuthServiceImp implements AuthService {
             // 1 Validate user input;
             this.authValidator.registerValidate(payload);
             // 2 Generated temp password
-            String tmpPassword = this.generateTempPassword();
 
             // 3 Hash password
-            String hashed = this.passwordEncoder.encode(tmpPassword);
+            String hashed = this.passwordEncoder.encode(payload.userName());
 
-            // 4 Generate user loginId
-            String userLoginId = this.generateUniqueLoginId();
 
             // 5 Create User class
             User createdUser = new User();
             createdUser.setEmail(payload.email());
             createdUser.setPasswordHash(hashed);
-            createdUser.setLoginId(userLoginId);
-
+            createdUser.setUserName(payload.userName());
 
             // 5 Save the
             User user = this.userRepository.save(createdUser);
@@ -159,8 +155,7 @@ public class AuthServiceImp implements AuthService {
                    new UserDto(user.getId(),
                        user.getEmail(),
                        user.getRole(),
-                       user.getLoginId(),
-                       tmpPassword,
+                       user.getUserName(),
                        user.getCreatedAt(),
                        user.getUpdatedAt()
                    )
@@ -212,14 +207,6 @@ public class AuthServiceImp implements AuthService {
             // Unknown constraint → let GlobalExceptionHandler handle it
             throw ex;
         }
-    }
-
-    private String generateUniqueLoginId() {
-        String id;
-        do {
-            id = generate9DigitNumber();
-        } while (userRepository.existsByLoginId(id));
-        return id;
     }
 
     private String generate9DigitNumber() {

@@ -9,8 +9,7 @@ public record UserDto(
         UUID id,
         String email,
         UserRole role,
-        String loginId,
-        String tmpPassword,
+        String userName,
         Instant createdAt,
         Instant updatedAt
 ) { }

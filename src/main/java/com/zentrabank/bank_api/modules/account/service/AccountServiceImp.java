@@ -142,32 +142,15 @@ public class AccountServiceImp implements AccountService {
         return  "";
     }
 
-    /**
-     * Generates a unique 11-digit account number.
-     *
-     * Why 11 digits?
-     *  - French BBAN format requires the account number to be exactly 11 characters.
-     *  - This is used to compute the RIB key and IBAN.
-     *
-     * How it works:
-     *  1. Generate a random 11-digit number (10000000000 → 99999999999)
-     *  2. Convert it to String
-     *  3. Check database to ensure uniqueness
-     *  4. Repeat only if a collision happens (extremely rare)
-     */
-    private String accountNumberGenerator() {
-
+    private String accountNumberGenerator(){
         String accountNumber;
-
         do {
+            // Generate 9-digit number (100000000 → 999999999)
             // Generate a random 11-digit number.
             // ThreadLocalRandom is preferred for high-performance concurrent apps.
             long number = ThreadLocalRandom.current()
                     .nextLong(10_000_000_000L, 100_000_000_000L);
-
-            // Convert to String (preserves leading zeros if needed)
             accountNumber = String.valueOf(number);
-
         } while (this.accountRepository.existsByAccountNumber(accountNumber));
 
         return accountNumber;

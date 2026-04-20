@@ -57,21 +57,17 @@ public class AuthValidator {
     public User loginValidate(LoginDto payload){
         try{
 
-            String email = payload.email();
+            String userName = payload.userName();
             String password = payload.password();
-            boolean isEmailInvalid = email == null || email.isBlank();
+            boolean isUserNameInvalid = userName == null || userName.isBlank();
             boolean isPasswordInvalid = password == null || password.isBlank();
 
-            if (isEmailInvalid || isPasswordInvalid){
+            if (isUserNameInvalid || isPasswordInvalid){
                 throw new UnauthorizedException("Invalid login credentials");
             }
 
-            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                throw new InvalidEmailException("Email format is invalid");
-            }
-
-            User user = this.userRepository.findByEmail(payload.email())
-                    .orElseThrow(() -> new NotFoundException("User with this email does not exist"));
+            User user = this.userRepository.findByUserName(userName)
+                    .orElseThrow(() -> new NotFoundException("User with this userName does not exist"));
 
             // Validate password
             this.comparePassword(payload.password(), user.getPasswordHash());
