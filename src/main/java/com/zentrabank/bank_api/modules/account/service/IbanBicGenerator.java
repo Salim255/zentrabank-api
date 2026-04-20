@@ -33,7 +33,7 @@ public class IbanBicGenerator {
 
         // Compute IBAN check digits using MOD-97 algorithm
         // Why? Required by ISO 13616. Without this, IBAN is invalid.
-        String checkDigits = computeIbanCheckDigits("FR", bban);
+        String checkDigits = computeIbanCheckDigits(bban);
 
         // Final IBAN = CountryCode + CheckDigits + BBAN
         return "FR" + checkDigits + bban;
@@ -45,7 +45,7 @@ public class IbanBicGenerator {
     public String generateBic(){
         // Bank code: 4 letters
         // Why? SWIFT standard requires 4-letter bank identifier.
-        String bankCode = randomLetters(4);
+        String bankCode = randomLetters();
 
         // Country code: FR (France)
         // Why? Your bank is French → BIC must reflect country.
@@ -53,7 +53,7 @@ public class IbanBicGenerator {
 
         // Location code: 2 alphanumeric characters
         // Why? Identifies region or city.
-        String locationCode = randomLettersOrDigits(2);
+        String locationCode = randomLettersOrDigits();
 
         // Branch code: XXX (default)
         // Why? XXX = primary office. Optional but recommended.
@@ -66,10 +66,10 @@ public class IbanBicGenerator {
     // ------------------------------------------------------------
     // IBAN CHECK DIGIT CALCULATION (MOD-97)
     // ------------------------------------------------------------
-    private String computeIbanCheckDigits(String countryCode, String bban){
+    private String computeIbanCheckDigits(String bban){
         // Rearrange: BBAN + CountryCode + "00"
         // Why? ISO 13616 requires moving country code to end with "00" placeholder.
-        String rearranged = bban + countryCode + "00";
+        String rearranged = bban + "FR" + "00";
 
         // Convert letters to numbers: A=10, B=11, ..., Z=35
         // Why? MOD-97 works only on numeric strings.
@@ -116,12 +116,12 @@ public class IbanBicGenerator {
     // ------------------------------------------------------------
     // HELPER: RANDOM LETTERS
     // ------------------------------------------------------------
-    private String randomLetters(int length) {
+    private String randomLetters() {
         // Generates uppercase letters A–Z
         // Why? BIC bank code must be letters only.
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < 4; i++) {
             sb.append(alphabet.charAt(random.nextInt(alphabet.length())));
         }
         return sb.toString();
@@ -130,11 +130,11 @@ public class IbanBicGenerator {
     // ------------------------------------------------------------
     // HELPER: RANDOM LETTERS OR DIGITS
     // ------------------------------------------------------------
-    private String randomLettersOrDigits(int length) {
+    private String randomLettersOrDigits() {
         // Used for BIC location code (letters or digits allowed)
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < 2; i++) {
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
         return sb.toString();
