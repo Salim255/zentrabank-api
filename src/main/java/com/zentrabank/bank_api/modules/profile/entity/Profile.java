@@ -2,7 +2,6 @@ package com.zentrabank.bank_api.modules.profile.entity;
 
 import com.zentrabank.bank_api.modules.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.Instant;
@@ -22,70 +21,47 @@ public class Profile {
     @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
-    // ---------- PERSONAL INFO ----------
-
-    @NotNull(message = "Title is required")
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
     private PersonTitle title;
 
-    @NotBlank(message = "First name is required")
-    @Size(max = 50)
+    @Column(nullable = false, length = 100)
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
-    @Size(max = 50)
+    @Column(nullable = false, length = 100)
     private String lastName;
 
-    // ---------- ADDRESS ----------
-
-    @NotBlank(message = "Address line is required")
-    @Size(max = 120)
+    @Column(nullable = false, length = 150)
     private String addressLine;
 
-    @NotBlank(message = "City is required")
-    @Size(max = 80)
+    @Column(nullable = false, length = 100)
     private String city;
 
-    @NotBlank(message = "Country is required")
-    @Size(max = 80)
+    @Column(nullable = false, length = 100)
     private String country;
 
-    @NotBlank(message = "Zip code is required")
-    @Size(max = 20)
+    @Column(nullable = false, length = 20)
     private String zipCode;
 
-    // ---------- PHONE ----------
-
-    @NotBlank(message = "Phone number is required")
-    @Pattern(
-            regexp = "^[0-9+()\\-\\s]{6,20}$",
-            message = "Invalid phone number format"
-    )
+    @Column(nullable = false, length = 30)
     private String phoneNumber;
 
-    @NotBlank(message = "Phone type is required")
-    @Size(max = 20)
+    @Column(nullable = false, length = 20)
     private String phoneType;
 
-    // ---------- EMPLOYMENT ----------
-
-    @NotNull(message = "Employment status is required")
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private EmploymentStatus employmentStatus;
 
-    // ---------- RELATIONSHIP ----------
-
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    // ---------- TIMESTAMPS ----------
-
     @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
+    private Instant createdAt;
 
     @Column(nullable = false)
-    private Instant updatedAt = Instant.now();
+    private Instant updatedAt;
 
     @PrePersist
     protected void onCreate() {

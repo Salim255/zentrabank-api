@@ -45,12 +45,6 @@ public class User {
     @Column(nullable = false)
     private String passwordHash; // BCrypt hashed password
 
-    @Column(nullable = false, length = 100)
-    private String firstName;
-
-    @Column(nullable = false, length = 100)
-    private String lastName;
-
     @Column(nullable = false)
     private boolean emailVerified = false;
 
