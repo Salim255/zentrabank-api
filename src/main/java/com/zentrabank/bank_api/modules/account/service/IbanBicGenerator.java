@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.account.service;
 
+import java.math.BigInteger;
 import java.security.SecureRandom;
 
 public class IbanBicGenerator {
@@ -60,5 +61,42 @@ public class IbanBicGenerator {
 
         // Final BIC = AAAA BB CC DDD
         return bankCode + countryCode + locationCode + branchCode;
+    }
+
+    // ------------------------------------------------------------
+    // IBAN CHECK DIGIT CALCULATION (MOD-97)
+    // ------------------------------------------------------------
+    private String computeIbanCheckDigits(String countryCode, String bban){
+        // Rearrange: BBAN + CountryCode + "00"
+        // Why? ISO 13616 requires moving country code to end with "00" placeholder.
+        String rearranged = bban + countryCode + "00";
+
+        // Convert letters to numbers: A=10, B=11, ..., Z=35
+        // Why? MOD-97 works only on numeric strings.
+        StringBuilder numeric = new StringBuilder();
+
+        for (char c : rearranged.toCharArray()) {
+            if (Character.isLetter(c)) {
+                // Convert letter to number by subtracting 55 (A=65 ASCII → 65-55=10)
+                numeric.append((int) c - 55);
+            } else {
+                // Keep digits as-is
+                numeric.append(c);
+            }
+        }
+
+        // Convert numeric string to BigInteger
+        // Why? IBAN numbers exceed long range → BigInteger required.
+        BigInteger num = new BigInteger(numeric.toString());
+
+        // Compute MOD-97
+        // Why? IBAN checksum = 98 - (numeric % 97)
+        int mod97 = num.mod(BigInteger.valueOf(97)).intValue();
+
+        // Final check digits
+        int checkDigits = 98 - mod97;
+
+        // Always 2 digits (pad with zero if needed)
+        return String.format("%02d", checkDigits);
     }
 }
