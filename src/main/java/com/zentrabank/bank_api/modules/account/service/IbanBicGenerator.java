@@ -112,4 +112,18 @@ public class IbanBicGenerator {
         }
         return sb.toString();
     }
+
+    // ------------------------------------------------------------
+    // HELPER: RANDOM LETTERS
+    // ------------------------------------------------------------
+    private String randomLetters(int length) {
+        // Generates uppercase letters A–Z
+        // Why? BIC bank code must be letters only.
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(alphabet.charAt(random.nextInt(alphabet.length())));
+        }
+        return sb.toString();
+    }
 }
