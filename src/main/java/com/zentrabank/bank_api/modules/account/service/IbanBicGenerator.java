@@ -99,4 +99,17 @@ public class IbanBicGenerator {
         // Always 2 digits (pad with zero if needed)
         return String.format("%02d", checkDigits);
     }
+
+    // ------------------------------------------------------------
+    // HELPER: RANDOM DIGITS
+    // ------------------------------------------------------------
+    private String randomDigits(int length) {
+        // Generates a numeric string of given length
+        // Why? Used for bank code, branch code, account number, etc.
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            sb.append(random.nextInt(10)); // 0–9
+        }
+        return sb.toString();
+    }
 }
