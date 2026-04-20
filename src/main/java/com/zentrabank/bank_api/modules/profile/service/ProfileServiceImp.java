@@ -2,6 +2,7 @@ package com.zentrabank.bank_api.modules.profile.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.modules.profile.dto.CreateProfileDto;
+import com.zentrabank.bank_api.modules.profile.dto.CreateProfileResponseDto;
 import com.zentrabank.bank_api.modules.profile.dto.ProfileDto;
 import com.zentrabank.bank_api.modules.profile.entity.Profile;
 import com.zentrabank.bank_api.modules.profile.repository.ProfileRepository;
@@ -24,7 +25,10 @@ public class ProfileServiceImp implements ProfileService {
     private  final ProfileMapper profileMapper;
 
     private final Logger logger = LoggerFactory.getLogger(ProfileServiceImp.class);
-    public ApiResponseDto<ProfileDto> createProfile(CreateProfileDto payload, UUID userId){
+    public ApiResponseDto<CreateProfileResponseDto> createProfile(
+            CreateProfileDto payload,
+            UUID userId
+    ){
         try {
             // 1. Validate input
             this.profileValidator
@@ -45,7 +49,7 @@ public class ProfileServiceImp implements ProfileService {
             ProfileDto response = this.profileMapper.toDto(saved);
 
             // 6. Wrap in ApiResponseDto
-            return ApiResponseDto.success(response);
+            return ApiResponseDto.success(new CreateProfileResponseDto(response));
         } catch (Exception error){
             this.logger.error("Error to create profile", error);
             throw  error;

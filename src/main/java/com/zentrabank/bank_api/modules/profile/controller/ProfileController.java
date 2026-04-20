@@ -2,6 +2,7 @@ package com.zentrabank.bank_api.modules.profile.controller;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.modules.profile.dto.CreateProfileDto;
+import com.zentrabank.bank_api.modules.profile.dto.CreateProfileResponseDto;
 import com.zentrabank.bank_api.modules.profile.dto.ProfileDto;
 import com.zentrabank.bank_api.modules.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +48,7 @@ public class ProfileController {
                     )
             }
     )
-    public ApiResponseDto<ProfileDto> createProfile(
+    public ApiResponseDto<CreateProfileResponseDto> createProfile(
             @Valid @RequestBody CreateProfileDto dto,
             Authentication auth
     ) {
