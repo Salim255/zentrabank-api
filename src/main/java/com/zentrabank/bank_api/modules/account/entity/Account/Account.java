@@ -1,12 +1,9 @@
 package com.zentrabank.bank_api.modules.account.entity.Account;
-
 import com.zentrabank.bank_api.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
