@@ -113,6 +113,5 @@ public class Account {
     public void preUpdate() {
         this.updatedAt = Instant.now();
     }
-
     // Getters & Setters omitted for brevity; can use Lombok to reduce boilerplate
 }

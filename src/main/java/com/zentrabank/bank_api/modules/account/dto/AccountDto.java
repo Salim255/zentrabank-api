@@ -19,6 +19,5 @@ public record AccountDto(
         boolean overdraftEnabled,
         BigDecimal overdraftLimit,
         Instant createdAt,
-        Instant updatedAt,
-        UUID userId
+        Instant updatedAt
 ) { }
