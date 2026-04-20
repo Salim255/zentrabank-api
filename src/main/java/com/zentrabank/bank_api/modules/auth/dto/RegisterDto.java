@@ -15,14 +15,6 @@ public record RegisterDto(
         @Email(message = "Email must be valid")
         String email,
 
-        @Schema(example = "John")
-        @NotBlank(message = "First name is required")
-        String firstName,
-
-        @Schema(example = "Doe")
-        @NotBlank(message = "Last name is required")
-        String lastName,
-
         @Schema(example = "StrongPassword123!")
         @NotBlank(message = "Password is required")
         @Size(min = 8, message = "Password must be at least 8 characters long")

@@ -55,14 +55,11 @@ public class AuthServiceImp implements AuthService {
                 String email = this.config.superAdminEmail();
                 String password = this.config.superAdminPassword();
                 String firstName = this.config.superAdminFirstName();
-                String lastName = this.config.superAdminLastName();
 
                 User superAdmin = User.builder()
                         .email(email)
                         .loginId(firstName)
                         .passwordHash(passwordEncoder.encode(password))
-                        .firstName(firstName)
-                        .lastName(lastName)
                         .role(UserRole.SUPER_ADMIN)
                         .build();
 
@@ -150,8 +147,6 @@ public class AuthServiceImp implements AuthService {
             // 5 Create User class
             User createdUser = new User();
             createdUser.setEmail(payload.email());
-            createdUser.setFirstName(payload.firstName());
-            createdUser.setLastName(payload.lastName());
             createdUser.setPasswordHash(hashed);
             createdUser.setLoginId(userLoginId);
 
@@ -163,8 +158,6 @@ public class AuthServiceImp implements AuthService {
             RegisterResponseDto response = new RegisterResponseDto(
                    new UserDto( user.getId(),
                        user.getEmail(),
-                       user.getFirstName(),
-                       user.getLastName(),
                        user.getRole(),
                        user.getLoginId(),
                        tmpPassword,
@@ -208,8 +201,6 @@ public class AuthServiceImp implements AuthService {
                     new LoggedUserDto(
                             user.getId().toString(),
                             user.getEmail(),
-                            user.getFirstName(),
-                            user.getLastName(),
                             user.isFirstLogin(),
                             user.getRole()
                     ),

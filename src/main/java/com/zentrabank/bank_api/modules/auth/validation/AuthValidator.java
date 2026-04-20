@@ -29,15 +29,13 @@ public class AuthValidator {
 
     public void registerValidate(RegisterDto payload) {
       try {
-          String firstName = payload.firstName();
-          String lastName = payload.lastName();
+
           String email = payload.email();
 
           boolean isInValidEmail = email == null || email.isBlank();
-          boolean isInValidFirstName = firstName == null || firstName.isBlank();
-          boolean isInvalidLastName = lastName == null || lastName.isBlank();
 
-          if (isInValidFirstName || isInvalidLastName || isInValidEmail) {
+
+          if (isInValidEmail) {
               throw new BadRequestException("Invalid field in register user");
           }
 
