@@ -1,4 +1,59 @@
 package com.zentrabank.bank_api.modules.application.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+
 public class ApplicationController {
+    private final ApplicationService applicationService;
+
+    public ApplicationController(ApplicationService applicationService) {
+        this.applicationService = applicationService;
+    }
+
+    @Operation(
+            summary = "Create a new application",
+            description = """
+            Creates a new bank account application based on the provided customer information,
+            account preferences, and regulatory declarations.
+            """,
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Application successfully created.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ApplicationSubmitResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid request payload.",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Unexpected server error.",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
+    @PostMapping
+    public ResponseEntity<ApplicationSubmitResponse> createApplication(
+            @Parameter(
+                    description = "Application details including personal information, account type, " +
+                            "source of wealth and electronic signature.",
+                    required = true
+            )
+            @Valid @RequestBody ApplicationSubmitRequest request
+    ) {
+        ApplicationSubmitResponse response = applicationService.createApplication(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 }
