@@ -1,3 +1,3 @@
 package com.zentrabank.bank_api.modules.auth.dto;
 
-public record RegisterResponseDto(UserDto user) { }
+public record RegisterResponseDto(UserDto user, TokenDto tokens) { }

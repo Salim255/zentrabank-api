@@ -32,6 +32,23 @@ public class AuthController {
             @Valid @RequestBody RegisterDto body,
             HttpServletResponse response
     ){
+        ApiResponseDto<RegisterResponseDto> responseDto = this.authService.register(body);
+        Cookie accessToeknCookie = JwtCookieUtils
+                .createJwtCookie(
+                        responseDto.data().tokens().accessToken(),
+                        false,
+                        24*60*60,
+                        configProperties.accessJwtName()
+                );
+        Cookie refreshTokenCookie = JwtCookieUtils
+                .createJwtCookie(
+                        responseDto.data().tokens().refreshToken(),
+                        false,
+                        24*60*60,
+                        configProperties.refreshJwtName()
+                );
+        response.addCookie(accessToeknCookie);
+        response.addCookie(refreshTokenCookie);
         return this.authService.register(body);
     }
 

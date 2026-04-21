@@ -13,6 +13,7 @@ public class ProfileMapper {
                 .title(dto.title())
                 .firstName(dto.firstName())
                 .lastName(dto.lastName())
+                .dateOfBirth(dto.dateOfBirth())
                 .addressLine(dto.addressLine())
                 .city(dto.city())
                 .country(dto.country())

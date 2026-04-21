@@ -149,7 +149,19 @@ public class AuthServiceImp implements AuthService {
             // 5 Save the
             User user = this.userRepository.save(createdUser);
 
-            // 6 Build RegisterDto
+            // 6 Create tokens
+            String accessToken = this.jwtService.generateAccessToken(String.valueOf(user.getId()), user.getRole());
+            String refreshToken = this.jwtService.generateRefreshToken(String.valueOf(user.getId()), user.getRole());
+
+            // 7 Create refresh token in DB
+            CreateTokenDto tokenPayload = new CreateTokenDto(
+                    user.getId(),
+                    refreshToken,
+                    this.jwtService.fromNow(config.refreshTokenExpiration()).toInstant()
+            );
+            this.refreshTokenServiceImp.createRefreshToken(tokenPayload);
+
+            // 8 Build RegisterDto
             RegisterResponseDto response = new RegisterResponseDto(
                    new UserDto(user.getId(),
                        user.getEmail(),
@@ -157,9 +169,9 @@ public class AuthServiceImp implements AuthService {
                        user.getUserName(),
                        user.getCreatedAt(),
                        user.getUpdatedAt()
-                   )
+                   ),
+                    new TokenDto(accessToken, refreshToken)
             );
-
 
             // 7 Return data
             return  ApiResponseDto.success(response);
