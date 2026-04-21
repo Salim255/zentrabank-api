@@ -24,8 +24,8 @@ public class ProfileServiceImp implements ProfileService {
     private final ProfileRepository profileRepository;
     private final ProfileValidator profileValidator;
     private  final ProfileMapper profileMapper;
-
     private final Logger logger = LoggerFactory.getLogger(ProfileServiceImp.class);
+
     public ApiResponseDto<CreateProfileResponseDto> createProfile(
             CreateProfileDto payload,
             UUID userId

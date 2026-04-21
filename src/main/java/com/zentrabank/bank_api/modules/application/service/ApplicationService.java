@@ -1,5 +1,8 @@
 package com.zentrabank.bank_api.modules.application.service;
 
+import com.zentrabank.bank_api.modules.application.dto.ApplicationResponseDto;
+import com.zentrabank.bank_api.modules.application.dto.CreateApplicationDto;
+
 public interface ApplicationService {
-    public String createApplication(String userId);
+    public ApplicationResponseDto createApplication(CreateApplicationDto payload);
 }

@@ -1,6 +1,7 @@
 package com.zentrabank.bank_api.modules.application.controller;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.modules.application.dto.ApplicationResponseDto;
 import com.zentrabank.bank_api.modules.application.dto.CreateApplicationDto;
 import com.zentrabank.bank_api.modules.application.service.ApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,10 +10,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+@RequestMapping("/applications")
 public class ApplicationController {
     private final ApplicationService applicationService;
 
@@ -32,7 +38,7 @@ public class ApplicationController {
                             description = "Application successfully created.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ApplicationSubmitResponse.class)
+                                    schema = @Schema(implementation = ApiResponseDto.class)
                             )
                     ),
                     @ApiResponse(
@@ -52,7 +58,7 @@ public class ApplicationController {
             }
     )
     @PostMapping
-    public ApiResponseDto<ApplicationSubmitResponse> createApplication(
+    public ApiResponseDto<ApplicationResponseDto> createApplication(
             @Parameter(
                     description = "Application details including personal information, account type, " +
                             "source of wealth and electronic signature.",
@@ -61,6 +67,6 @@ public class ApplicationController {
             @Valid @RequestBody CreateApplicationDto request
     ) {
         ApiResponseDto response = applicationService.createApplication(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return response;
     }
 }

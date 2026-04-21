@@ -1,15 +1,21 @@
 package com.zentrabank.bank_api.modules.application.dto;
 
+import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
+import com.zentrabank.bank_api.modules.account.entity.Account.AccountType;
+import com.zentrabank.bank_api.modules.profile.dto.CreateProfileDto;
+import com.zentrabank.bank_api.modules.profile.entity.EmploymentStatus;
+import com.zentrabank.bank_api.modules.profile.entity.PersonTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record CreateApplicationDto(
     @Schema(description = "Customer title (e.g. Mr, Ms, Dr).", example = "Mr")
-    String title,
+    PersonTitle title,
 
     @NotBlank
     @Size(min = 2, max = 50)
@@ -29,6 +35,10 @@ public record CreateApplicationDto(
     String city,
 
     @NotBlank
+    @Schema(description = "Country of residence.", example = "France")
+    String country,
+
+    @NotBlank
     @Schema(description = "Postal code.", example = "75001")
     String zipCode,
 
@@ -44,10 +54,10 @@ public record CreateApplicationDto(
     String dob,
 
     @Schema(description = "Employment status.", example = "EMPLOYED")
-    String employment,
+    EmploymentStatus employmentStatus,
 
     @Schema(description = "Requested account type.", example = "CHECKING")
-    String accountType,
+    AccountType accountType,
 
     @NotEmpty
     @Schema(description = "Selected sources of wealth.", example = "[\"EMPLOYMENT_INCOME\",\"SAVINGS\"]")
@@ -57,5 +67,27 @@ public record CreateApplicationDto(
     @Schema(description = "Electronic signature (full legal name).", example = "John Doe")
     String signature
 
-    // getters/setters
-) {}
+        // getters/setters
+) {
+    public CreateProfileDto toProfileDto() {
+        return new CreateProfileDto(
+                title,
+                firstName,
+                lastName,
+                LocalDate.parse(dob),
+                addressLine,
+                city,
+                country,
+                zipCode,
+                phoneNumber,
+                phoneType,
+                employmentStatus
+        );
+    }
+
+    public CreateAccountDto toAccountDto(Long profileId) {
+        return new CreateAccountDto(
+                accountType
+        );
+    }
+}

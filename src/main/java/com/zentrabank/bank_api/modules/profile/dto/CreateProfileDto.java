@@ -3,10 +3,9 @@ package com.zentrabank.bank_api.modules.profile.dto;
 import com.zentrabank.bank_api.modules.profile.entity.EmploymentStatus;
 import com.zentrabank.bank_api.modules.profile.entity.PersonTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 public record CreateProfileDto(
         @Schema(description = "Customer title", example = "MR")
@@ -22,6 +21,16 @@ public record CreateProfileDto(
         @NotBlank(message = "Last name is required")
         @Size(max = 100, message = "Last name must be at most 100 characters")
         String lastName,
+
+        @Schema(
+                description = "Customer date of birth",
+                example = "1988-05-12",
+                type = "string",
+                format = "date"
+        )
+        @NotNull(message = "Date of birth is required")
+        @Past(message = "Date of birth must be in the past")
+        LocalDate dateOfBirth,
 
         @Schema(description = "Primary address line", example = "123 Main Street")
         @NotBlank(message = "Address line is required")
