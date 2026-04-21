@@ -4,6 +4,7 @@ import com.zentrabank.bank_api.modules.account.dto.CreateAccountResponseDto;
 import com.zentrabank.bank_api.modules.account.service.AccountService;
 import com.zentrabank.bank_api.modules.application.dto.ApplicationResponseDto;
 import com.zentrabank.bank_api.modules.application.dto.CreateApplicationDto;
+import com.zentrabank.bank_api.modules.application.validation.ApplicationValidator;
 import com.zentrabank.bank_api.modules.profile.dto.CreateProfileResponseDto;
 import com.zentrabank.bank_api.modules.profile.service.ProfileService;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class ApplicationServiceImp implements ApplicationService {
+    private final ApplicationValidator applicationValidator;
     private final AccountService accountService;
     private final ProfileService profileService;
     private final Logger logger = LoggerFactory.getLogger(ApplicationServiceImp.class);
@@ -24,6 +26,8 @@ public class ApplicationServiceImp implements ApplicationService {
     @Override
     public ApplicationResponseDto createApplication(CreateApplicationDto payload, UUID userId){
        try {
+           // Validate payload
+           applicationValidator.validate(payload);
            // 1. Create profile
            CreateProfileResponseDto profileDto = profileService.createProfile(payload.toProfileDto(), userId);
 
