@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -30,6 +31,9 @@ public class Profile {
 
     @Column(nullable = false, length = 100)
     private String lastName;
+
+    @Column(nullable = false)
+    private LocalDate dateOfBirth;
 
     @Column(nullable = false, length = 150)
     private String addressLine;
