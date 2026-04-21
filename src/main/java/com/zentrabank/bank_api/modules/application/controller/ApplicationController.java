@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.application.controller;
 
+import com.zentrabank.bank_api.modules.application.service.ApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
