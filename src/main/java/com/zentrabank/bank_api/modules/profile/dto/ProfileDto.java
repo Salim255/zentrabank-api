@@ -4,6 +4,7 @@ import com.zentrabank.bank_api.modules.profile.entity.EmploymentStatus;
 import com.zentrabank.bank_api.modules.profile.entity.PersonTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record ProfileDto(
@@ -18,6 +19,9 @@ public record ProfileDto(
 
         @Schema(description = "Customer last name", example = "Doe")
         String lastName,
+
+        @Schema(description = "Date of birth in ISO-8601 format.", example = "1988-05-12")
+        LocalDate dateOfBirth,
 
         @Schema(description = "Primary address line", example = "123 Main Street")
         String addressLine,

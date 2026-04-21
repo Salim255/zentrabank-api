@@ -71,7 +71,6 @@ public class ApplicationController {
             Authentication auth
     ) {
         UUID userId = (UUID) auth.getPrincipal();
-
         ApplicationResponseDto response = applicationService.createApplication(body, userId);
         return  ApiResponseDto.success(response);
     }

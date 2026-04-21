@@ -3,6 +3,7 @@ package com.zentrabank.bank_api.modules.user.repository;
 import com.zentrabank.bank_api.modules.user.entity.User;
 import com.zentrabank.bank_api.modules.user.entity.UserRole;
 import jakarta.transaction.Transactional;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -85,5 +86,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      */
     Optional<User> findByUserName(String userName);
 
+    /**NullMarked:
+    Makes parameters and return values non‑null by default
+    Is only for static analysis
+    Does not affect Spring, JPA, Hibernate, or runtime behavior
+    Removes the warning about overriding a null‑annotated method
+     */
+    @NullMarked
     Optional<User> findById(UUID id);
 }

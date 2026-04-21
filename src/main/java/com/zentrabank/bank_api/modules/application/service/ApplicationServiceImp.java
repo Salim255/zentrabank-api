@@ -28,6 +28,7 @@ public class ApplicationServiceImp implements ApplicationService {
        try {
            // Validate payload
            applicationValidator.validate(payload);
+
            // 1. Create profile
            CreateProfileResponseDto profileDto = profileService.createProfile(payload.toProfileDto(), userId);
 

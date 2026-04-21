@@ -29,6 +29,10 @@ public class ProfileValidator {
                 throw new BadRequestException("Profile payload cannot be null");
             }
 
+            if (userId == null) {
+                throw new BadRequestException("UserId cannot be null");
+            }
+
             // Validate user exists
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException("User not found"));

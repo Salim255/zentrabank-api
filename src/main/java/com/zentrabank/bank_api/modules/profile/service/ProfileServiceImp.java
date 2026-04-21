@@ -1,6 +1,7 @@
 package com.zentrabank.bank_api.modules.profile.service;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.profile.dto.CreateProfileDto;
 import com.zentrabank.bank_api.modules.profile.dto.CreateProfileResponseDto;
 import com.zentrabank.bank_api.modules.profile.dto.GetProfileResponseDto;
@@ -59,11 +60,13 @@ public class ProfileServiceImp implements ProfileService {
 
     public ApiResponseDto<GetProfileResponseDto> getProfile(UUID profileId){
             try {
-                Profile profile = this.profileRepository.getReferenceById(profileId);
+                Profile profile = this.profileRepository
+                        .findById(profileId)
+                        .orElseThrow(() -> new NotFoundException("Profile not found"));
                 ProfileDto response =  this.profileMapper.toDto(profile);
                 return ApiResponseDto.success(new GetProfileResponseDto(response));
             } catch (Exception e) {
-                this.logger.error(("Error in get profile"));
+                this.logger.error("Error in get profile 👹👹", e);
                 throw e;
             }
     }

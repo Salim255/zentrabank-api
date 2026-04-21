@@ -138,8 +138,7 @@ public class AuthServiceImp implements AuthService {
             // 2 Generated temp password
 
             // 3 Hash password
-            String hashed = this.passwordEncoder.encode(payload.userName());
-
+            String hashed = this.passwordEncoder.encode(payload.password());
 
             // 5 Create User class
             User createdUser = new User();
@@ -160,6 +159,7 @@ public class AuthServiceImp implements AuthService {
                        user.getUpdatedAt()
                    )
             );
+
 
             // 7 Return data
             return  ApiResponseDto.success(response);

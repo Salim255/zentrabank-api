@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 @Service
 public class AccountServiceImp implements AccountService {
+    private static final BigDecimal INITIAL_BALANCE = new BigDecimal("1000000.00");
     private final RibKeyCalculator ribKeyCalculator;
     private  final IbanBicGenerator ibanBicGenerator;
     private  final  EntityManager entityManager;
@@ -74,7 +75,6 @@ public class AccountServiceImp implements AccountService {
     @Override
     public CreateAccountResponseDto createAccount(CreateAccountDto payload, UUID userId) {
         try {
-
             // 1 Get user reference
             User userRef = this.entityManager.getReference(User.class, userId);
 
@@ -100,6 +100,7 @@ public class AccountServiceImp implements AccountService {
             newAccount.setIban(iban);
             newAccount.setBic(bic);
             newAccount.setUser(userRef);
+            newAccount.setBalance(INITIAL_BALANCE);
             newAccount.setAccountNumber(accountNumber);
 
             // 3 Create account

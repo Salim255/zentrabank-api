@@ -42,6 +42,7 @@ public class ProfileMapper {
                 profile.getTitle(),
                 profile.getFirstName(),
                 profile.getLastName(),
+                profile.getDateOfBirth(),
                 profile.getAddressLine(),
                 profile.getCity(),
                 profile.getCountry(),
