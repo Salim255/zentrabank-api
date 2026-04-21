@@ -1,11 +1,17 @@
 package com.zentrabank.bank_api.modules.application.controller;
 
+import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.modules.application.dto.CreateApplicationDto;
 import com.zentrabank.bank_api.modules.application.service.ApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public class ApplicationController {
     private final ApplicationService applicationService;
@@ -46,15 +52,15 @@ public class ApplicationController {
             }
     )
     @PostMapping
-    public ResponseEntity<ApplicationSubmitResponse> createApplication(
+    public ApiResponseDto<ApplicationSubmitResponse> createApplication(
             @Parameter(
                     description = "Application details including personal information, account type, " +
                             "source of wealth and electronic signature.",
                     required = true
             )
-            @Valid @RequestBody ApplicationSubmitRequest request
+            @Valid @RequestBody CreateApplicationDto request
     ) {
-        ApplicationSubmitResponse response = applicationService.createApplication(request);
+        ApiResponseDto response = applicationService.createApplication(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
