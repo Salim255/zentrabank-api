@@ -12,5 +12,7 @@ import java.util.UUID;
 public interface ProfileRepository extends JpaRepository<Profile, UUID> {
     @NullMarked
     Optional<Profile> findById(UUID profileId);
+
+    Optional<Profile> findByUserId(UUID userId);
 }
 

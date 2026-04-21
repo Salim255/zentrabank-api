@@ -47,17 +47,14 @@ public class ApplicationValidator {
     }
 
     private void validateDob(CreateApplicationDto payload) {
-        if (isBlank(payload.dob())) {
+        if (payload.dob() == null) {
             throw new BadRequestException("Date of birth is required");
         }
 
-        try {
-            LocalDate dob = LocalDate.parse(payload.dob());
-            if (!dob.isBefore(LocalDate.now())) {
-                throw new InvalidFieldException("Date of birth must be in the past");
-            }
-        } catch (Exception e) {
-            throw new InvalidFieldException("Date of birth must follow ISO format YYYY-MM-DD");
+        LocalDate dob = payload.dob();
+
+        if (!dob.isBefore(LocalDate.now())) {
+            throw new InvalidFieldException("Date of birth must be in the past");
         }
     }
 

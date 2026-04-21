@@ -27,6 +27,36 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
+
+    @GetMapping("/profile")
+    @Operation(
+            summary = "Get authenticated user's profile",
+            description = "Retrieves the profile associated with the authenticated user.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Profile retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ApiResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Profile not found",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
+    public ApiResponseDto<GetProfileResponseDto> getProfile(Authentication auth) {
+
+        UUID userId = (UUID) auth.getPrincipal();
+
+        ProfileDto profile = profileService.getProfileByUserId(userId);
+
+        return ApiResponseDto.success(new GetProfileResponseDto(profile));
+    }
+
     // ---------------------------------------------------------
     // CREATE PROFILE
     // ---------------------------------------------------------

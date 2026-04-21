@@ -50,8 +50,13 @@ public record CreateApplicationDto(
     @Schema(description = "Phone number in E.164 format.", example = "+33123456789")
     String phoneNumber,
 
-    @Schema(description = "Date of birth in ISO-8601 format.", example = "1988-05-12")
-    String dob,
+    @Schema(
+            description = "Date of birth in ISO-8601 format (YYYY-MM-DD)",
+            example = "1988-05-12",
+            type = "string",
+            format = "date"
+    )
+    LocalDate dob,
 
     @Schema(description = "Employment status.", example = "EMPLOYED")
     EmploymentStatus employmentStatus,
@@ -74,7 +79,7 @@ public record CreateApplicationDto(
                 title,
                 firstName,
                 lastName,
-                LocalDate.parse(dob),
+                dob,
                 addressLine,
                 city,
                 country,

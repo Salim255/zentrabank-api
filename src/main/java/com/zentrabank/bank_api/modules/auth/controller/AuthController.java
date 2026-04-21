@@ -49,7 +49,7 @@ public class AuthController {
                 );
         response.addCookie(accessToeknCookie);
         response.addCookie(refreshTokenCookie);
-        return this.authService.register(body);
+        return responseDto;
     }
 
     @PostMapping("/refresh-token")
