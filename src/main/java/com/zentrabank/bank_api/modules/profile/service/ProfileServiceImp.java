@@ -26,7 +26,7 @@ public class ProfileServiceImp implements ProfileService {
     private  final ProfileMapper profileMapper;
     private final Logger logger = LoggerFactory.getLogger(ProfileServiceImp.class);
 
-    public ApiResponseDto<CreateProfileResponseDto> createProfile(
+    public CreateProfileResponseDto createProfile(
             CreateProfileDto payload,
             UUID userId
     ){
@@ -50,7 +50,7 @@ public class ProfileServiceImp implements ProfileService {
             ProfileDto response = this.profileMapper.toDto(saved);
 
             // 6. Wrap in ApiResponseDto
-            return ApiResponseDto.success(new CreateProfileResponseDto(response));
+            return new CreateProfileResponseDto(response);
         } catch (Exception error){
             this.logger.error("Error to create profile", error);
             throw  error;

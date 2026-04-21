@@ -10,5 +10,5 @@ import java.util.UUID;
 
 public interface ProfileService {
     public ApiResponseDto<GetProfileResponseDto> getProfile(UUID profileId);
-    public ApiResponseDto<CreateProfileResponseDto> createProfile(CreateProfileDto payload, UUID userId);
+    public CreateProfileResponseDto createProfile(CreateProfileDto payload, UUID userId);
 }

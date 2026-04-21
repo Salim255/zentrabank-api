@@ -55,7 +55,7 @@ public class ProfileController {
             Authentication auth
     ) {
         UUID userId = (UUID) auth.getPrincipal();
-        return profileService.createProfile(dto, userId);
+        return ApiResponseDto.success(profileService.createProfile(dto, userId));
     }
 
     // ---------------------------------------------------------

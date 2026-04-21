@@ -85,7 +85,7 @@ public record CreateApplicationDto(
         );
     }
 
-    public CreateAccountDto toAccountDto(Long profileId) {
+    public CreateAccountDto toAccountDto() {
         return new CreateAccountDto(
                 accountType
         );
