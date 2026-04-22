@@ -5,6 +5,7 @@ import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.account.dto.AccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountResponseDto;
+import com.zentrabank.bank_api.modules.account.dto.GetAccountsResponseDto;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.account.repository.AccountRepository;
 import com.zentrabank.bank_api.modules.user.entity.User;
@@ -27,6 +28,16 @@ public class AccountServiceImp implements AccountService {
     private  final  EntityManager entityManager;
     private  final  AccountRepository accountRepository;
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
+
+    @Override
+    public GetAccountsResponseDto getAccountsResponseDto(UUID userId){
+        try {
+            Account accounts = this.accountRepository.findAllByUserId(userId);
+        } catch (Exception e) {
+            this.logger.error("Error in fetching user accounts", e);
+            throw e;
+        }
+    }
 
     @Override
     public Account lockAccountForUpdate(UUID accountId) {

@@ -2,11 +2,13 @@ package com.zentrabank.bank_api.modules.account.service;
 
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountResponseDto;
+import com.zentrabank.bank_api.modules.account.dto.GetAccountsResponseDto;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 
 import java.util.UUID;
 
 public interface AccountService {
+    public GetAccountsResponseDto getAccountsByUserId(UUID userId);
     public Account lockAccountForUpdate(UUID accountId);
     public void saveAccountChange(Account account);
     public Account findAccountByAccountNumber(String accountNumber);
