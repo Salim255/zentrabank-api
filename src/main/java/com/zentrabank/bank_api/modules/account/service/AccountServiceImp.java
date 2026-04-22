@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -28,11 +29,16 @@ public class AccountServiceImp implements AccountService {
     private  final  EntityManager entityManager;
     private  final  AccountRepository accountRepository;
     private  final Logger logger = LoggerFactory.getLogger(AccountServiceImp.class);
+    private final AccountMapper accountMapper;
 
     @Override
-    public GetAccountsResponseDto getAccountsResponseDto(UUID userId){
+    public GetAccountsResponseDto getAccountsByUserId(UUID userId){
         try {
-            Account accounts = this.accountRepository.findAllByUserId(userId);
+            List<AccountDto> accounts = this.accountRepository.findAllByUserId(userId)
+                    .stream()
+                    .map(accountMapper::toDto)
+                    .toList();
+            return new GetAccountsResponseDto(accounts);
         } catch (Exception e) {
             this.logger.error("Error in fetching user accounts", e);
             throw e;

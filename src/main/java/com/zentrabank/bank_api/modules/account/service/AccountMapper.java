@@ -2,7 +2,9 @@ package com.zentrabank.bank_api.modules.account.service;
 
 import com.zentrabank.bank_api.modules.account.dto.AccountDto;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccountMapper {
     public AccountDto toDto(Account account) {
         return new AccountDto(

@@ -4,6 +4,7 @@ import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.exceptions.ForbiddenException;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.account.dto.GetAccountsResponseDto;
+import com.zentrabank.bank_api.modules.account.service.AccountService;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterDto;
 import com.zentrabank.bank_api.modules.auth.dto.RegisterResponseDto;
 import com.zentrabank.bank_api.modules.auth.dto.ResetPasswordDto;
@@ -25,15 +26,18 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
 
+    private final AccountService accountService;
     private final AuthService authService;
     private final ProfileService profileService;
 
     public UserController(
+            AccountService accountService,
             ProfileService profileService,
             AuthService authService
             ){
         this.authService = authService;
         this.profileService = profileService;
+         this.accountService = accountService;
     }
 
     @GetMapping("/accounts")
@@ -54,10 +58,7 @@ public class UserController {
     public ApiResponseDto<GetAccountsResponseDto> getUserAccounts(Authentication auth) {
         UUID userId = (UUID) auth.getPrincipal();
 
-        var accounts = accountService.getAccountsByUserId(userId);
-
-        var response = new AccountsResponseDto(accounts);
-
+        GetAccountsResponseDto response = accountService.getAccountsByUserId(userId);
         return ApiResponseDto.success(response);
     }
 
