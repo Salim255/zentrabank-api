@@ -40,7 +40,33 @@ public class UserController {
          this.accountService = accountService;
     }
 
-    @GetMapping("/accounts")
+    userService;
+
+    @GetMapping("/me")
+    @Operation(
+            summary = "Get authenticated user information",
+            description = "Returns the authenticated user's basic account information. Used for session restore on page refresh.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User information retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = MeResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized – user is not authenticated"
+                    )
+            }
+    )
+    public ApiResponseDto<MeResponseDto> getMe(Authentication auth) {
+        UUID userId = (UUID) auth.getPrincipal();
+        MeResponseDto response = userService.getMe(userId);
+
+    }
+        @GetMapping("/accounts")
     @Operation(
             summary = "Get authenticated user's accounts",
             description = "Retrieves all bank accounts associated with the authenticated user.",

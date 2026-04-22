@@ -31,9 +31,13 @@ public class ProfileServiceImp implements ProfileService {
             try {
                 Profile profile = this.profileRepository.
                         findByUserId(userId)
-                        .orElseThrow(() -> new NotFoundException("Profile not found for given userId"));
-                ProfileDto response = this.profileMapper.toDto(profile);
-                return  new GetProfileResponseDto(response);
+                        .orElse(null);
+
+                ProfileDto dto = (profile != null)
+                        ? this.profileMapper.toDto(profile)
+                        : null;
+
+                return  new GetProfileResponseDto(dto);
             } catch (Exception e) {
                 this.logger.error("Error in fetching profile by userID", e);
                 throw e;
