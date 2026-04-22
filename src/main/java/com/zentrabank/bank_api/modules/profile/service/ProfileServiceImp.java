@@ -27,6 +27,19 @@ public class ProfileServiceImp implements ProfileService {
     private  final ProfileMapper profileMapper;
     private final Logger logger = LoggerFactory.getLogger(ProfileServiceImp.class);
 
+    public GetProfileResponseDto getProfileByUserId(UUID userId){
+            try {
+                Profile profile = this.profileRepository.
+                        findByUserId(userId)
+                        .orElseThrow(() -> new NotFoundException("Profile not found for given userId"));
+                ProfileDto response = this.profileMapper.toDto(profile);
+                return  new GetProfileResponseDto(response);
+            } catch (Exception e) {
+                this.logger.error("Error in fetching profile by userID", e);
+                throw e;
+            }
+    }
+
     public CreateProfileResponseDto createProfile(
             CreateProfileDto payload,
             UUID userId
