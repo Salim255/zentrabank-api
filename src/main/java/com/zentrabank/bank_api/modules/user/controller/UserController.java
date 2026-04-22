@@ -1,6 +1,8 @@
 package com.zentrabank.bank_api.modules.user.controller;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.common.utils.JwtCookieUtils;
+import com.zentrabank.bank_api.config.BankApiConfigProperties;
 import com.zentrabank.bank_api.exceptions.ForbiddenException;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
 import com.zentrabank.bank_api.modules.account.dto.GetAccountsResponseDto;
@@ -11,6 +13,8 @@ import com.zentrabank.bank_api.modules.auth.dto.ResetPasswordDto;
 import com.zentrabank.bank_api.modules.auth.service.AuthService;
 import com.zentrabank.bank_api.modules.profile.dto.GetProfileResponseDto;
 import com.zentrabank.bank_api.modules.profile.service.ProfileService;
+import com.zentrabank.bank_api.modules.user.dto.MeResponseDto;
+import com.zentrabank.bank_api.modules.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,22 +29,46 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
+    private final BankApiConfigProperties configProperties;
     private final AccountService accountService;
     private final AuthService authService;
     private final ProfileService profileService;
+    private final UserService userService;
 
     public UserController(
+            BankApiConfigProperties configProperties,
+            UserService userService,
             AccountService accountService,
             ProfileService profileService,
             AuthService authService
             ){
+        this.configProperties =  configProperties;
+        this.userService = userService;
         this.authService = authService;
         this.profileService = profileService;
-         this.accountService = accountService;
+        this.accountService = accountService;
     }
 
-    userService;
+    @PostMapping("/logout")
+    @Operation(
+            summary = "Logout user",
+            description = "Clears authentication cookies and invalidates the session.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User logged out successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ApiResponseDto.class)
+                            )
+                    )
+            }
+    )
+    public ApiResponseDto<Void> logout(HttpServletResponse response) {
+        JwtCookieUtils.clearJwtCookie(response, this.configProperties.refreshJwtName());
+        JwtCookieUtils.clearJwtCookie(response,this.configProperties.accessJwtName());
+        return ApiResponseDto.success(null);
+    }
 
     @GetMapping("/me")
     @Operation(
@@ -64,9 +92,10 @@ public class UserController {
     public ApiResponseDto<MeResponseDto> getMe(Authentication auth) {
         UUID userId = (UUID) auth.getPrincipal();
         MeResponseDto response = userService.getMe(userId);
-
+        return ApiResponseDto.success(response);
     }
-        @GetMapping("/accounts")
+
+    @GetMapping("/accounts")
     @Operation(
             summary = "Get authenticated user's accounts",
             description = "Retrieves all bank accounts associated with the authenticated user.",

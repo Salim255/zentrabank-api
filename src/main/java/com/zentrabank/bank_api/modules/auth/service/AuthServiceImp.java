@@ -206,7 +206,7 @@ public class AuthServiceImp implements AuthService {
             // Built LoginResponseDto
             LoginResponseDto  result = new LoginResponseDto(
                     new LoggedUserDto(
-                            user.getId().toString(),
+                            user.getId(),
                             user.getEmail(),
                             user.isFirstLogin(),
                             user.getRole()
