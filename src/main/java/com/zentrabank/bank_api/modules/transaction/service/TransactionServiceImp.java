@@ -3,10 +3,7 @@ package com.zentrabank.bank_api.modules.transaction.service;
 
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.account.service.AccountService;
-import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
-import com.zentrabank.bank_api.modules.transaction.dto.LockedAccountsDto;
-import com.zentrabank.bank_api.modules.transaction.dto.TransactionDto;
-import com.zentrabank.bank_api.modules.transaction.dto.TransactionResponseDto;
+import com.zentrabank.bank_api.modules.transaction.dto.*;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
@@ -34,7 +31,7 @@ public class TransactionServiceImp implements TransactionService {
 
 
     public  TransactionResponseDto  transferOperation(
-            CreateTransactionDto payload,
+            TransferDto payload,
             UUID userId
     ){
         try {
@@ -72,8 +69,8 @@ public class TransactionServiceImp implements TransactionService {
 
             // 9 Create transaction (sender side)
             // 10 Create transaction (receiver side)
-            Transaction transaction = buildTransaction(payload, sender, senderNewBalance);
-            Transaction receivertransaction = buildTransaction(payload, sender, senderNewBalance);
+            Transaction transaction = buildTransfer(payload, sender, senderNewBalance);
+            Transaction receivertransaction = buildTransfer(payload, sender, senderNewBalance);
             this.transactionRepository.save(transaction);
             this.transactionRepository.save(receivertransaction);
 
@@ -202,6 +199,24 @@ public class TransactionServiceImp implements TransactionService {
         // Return both locked accounts wrapped in a helper object
         // This makes the method clean and avoids returning multiple values manually
         return new LockedAccountsDto(sender, receiver);
+    }
+
+    private Transaction buildTransfer(
+            TransferDto payload,
+            Account account,
+            BigDecimal newBalance
+    ) {
+        Transaction transaction = new Transaction();
+
+        transaction.setAccount(account);
+        transaction.setAmount(payload.amount());
+        transaction.setType(payload.type());
+        transaction.setDescription(payload.description());
+        transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
+        transaction.setPostTransactionBalance(newBalance);
+        transaction.setCurrency(account.getCurrency());
+
+        return transaction;
     }
 
     private Transaction buildTransaction(

@@ -5,6 +5,7 @@ import com.zentrabank.bank_api.exceptions.ForbiddenException;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
 import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
 import com.zentrabank.bank_api.modules.transaction.dto.TransactionResponseDto;
+import com.zentrabank.bank_api.modules.transaction.dto.TransferDto;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.service.TransactionService;
 import jakarta.validation.Valid;
@@ -23,9 +24,9 @@ import java.util.UUID;
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @PostMapping()
+    @PostMapping("transfer")
     public ApiResponseDto<TransactionResponseDto> transfer(
-            @Valid @RequestBody CreateTransactionDto body,
+            @Valid @RequestBody TransferDto body,
             Authentication auth
     ){
         // Validate auth
@@ -59,7 +60,6 @@ public class TransactionController {
         TransactionResponseDto response;
         switch (body.type()) {
             case DEPOSIT -> response = transactionService.depositOperation(body, userId);
-            case TRANSFER -> response = transactionService.transferOperation(body, userId);
             case WITHDRAWAL -> response = transactionService.withdrawalOperation(body, userId);
             default -> throw new IllegalArgumentException("Unsupported transaction type");
         }

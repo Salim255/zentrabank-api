@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.transaction.dto;
 
+import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -58,8 +59,8 @@ public record TransferDto(
                 description = "Type of transfer (e.g., TRANSFER, SEPA_INSTANT).",
                 example = "TRANSFER"
         )
-        @NotBlank(message = "Transfer type is required.")
-        String type,
+        @NotNull(message = "Transfer type is required.")
+        TransactionType type,
 
         @Schema(
                 description = "Optional transfer description.",

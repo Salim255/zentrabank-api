@@ -5,6 +5,7 @@ import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.account.service.AccountService;
 import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
+import com.zentrabank.bank_api.modules.transaction.dto.TransferDto;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import java.math.BigDecimal;
 public class TransactionValidator {
     private final AccountService accountService;
 
-    public void validateTransfer(CreateTransactionDto payload, Account sender, Account receiver) {
+    public void validateTransfer(TransferDto payload, Account sender, Account receiver) {
 
         if (payload.amount() == null || payload.amount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new BadRequestException("Amount must be greater than zero");

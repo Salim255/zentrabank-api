@@ -54,6 +54,9 @@ public class Transaction {
     @Column(length = 20)
     private String referenceAccountNumber;
 
+    @Column(name = "recipient_name", nullable = false, length = 80)
+    private String recipientName;
+
     // Optional description or memo for the transaction
     @Column(length = 255)
     private String description;
