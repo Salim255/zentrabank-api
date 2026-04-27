@@ -1,7 +1,10 @@
 package com.zentrabank.bank_api.modules.transfer.service;
 
+import com.zentrabank.bank_api.modules.account.entity.Account.Account;
+import com.zentrabank.bank_api.modules.account.repository.AccountRepository;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
+import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
 import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferDto;
 import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferResponseDto;
 import com.zentrabank.bank_api.modules.transfer.dto.GetTransferResponseDto;
@@ -21,6 +24,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public  class TransferServiceImp implements TransferService {
+    private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
     private final TransferRepository transferRepository;
     private final Logger logger = LoggerFactory.getLogger(TransferServiceImp.class);
 
@@ -164,5 +169,20 @@ public  class TransferServiceImp implements TransferService {
                 data.getCreatedAt(),
                 data.getCompletedAt()
         );
+    }
+
+    private String generateReferenceId() {
+        String timestamp = java.time.format.DateTimeFormatter
+                .ofPattern("yyyyMMdd-HHmmss")
+                .withZone(java.time.ZoneId.of("UTC"))
+                .format(java.time.Instant.now());
+
+        String random = java.util.UUID.randomUUID()
+                .toString()
+                .replace("-", "")
+                .substring(0, 8)
+                .toUpperCase();
+
+        return "TRF-" + timestamp + "-" + random;
     }
 }
