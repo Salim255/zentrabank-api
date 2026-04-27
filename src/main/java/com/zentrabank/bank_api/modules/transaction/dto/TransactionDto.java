@@ -10,9 +10,6 @@ public record TransactionDto(
         UUID id,
         TransactionType type,
         BigDecimal amount,
-        String currency,
-        String referenceAccountNumber,
         BigDecimal postTransactionBalance,
-        String description,
         Instant createdAt
 ) { }

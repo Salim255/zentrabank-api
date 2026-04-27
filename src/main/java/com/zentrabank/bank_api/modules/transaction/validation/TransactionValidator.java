@@ -92,7 +92,7 @@ public class TransactionValidator {
         }
 
         // 2. Reference account for TRANSFER
-        if (payload.type() == TransactionType.TRANSFER){
+        if (payload.type() == TransactionType.TRANSFER_CREDIT || payload.type() == TransactionType.TRANSFER_DEBIT ){
             if (payload.referenceAccountNumber() == null || payload.referenceAccountNumber().isBlank()) {
                 throw new IllegalArgumentException("Reference account is required for transfers");
             }
@@ -106,7 +106,7 @@ public class TransactionValidator {
         }
 
         // 3. Check sufficient balance for DEBIT/TRANSFER
-        if ((payload.type() == TransactionType.WITHDRAWAL || payload.type() == TransactionType.TRANSFER)
+        if ((payload.type() == TransactionType.WITHDRAWAL || payload.type() == TransactionType.TRANSFER_DEBIT)
                 && account.getBalance().compareTo(payload.amount()) < 0) {
             throw new IllegalArgumentException("Insufficient balance");
         }

@@ -29,7 +29,7 @@ public class TransactionServiceImp implements TransactionService {
     private final TransactionRepository transactionRepository;
 
 
-
+    @Transactional
     public  TransactionResponseDto  transferOperation(
             TransferDto payload,
             UUID userId
@@ -60,6 +60,7 @@ public class TransactionServiceImp implements TransactionService {
             BigDecimal senderNewBalance = sender.getBalance().subtract(amount);
             BigDecimal receiverNewBalance = receiver.getBalance().add(amount);
 
+            // Update balance
             sender.setBalance(senderNewBalance);
             receiver.setBalance(receiverNewBalance);
 
@@ -69,13 +70,14 @@ public class TransactionServiceImp implements TransactionService {
 
             // 9 Create transaction (sender side)
             // 10 Create transaction (receiver side)
-            Transaction transaction = buildTransfer(payload, sender, senderNewBalance);
-            Transaction receivertransaction = buildTransfer(payload, sender, senderNewBalance);
-            this.transactionRepository.save(transaction);
+            Transaction senderTransaction = buildTransfer(payload, sender, senderNewBalance);
+            Transaction receivertransaction = buildTransfer(payload, receiver, receiverNewBalance);
+
+            this.transactionRepository.save(senderTransaction);
             this.transactionRepository.save(receivertransaction);
 
             // 11 Return response
-            return new TransactionResponseDto(toDto(transaction));
+            return new TransactionResponseDto(toDto(senderTransaction));
         } catch (Exception e) {
             this.logger.error("Error during transfer transaction", e);
             throw e;
@@ -208,13 +210,12 @@ public class TransactionServiceImp implements TransactionService {
     ) {
         Transaction transaction = new Transaction();
 
-        transaction.setAccount(account);
+        // transaction.setSender(account);
         transaction.setAmount(payload.amount());
         transaction.setType(payload.type());
-        transaction.setDescription(payload.description());
-        transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
+        //transaction.setDescription(payload.description());
         transaction.setPostTransactionBalance(newBalance);
-        transaction.setCurrency(account.getCurrency());
+        //transaction.setCurrency(account.getCurrency());
 
         return transaction;
     }
@@ -226,13 +227,12 @@ public class TransactionServiceImp implements TransactionService {
     ) {
         Transaction transaction = new Transaction();
 
-        transaction.setAccount(account);
+        //transaction.setSender(account);
         transaction.setAmount(payload.amount());
         transaction.setType(payload.type());
-        transaction.setDescription(payload.description());
-        transaction.setReferenceAccountNumber(payload.referenceAccountNumber());
+        //transaction.setDescription(payload.description());
         transaction.setPostTransactionBalance(newBalance);
-        transaction.setCurrency(account.getCurrency());
+        //transaction.setCurrency(account.getCurrency());
 
         return transaction;
     }
@@ -242,10 +242,7 @@ public class TransactionServiceImp implements TransactionService {
                 transaction.getId(),
                 transaction.getType(),
                 transaction.getAmount(),
-                transaction.getCurrency(),
-                transaction.getReferenceAccountNumber(),
                 transaction.getPostTransactionBalance(),
-                transaction.getDescription(),
                 transaction.getCreatedAt()
         );
     }

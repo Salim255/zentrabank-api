@@ -2,6 +2,7 @@ package com.zentrabank.bank_api.modules.transaction.entity;
 
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
+import com.zentrabank.bank_api.modules.transfer.entity.Transfer;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,10 +33,15 @@ public class Transaction {
     )
     private UUID id;
 
-    // Many-to-One relation: each transaction belongs to one bank account
+    // ONE account per transaction (mandatory)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
+    // Link back to the transfer (optional for deposits/withdrawals)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transfer_id")
+    private Transfer transfer;
 
     // Type of transaction: DEPOSIT, WITHDRAWAL, TRANSFER
     @Enumerated(EnumType.STRING)
@@ -45,21 +51,6 @@ public class Transaction {
     // Amount involved in the transaction
     @Column(nullable = false)
     private BigDecimal amount;
-
-    // Currency of the transaction (for multi-currency support)
-    @Column(length = 3, nullable = false)
-    private String currency = "USD";
-
-    // Optional reference for transfers (from/to account numbers)
-    @Column(length = 20)
-    private String referenceAccountNumber;
-
-    @Column(name = "recipient_name", nullable = false, length = 80)
-    private String recipientName;
-
-    // Optional description or memo for the transaction
-    @Column(length = 255)
-    private String description;
 
     // Balance after the transaction (optional but useful for audit/logging)
     @Column(nullable = false)

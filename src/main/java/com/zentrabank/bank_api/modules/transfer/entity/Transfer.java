@@ -55,6 +55,16 @@ public class Transfer {
     @Column(nullable = false)
     private TransferStatus status;
 
+    // EXTERNAL TRANSFER FIELDS
+    @Column(name = "external_iban", length = 34)
+    private String externalIban; // null for internal transfers
+
+    @Column(name = "external_bic", length = 11)
+    private String externalBic; // null for internal transfers
+
+    @Column(name = "external_recipient_name", length = 80)
+    private String externalRecipientName; // null for internal transfers
+
     // Unique reference for external systems / idempotency
     @Column(unique = true, nullable = false)
     private String referenceId;
@@ -69,4 +79,22 @@ public class Transfer {
 
     // When transfer was completed (if success)
     private Instant completedAt;
+
+    @Column(nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    // JPA: runs BEFORE the entity is inserted into the database
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+        this.updatedAt = this.createdAt;
+    }
+
+
+    // Pre-update hook to automatically update timestamps (if needed)
+    @PreUpdate
+    public void preUpdate() {
+        // could add updatedAt if you track updates for transactions
+        this.updatedAt = Instant.now();
+    }
 }
