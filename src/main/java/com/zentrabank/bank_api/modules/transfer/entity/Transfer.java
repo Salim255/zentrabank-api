@@ -3,12 +3,16 @@ package com.zentrabank.bank_api.modules.transfer.entity;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.transfer.entity.TransferStatus;
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
 @Table(
