@@ -24,6 +24,25 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping()
+    public ApiResponseDto<TransactionResponseDto> transfer(
+            @Valid @RequestBody CreateTransactionDto body,
+            Authentication auth
+    ){
+        // Validate auth
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new ForbiddenException("Invalid authentication token");
+        }
+
+        // Get userId
+        UUID userId = (UUID) auth.getPrincipal();
+
+        // Create and return
+        TransactionResponseDto response = transactionService.transferOperation(body, userId);;
+
+        return ApiResponseDto.success(response);
+    }
+
+    @PostMapping()
     public ApiResponseDto<TransactionResponseDto> createTransaction(
             @Valid @RequestBody CreateTransactionDto body,
             Authentication auth
