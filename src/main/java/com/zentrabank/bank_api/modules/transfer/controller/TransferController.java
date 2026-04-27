@@ -1,6 +1,12 @@
 package com.zentrabank.bank_api.modules.transfer.controller;
 
+import com.zentrabank.bank_api.common.dto.ApiResponseDto;
+import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferResponseDto;
+import com.zentrabank.bank_api.modules.transfer.service.TransferService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
