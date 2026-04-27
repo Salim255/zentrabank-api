@@ -1,5 +1,7 @@
 package com.zentrabank.bank_api.modules.transfer.service;
 
+import com.zentrabank.bank_api.exceptions.BadRequestException;
+import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.account.repository.AccountRepository;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
@@ -31,7 +33,7 @@ public  class TransferServiceImp implements TransferService {
 
     @Override
     public String listTransfers(UUID userId) {
-
+        return  "";
     }
 
     @Override
@@ -54,29 +56,25 @@ public  class TransferServiceImp implements TransferService {
             // ---------------------------------------------------------
             // 1. Load sender account & validate ownership
             // ---------------------------------------------------------
-            Account sender = accountRepository.findById(dto.fromAccountId())
-                    .orElseThrow(() -> new IllegalArgumentException("Sender account not found"));
+            Account sender = accountRepository.findAccountByAccountNumber(dto.fromAccountNumber())
+                    .orElseThrow(() ->  new NotFoundException("Sender account not found"));
 
-            if (!sender.getUserId().equals(userId)) {
-                throw new IllegalStateException("You do not own this account");
+            if (!sender.getUser().getId().equals(userId)) {
+                throw  new NotFoundException("You do not own this account");
             }
 
             // ---------------------------------------------------------
             // 2. Determine internal vs external transfer
             // ---------------------------------------------------------
-            boolean isInternal = dto.toAccountId() != null;
+            Account receiver = accountRepository.findAccountByAccountNumber(dto.toAccountNumber())
+                        .orElseThrow(() -> new NotFoundException("Receiver account not found"));
 
-            Account receiver = null;
-            if (isInternal) {
-                receiver = accountRepository.findById(dto.toAccountId())
-                        .orElseThrow(() -> new IllegalArgumentException("Receiver account not found"));
-            }
 
             // ---------------------------------------------------------
             // 3. Validate balance
             // ---------------------------------------------------------
             if (sender.getBalance().compareTo(dto.amount()) < 0) {
-                throw new IllegalStateException("Insufficient balance");
+                throw new BadRequestException("Insufficient balance");
             }
 
             // ---------------------------------------------------------
@@ -85,9 +83,9 @@ public  class TransferServiceImp implements TransferService {
             Transfer transfer = Transfer.builder()
                     .fromAccount(sender)
                     .toAccount(receiver)
-                    .externalIban(isInternal ? null : dto.externalIban())
-                    .externalBic(isInternal ? null : dto.externalBic())
-                    .externalRecipientName(isInternal ? null : dto.externalRecipientName())
+                    .externalIban(dto.externalIban())
+                    .externalBic(dto.externalBic())
+                    .externalRecipientName(dto.externalRecipientName())
                     .amount(dto.amount())
                     .currency(dto.currency())
                     .status(TransferStatus.PENDING)
@@ -103,10 +101,10 @@ public  class TransferServiceImp implements TransferService {
             sender.setBalance(sender.getBalance().subtract(dto.amount()));
             accountRepository.save(sender);
 
-            if (isInternal) {
-                receiver.setBalance(receiver.getBalance().add(dto.amount()));
-                accountRepository.save(receiver);
-            }
+
+            receiver.setBalance(receiver.getBalance().add(dto.amount()));
+            accountRepository.save(receiver);
+
 
             // ---------------------------------------------------------
             // 6. Create debit transaction
@@ -124,17 +122,16 @@ public  class TransferServiceImp implements TransferService {
             // ---------------------------------------------------------
             // 7. Create credit transaction (internal only)
             // ---------------------------------------------------------
-            if (isInternal) {
-                transactionRepository.save(
-                        Transaction.builder()
-                                .account(receiver)
-                                .transfer(transfer)
-                                .type(TransactionType.TRANSFER_CREDIT)
-                                .amount(dto.amount())
-                                .postTransactionBalance(receiver.getBalance())
-                                .build()
-                );
-            }
+            transactionRepository.save(
+                    Transaction.builder()
+                            .account(receiver)
+                            .transfer(transfer)
+                            .type(TransactionType.TRANSFER_CREDIT)
+                            .amount(dto.amount())
+                            .postTransactionBalance(receiver.getBalance())
+                            .build()
+            );
+
 
             // ---------------------------------------------------------
             // 8. Mark transfer as COMPLETED
@@ -156,8 +153,8 @@ public  class TransferServiceImp implements TransferService {
     public TransferDto buildTransferDto(Transfer data){
         return new TransferDto(
                 data.getId(),
-                data.getFromAccount(),
-                data.getToAccount(),
+                data.getFromAccount().getId(),
+                data.getToAccount().getId(),
                 data.getExternalIban(),
                 data.getExternalBic(),
                 data.getExternalRecipientName(),

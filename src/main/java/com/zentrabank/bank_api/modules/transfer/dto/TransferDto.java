@@ -1,5 +1,6 @@
 package com.zentrabank.bank_api.modules.transfer.dto;
 
+import com.zentrabank.bank_api.modules.transfer.entity.TransferStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
@@ -33,7 +34,7 @@ public record TransferDto(
         String currency,
 
         @Schema(description = "Transfer status (PENDING, PROCESSING, COMPLETED, FAILED)")
-        String status,
+        TransferStatus status,
 
         @Schema(description = "Unique reference for audit, idempotency, and external systems")
         String referenceId,

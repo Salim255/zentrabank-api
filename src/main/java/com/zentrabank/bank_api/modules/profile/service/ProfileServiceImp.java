@@ -55,7 +55,7 @@ public class ProfileServiceImp implements ProfileService {
 
             // 2. Fetch user
             User user = this.userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() ->  new NotFoundException("User not found"));
 
             // 3. Map DTO → Entity
             Profile profile = this.profileMapper.toEntity(payload);

@@ -10,16 +10,14 @@ public record CreateTransferDto(
         // ---------------------------------------------------------
         // INTERNAL TRANSFER: sender account
         // ---------------------------------------------------------
-        @NotNull(message = "Sender account ID is required")
-        @Schema(description = "Account ID from which money will be sent")
-        UUID fromAccountId,
+        @NotNull(message = "Sender account number is required")
+        @Schema(description = "Account number from which money will be sent")
+        String fromAccountNumber,
 
         // ---------------------------------------------------------
-        // INTERNAL TRANSFER: receiver account (optional)
-        // If null → external transfer
-        // ---------------------------------------------------------
-        @Schema(description = "Receiver internal account ID (null for external transfers)")
-        UUID toAccountId,
+        @NotNull(message = "Receiver account number is required")
+        @Schema(description = "Receiver account number")
+        String toAccountNumber,
 
         // ---------------------------------------------------------
         // EXTERNAL TRANSFER FIELDS

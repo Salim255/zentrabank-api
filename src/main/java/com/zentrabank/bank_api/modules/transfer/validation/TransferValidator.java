@@ -23,7 +23,7 @@ public class TransferValidator {
 
         validateAmount(dto.amount());
         validateCurrency(dto.currency());
-        validateSenderOwnership(sender, dto.fromAccountId());
+        validateSenderOwnership(sender, dto.fromAccountNumber());
         validateInternalVsExternal(dto, receiver);
         validateNotSelfTransfer(sender, receiver);
         validateBalance(sender, dto.amount());
@@ -49,34 +49,32 @@ public class TransferValidator {
         }
     }
 
-    private void validateSenderOwnership(Account sender, java.util.UUID fromAccountId) {
+    private void validateSenderOwnership(Account sender, String fromAccountNumber) {
         if (sender == null) {
             throw new NotFoundException("Sender account not found");
         }
-        if (!sender.getId().equals(fromAccountId)) {
+        if (!sender.getAccountNumber().equals(fromAccountNumber)) {
             throw new BadRequestException("Sender account mismatch");
         }
     }
 
     private void validateInternalVsExternal(CreateTransferDto dto, Account receiver) {
-        boolean isInternal = dto.toAccountId() != null;
 
-        if (isInternal) {
-            if (receiver == null) {
-                throw new NotFoundException("Receiver account not found");
-            }
-        } else {
-            // External transfer → IBAN/BIC/Name required
-            if (dto.externalIban() == null || dto.externalIban().isBlank()) {
-                throw new BadRequestException("External IBAN is required for external transfers");
-            }
-            if (dto.externalBic() == null || dto.externalBic().isBlank()) {
-                throw new BadRequestException("External BIC is required for external transfers");
-            }
-            if (dto.externalRecipientName() == null || dto.externalRecipientName().isBlank()) {
-                throw new BadRequestException("External recipient name is required for external transfers");
-            }
+        if (receiver == null) {
+            throw new NotFoundException("Receiver account not found");
         }
+
+        // External transfer → IBAN/BIC/Name required
+        if (dto.externalIban() == null || dto.externalIban().isBlank()) {
+            throw new BadRequestException("External IBAN is required for external transfers");
+        }
+        if (dto.externalBic() == null || dto.externalBic().isBlank()) {
+            throw new BadRequestException("External BIC is required for external transfers");
+        }
+        if (dto.externalRecipientName() == null || dto.externalRecipientName().isBlank()) {
+            throw new BadRequestException("External recipient name is required for external transfers");
+        }
+
     }
 
     private void validateNotSelfTransfer(Account sender, Account receiver) {
