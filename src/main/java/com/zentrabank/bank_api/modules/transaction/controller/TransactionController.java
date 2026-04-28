@@ -17,10 +17,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Controller
 @RestController
 @RequestMapping("/transactions")
 @RequiredArgsConstructor

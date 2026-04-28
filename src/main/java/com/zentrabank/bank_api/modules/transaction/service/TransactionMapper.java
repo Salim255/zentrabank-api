@@ -12,7 +12,10 @@ public class TransactionMapper {
                     transaction.getId(),
                     transaction.getType(),
                     transaction.getAmount(),
+                    transaction.getTransfer().getDescription(),
                     transaction.getPostTransactionBalance(),
+                    transaction.getTransfer().getExternalRecipientName(),
+                    transaction.getTransfer().getToAccount().getIban(),
                     transaction.getCreatedAt()
             );
     }

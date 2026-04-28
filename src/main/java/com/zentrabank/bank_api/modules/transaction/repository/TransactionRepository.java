@@ -1,6 +1,7 @@
 package com.zentrabank.bank_api.modules.transaction.repository;
 
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
