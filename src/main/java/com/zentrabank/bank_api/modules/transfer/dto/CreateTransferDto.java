@@ -15,11 +15,6 @@ public record CreateTransferDto(
         String fromAccountNumber,
 
         // ---------------------------------------------------------
-        @NotNull(message = "Receiver account number is required")
-        @Schema(description = "Receiver account number")
-        String toAccountNumber,
-
-        // ---------------------------------------------------------
         // EXTERNAL TRANSFER FIELDS
         // Only required when toAccountId is null
         // ---------------------------------------------------------

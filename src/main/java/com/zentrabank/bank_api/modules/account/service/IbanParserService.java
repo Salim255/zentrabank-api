@@ -1,6 +1,8 @@
 package com.zentrabank.bank_api.modules.account.service;
 
 import com.zentrabank.bank_api.common.constants.BankConstants;
+import com.zentrabank.bank_api.exceptions.InvalidIbanException;
+import com.zentrabank.bank_api.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,8 +11,10 @@ public class IbanParserService {
     // ---------------------------------------------------------
     // CHECK IF IBAN BELONGS TO OUR BANK
     // ---------------------------------------------------------
-    public boolean isInternalIban(String iban) {
-        if (iban == null || iban.length() < 27) return false;
+    public boolean isValidInternalIban(String iban) {
+        if (iban == null  || iban.length() < 27 )  {
+            throw new InvalidIbanException("Invalid IBAN");
+        };
 
         // FRkk + BANK_CODE
         String bankCodeInIban = iban.substring(4, 9);

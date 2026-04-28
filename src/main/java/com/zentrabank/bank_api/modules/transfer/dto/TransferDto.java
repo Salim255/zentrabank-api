@@ -12,11 +12,11 @@ public record TransferDto(
         @Schema(description = "Unique ID of the transfer")
         UUID id,
 
-        @Schema(description = "Sender account ID")
-        UUID fromAccountId,
+        @Schema(description = "Sender account number")
+        String fromAccountNumber,
 
-        @Schema(description = "Receiver internal account ID (null for external transfers)")
-        UUID toAccountId,
+        @Schema(description = "Receiver internal account number")
+        String toAccountNumber,
 
         @Schema(description = "External IBAN (null for internal transfers)")
         String externalIban,

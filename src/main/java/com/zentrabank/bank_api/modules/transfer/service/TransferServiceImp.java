@@ -4,6 +4,7 @@ import com.zentrabank.bank_api.exceptions.BadRequestException;
 import com.zentrabank.bank_api.exceptions.NotFoundException;
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.account.repository.AccountRepository;
+import com.zentrabank.bank_api.modules.account.service.IbanParserService;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
@@ -26,6 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public  class TransferServiceImp implements TransferService {
+    private  final IbanParserService ibanParserService;
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final TransferRepository transferRepository;
@@ -66,9 +68,10 @@ public  class TransferServiceImp implements TransferService {
             // ---------------------------------------------------------
             // 2. Determine internal vs external transfer
             // ---------------------------------------------------------
-            Account receiver = accountRepository.findAccountByAccountNumber(dto.toAccountNumber())
-                        .orElseThrow(() -> new NotFoundException("Receiver account not found"));
-
+            ibanParserService.isValidInternalIban(dto.externalIban());
+            String receiverAccountNumber = ibanParserService.extractAccountNumber(dto.externalIban());
+            Account receiver = accountRepository.findAccountByAccountNumber(receiverAccountNumber)
+                        .orElseThrow(() -> new NotFoundException("Receiver account not found or Invalid IBAN"));
 
             // ---------------------------------------------------------
             // 3. Validate balance
@@ -153,8 +156,8 @@ public  class TransferServiceImp implements TransferService {
     public TransferDto buildTransferDto(Transfer data){
         return new TransferDto(
                 data.getId(),
-                data.getFromAccount().getId(),
-                data.getToAccount().getId(),
+                data.getFromAccount().getAccountNumber(),
+                data.getToAccount().getAccountNumber(),
                 data.getExternalIban(),
                 data.getExternalBic(),
                 data.getExternalRecipientName(),

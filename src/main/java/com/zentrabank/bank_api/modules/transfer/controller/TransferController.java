@@ -4,6 +4,7 @@ import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferDto;
 import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferResponseDto;
 import com.zentrabank.bank_api.modules.transfer.dto.GetTransferResponseDto;
+import com.zentrabank.bank_api.modules.transfer.dto.TransferDto;
 import com.zentrabank.bank_api.modules.transfer.service.TransferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -111,7 +113,7 @@ public class TransferController {
                     )
             }
     )
-    public ApiResponseDto<?> listTransfers(Authentication auth) {
+    public ApiResponseDto<List<TransferDto>>listTransfers(Authentication auth) {
         UUID userId = (UUID) auth.getPrincipal();
         return ApiResponseDto.success(transferService.listTransfers(userId));
     }
