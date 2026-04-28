@@ -28,7 +28,17 @@ public class TransactionServiceImp implements TransactionService {
 
     private final TransactionRepository transactionRepository;
 
+    @Override
+    public GetTransactionsResponseDto getTransactionsForAccount(UUID userId){
+        try {
 
+        } catch (Exception e) {
+            this.logger.error("Error in getting transactions", e);
+            throw e;
+        }
+    }
+
+    @Override
     @Transactional
     public  TransactionResponseDto  transferOperation(
             TransferDto payload,
