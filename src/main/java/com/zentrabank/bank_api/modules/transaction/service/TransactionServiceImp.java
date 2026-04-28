@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,9 +30,14 @@ public class TransactionServiceImp implements TransactionService {
     private final TransactionRepository transactionRepository;
 
     @Override
-    public GetTransactionsResponseDto getTransactionsForAccount(UUID userId){
+    public GetTransactionsResponseDto getTransactionsForAccount(UUID userId, int page, int size){
         try {
-
+            // 1 Fetch account by userId =
+            Account account = this.accountService.findAccountByUserId(userId);
+            List<TransactionDto> transactions = this.transactionRepository.findAll()
+                    .stream()
+                    .map(transactionMapper::toDto)
+                    .toList();
         } catch (Exception e) {
             this.logger.error("Error in getting transactions", e);
             throw e;

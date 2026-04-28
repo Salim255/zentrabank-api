@@ -8,7 +8,7 @@ import com.zentrabank.bank_api.modules.transaction.dto.TransferDto;
 import java.util.UUID;
 
 public interface TransactionService {
-    public GetTransactionsResponseDto getTransactionsForAccount(UUID userId);
+    public GetTransactionsResponseDto getTransactionsForAccount(UUID userId, int page, int size);
     public TransactionResponseDto  transferOperation(TransferDto payload, UUID userId);
     public TransactionResponseDto withdrawalOperation(CreateTransactionDto payload, UUID userId);
     public TransactionResponseDto depositOperation(CreateTransactionDto payload, UUID userId);
