@@ -265,6 +265,7 @@ public class TransactionServiceImp implements TransactionService {
                 transaction.getPostTransactionBalance(),
                 transaction.getTransfer().getExternalRecipientName(),
                 transaction.getTransfer().getFromAccount().getIban(),
+                transaction.getTransfer().getStatus(),
                 transaction.getCreatedAt()
         );
     }

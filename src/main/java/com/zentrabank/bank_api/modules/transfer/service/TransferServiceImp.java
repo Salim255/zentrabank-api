@@ -98,7 +98,11 @@ public  class TransferServiceImp implements TransferService {
                     .currency(dto.currency())
                     .status(TransferStatus.PENDING)
                     .referenceId(generateReferenceId())
-                    .description(dto.description())
+                    .description(
+                      dto.description() != null && !dto.description().trim().isEmpty()
+                        ? dto.description().trim()
+                        : null
+                     )
                     .build();
 
             transferRepository.save(transfer);

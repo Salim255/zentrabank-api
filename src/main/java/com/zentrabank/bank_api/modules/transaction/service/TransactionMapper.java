@@ -16,6 +16,7 @@ public class TransactionMapper {
                     transaction.getPostTransactionBalance(),
                     transaction.getTransfer().getExternalRecipientName(),
                     transaction.getTransfer().getToAccount().getIban(),
+                    transaction.getTransfer().getStatus(),
                     transaction.getCreatedAt()
             );
     }

@@ -2,6 +2,7 @@ package com.zentrabank.bank_api.modules.transaction.dto;
 
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
+import com.zentrabank.bank_api.modules.transfer.entity.TransferStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -15,5 +16,6 @@ public record TransactionDto(
         BigDecimal postTransactionBalance,
         String toClientName,
         String toAccountIbn,
+        TransferStatus status,
         Instant createdAt
 ) { }
