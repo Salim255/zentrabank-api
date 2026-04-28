@@ -5,7 +5,6 @@ import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import com.zentrabank.bank_api.modules.account.service.AccountService;
 import com.zentrabank.bank_api.modules.transaction.dto.*;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
-import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
 import com.zentrabank.bank_api.modules.transaction.validation.TransactionValidator;
 import jakarta.persistence.EntityManager;
@@ -24,6 +23,7 @@ import java.util.UUID;
 public class TransactionServiceImp implements TransactionService {
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImp.class);
     private final  EntityManager entityManager;
+    private final TransactionMapper transactionMapper;
     private final AccountService accountService;
     private final TransactionValidator transactionValidator;
 
@@ -34,10 +34,13 @@ public class TransactionServiceImp implements TransactionService {
         try {
             // 1 Fetch account by userId =
             Account account = this.accountService.findAccountByUserId(userId);
-            List<TransactionDto> transactions = this.transactionRepository.findAll()
+            List<TransactionDto> transactions = this.transactionRepository
+                    .findByAccountAccountNumber(account.getAccountNumber())
                     .stream()
                     .map(transactionMapper::toDto)
                     .toList();
+
+            return new GetTransactionsResponseDto(transactions);
         } catch (Exception e) {
             this.logger.error("Error in getting transactions", e);
             throw e;
