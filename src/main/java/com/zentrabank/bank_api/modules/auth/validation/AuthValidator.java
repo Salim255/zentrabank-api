@@ -67,7 +67,7 @@ public class AuthValidator {
             }
 
             User user = this.userRepository.findByUserName(userName)
-                    .orElseThrow(() -> new NotFoundException("User with this userName does not exist"));
+                    .orElseThrow(() ->new UnauthorizedException("Invalid login credentials"));
 
             // Validate password
             this.comparePassword(payload.password(), user.getPasswordHash());
