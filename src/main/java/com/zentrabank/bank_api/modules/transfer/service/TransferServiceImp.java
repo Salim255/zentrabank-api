@@ -8,10 +8,7 @@ import com.zentrabank.bank_api.modules.account.service.IbanParserService;
 import com.zentrabank.bank_api.modules.transaction.entity.Transaction;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.repository.TransactionRepository;
-import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferDto;
-import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferResponseDto;
-import com.zentrabank.bank_api.modules.transfer.dto.GetTransferResponseDto;
-import com.zentrabank.bank_api.modules.transfer.dto.TransferDto;
+import com.zentrabank.bank_api.modules.transfer.dto.*;
 import com.zentrabank.bank_api.modules.transfer.entity.Transfer;
 import com.zentrabank.bank_api.modules.transfer.entity.TransferStatus;
 import com.zentrabank.bank_api.modules.transfer.repository.TransferRepository;
@@ -22,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -35,7 +33,14 @@ public  class TransferServiceImp implements TransferService {
 
     @Override
     public String listTransfers(UUID userId) {
-        return  "";
+        try {
+
+            return  ""  ;
+        } catch (Exception e) {
+            this.logger.error("Error in getting transfers", e);
+            throw e;
+        }
+
     }
 
     @Override

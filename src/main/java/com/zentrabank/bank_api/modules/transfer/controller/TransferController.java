@@ -1,10 +1,7 @@
 package com.zentrabank.bank_api.modules.transfer.controller;
 
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
-import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferDto;
-import com.zentrabank.bank_api.modules.transfer.dto.CreateTransferResponseDto;
-import com.zentrabank.bank_api.modules.transfer.dto.GetTransferResponseDto;
-import com.zentrabank.bank_api.modules.transfer.dto.TransferDto;
+import com.zentrabank.bank_api.modules.transfer.dto.*;
 import com.zentrabank.bank_api.modules.transfer.service.TransferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -113,7 +110,7 @@ public class TransferController {
                     )
             }
     )
-    public ApiResponseDto<List<TransferDto>>listTransfers(Authentication auth) {
+    public ApiResponseDto<?> listTransfers(Authentication auth) {
         UUID userId = (UUID) auth.getPrincipal();
         return ApiResponseDto.success(transferService.listTransfers(userId));
     }
