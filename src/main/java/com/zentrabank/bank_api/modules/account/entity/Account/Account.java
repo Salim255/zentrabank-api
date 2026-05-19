@@ -1,4 +1,5 @@
 package com.zentrabank.bank_api.modules.account.entity.Account;
+
 import com.zentrabank.bank_api.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,106 +13,102 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(
-        name = "accounts",
-        indexes = {
+@Table(name = "accounts", indexes = {
                 // Index for fast lookup by account number (common query)
-                @Index(
-                        name = "idx_account_number",
-                        columnList = "accountNumber",
-                        unique = true
-                )
-        }
-)
+                @Index(name = "idx_account_number", columnList = "accountNumber", unique = true)
+})
 public class Account {
-    @Id // JPA: marks this field as the primary key
-    // JPA: tells Hibernate to auto-generate the ID using a generator
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(
-            columnDefinition = "UUID", // Ensures PostgreSQL stores it as a real UUID type
-            updatable = false, // ID cannot be changed after creation
-            nullable = false  // ID must always be present
-    )
-    private UUID id;
+        @Id // JPA: marks this field as the primary key
+            // JPA: tells Hibernate to auto-generate the ID using a generator
+        @GeneratedValue(strategy = GenerationType.UUID)
+        @Column(columnDefinition = "UUID", // Ensures PostgreSQL stores it as a real UUID type
+                        updatable = false, // ID cannot be changed after creation
+                        nullable = false // ID must always be present
+        )
+        private UUID id;
 
-    // Unique human-readable account number (bank-wide unique)
-    @Column(nullable = false, unique = true, length = 11)
-    private String accountNumber;
+        // Unique human-readable account number (bank-wide unique)
+        @Column(nullable = false, unique = true, length = 11)
+        private String accountNumber;
 
-    // Account balance stored as BigDecimal for precise monetary operations
-    @Column(nullable = false)
-    private BigDecimal balance = BigDecimal.ZERO;
+        // Account balance stored as BigDecimal for precise monetary operations
+        @Column(nullable = false)
+        @Builder.Default
+        private BigDecimal balance = BigDecimal.ZERO;
 
-    // Type of account (CHECKING, SAVINGS, CREDIT, LOAN) - allows different product handling
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AccountType type;
+        // Type of account (CHECKING, SAVINGS, CREDIT, LOAN) - allows different product
+        // handling
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        private AccountType type;
 
-    // Status of the account (ACTIVE, BLOCKED, CLOSED, FROZEN)
-    // Useful for locking, freezing, or closing accounts without deleting them
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AccountStatus status = AccountStatus.ACTIVE;
+        // Status of the account (ACTIVE, BLOCKED, CLOSED, FROZEN)
+        // Useful for locking, freezing, or closing accounts without deleting them
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        @Builder.Default
+        private AccountStatus status = AccountStatus.ACTIVE;
 
-    // Link to the owner of the account
-    // Many accounts can belong to one user
-    // Many-to-One relationship: Many BankAccounts can belong to one User
-    // Example: A user can have multiple accounts (checking, savings, etc.)
-    @ManyToOne(
-            fetch = FetchType.LAZY, // LAZY loading: the User object is only
-            // fetched from DB when explicitly accessed
-            // This improves performance, especially when fetching many accounts
+        // Link to the owner of the account
+        // Many accounts can belong to one user
+        // Many-to-One relationship: Many BankAccounts can belong to one User
+        // Example: A user can have multiple accounts (checking, savings, etc.)
+        @ManyToOne(fetch = FetchType.LAZY, // LAZY loading: the User object is only
+                        // fetched from DB when explicitly accessed
+                        // This improves performance, especially when fetching many accounts
 
-            optional = false // optional=false means every BankAccount MUST have an associated User
-    )
-    @JoinColumn(
-            name = "user_id", // The foreign key column in the 'bank_accounts'
-            // table that references User's primary key
-            nullable = false // Database-level constraint: cannot create a BankAccount without a user
-    )
-    private User user; // The User object that owns this account
+                        optional = false // optional=false means every BankAccount MUST have an associated User
+        )
+        @JoinColumn(name = "user_id", // The foreign key column in the 'bank_accounts'
+                        // table that references User's primary key
+                        nullable = false // Database-level constraint: cannot create a BankAccount without a user
+        )
+        private User user; // The User object that owns this account
 
+        // Currency of the account (USD, EUR, etc.), required for multi-currency support
+        @Column(length = 3, nullable = false)
+        @Builder.Default
+        private String currency = "USD";
 
+        // Optional IBAN for international transfers; unique to prevent duplicates
+        @Column(length = 34, unique = true, nullable = false)
+        private String iban;
 
-    // Currency of the account (USD, EUR, etc.), required for multi-currency support
-    @Column(length = 3, nullable = false)
-    private String currency = "USD";
+        @Column(length = 11, nullable = false)
+        private String bic;
 
-    // Optional IBAN for international transfers; unique to prevent duplicates
-    @Column(length = 34, unique = true, nullable = false)
-    private String iban;
+        // Flag to indicate if overdraft is allowed for this account (common in checking
+        // accounts)
+        @Column(nullable = false)
+        @Builder.Default
+        private boolean overdraftEnabled = false;
 
-    @Column(length = 11, nullable = false)
-    private  String bic;
+        // Maximum overdraft limit if overdraft is enabled
+        @Column(nullable = false)
+        @Builder.Default
+        private BigDecimal overdraftLimit = BigDecimal.ZERO;
 
-    // Flag to indicate if overdraft is allowed for this account (common in checking accounts)
-    @Column(nullable = false)
-    private boolean overdraftEnabled = false;
+        // Timestamp of account creation, set automatically
+        @Column(nullable = false, updatable = false)
+        @Builder.Default
+        private Instant createdAt = Instant.now();
 
-    // Maximum overdraft limit if overdraft is enabled
-    @Column(nullable = false)
-    private BigDecimal overdraftLimit = BigDecimal.ZERO;
+        // Timestamp of last update, automatically updated via @PreUpdate
+        @Column(nullable = false)
+        @Builder.Default
+        private Instant updatedAt = Instant.now();
 
-    // Timestamp of account creation, set automatically
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
+        @PrePersist
+        // JPA: runs BEFORE the entity is inserted into the database
+        protected void onCreate() {
+                this.createdAt = Instant.now();
+                this.updatedAt = this.createdAt;
+        }
 
-
-    // Timestamp of last update, automatically updated via @PreUpdate
-    @Column(nullable = false)
-    private Instant updatedAt = Instant.now();
-
-    @PrePersist
-    // JPA: runs BEFORE the entity is inserted into the database
-    protected void onCreate() {
-        this.createdAt = Instant.now();
-        this.updatedAt = this.createdAt;
-    }
-
-    // Lifecycle hook to update `updatedAt` automatically on entity update
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now();
-    }
-    // Getters & Setters omitted for brevity; can use Lombok to reduce boilerplate
+        // Lifecycle hook to update `updatedAt` automatically on entity update
+        @PreUpdate
+        public void preUpdate() {
+                this.updatedAt = Instant.now();
+        }
+        // Getters & Setters omitted for brevity; can use Lombok to reduce boilerplate
 }
