@@ -8,10 +8,7 @@ import com.zentrabank.bank_api.modules.transfer.dto.GetTransferResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -21,6 +18,7 @@ import java.util.UUID;
 public class AuditLogController {
     private  final AuditLogService auditLogService;
 
+    @PostMapping("")
     public ApiResponseDto<CreateAuditLogResponseDto> createAudit(
             @Valid @RequestBody CreateAuditLogDto log,
             Authentication auth
