@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -36,8 +37,12 @@ public class UserServiceImp implements UserService {
         }
     }
     @Override
-    public String getUser() {
-        return "";
+    public Optional<User> getUser(UUID userId) {
+        try {
+            return this.userRepository.findById(userId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

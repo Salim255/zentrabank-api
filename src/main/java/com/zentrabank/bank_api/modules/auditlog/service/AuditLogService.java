@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AuditLogService {
-    public AuditLog createAuditLog(CreateAuditLogDto log);
+    public AuditLog createAuditLog(CreateAuditLogDto log, UUID userId);
     public List<AuditLog>  getLogsForEntity(String entityName, UUID entityId);
     public List<AuditLog> getLogsForUser(UUID userId);
     public List<AuditLog> search(AuditLogSearchCriteriaDto criteria, Pageable pageable);
