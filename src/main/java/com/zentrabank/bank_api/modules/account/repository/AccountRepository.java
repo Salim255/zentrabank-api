@@ -2,6 +2,8 @@ package com.zentrabank.bank_api.modules.account.repository;
 
 import com.zentrabank.bank_api.modules.account.entity.Account.Account;
 import jakarta.persistence.LockModeType;
+
+import org.hibernate.annotations.processing.Find;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -32,10 +34,10 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
     Account findAccountForUpdate(@Param("id") UUID id);
 
     Optional<Account> findAccountByAccountNumber(String accountNumber);
+
     boolean existsByAccountNumber(String accountNumber);
 
     Optional<Account> findByUserId(UUID userId);
-
 
     List<Account> findAllByUserId(UUID userId);
 }
