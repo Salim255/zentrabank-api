@@ -27,4 +27,13 @@ public class AuditLogController {
         this.auditLogService.createAuditLog(log, userId);
         return ApiResponseDto.success(new CreateAuditLogResponseDto(this.auditLogService.createAuditLog(log, userId)));
     }
+
+    @GetMapping("")
+    public  ApiResponseDto<> getLogsForEntity(
+            @Valid @RequestBody CreateAuditLogDto log,
+            Authentication auth
+    ){
+        UUID userId = (UUID) auth.getPrincipal();
+        this.auditLogService.getLogsForEntity("transfer")
+    }
 }
