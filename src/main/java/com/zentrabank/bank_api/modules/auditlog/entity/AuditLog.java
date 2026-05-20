@@ -40,7 +40,7 @@ import org.hibernate.type.SqlTypes;
                 // Fast lookup by action type
                 @Index(name = "idx_audit_action", columnList = "action")
 })
-public class AuditLogs {
+public class AuditLog {
 
         // -------------------------------------------------------------------------
         // PRIMARY KEY

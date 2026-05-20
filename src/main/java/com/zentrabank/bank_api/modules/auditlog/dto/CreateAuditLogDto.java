@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "Payload used to create an audit log entry.")
 public record CreateAuditLogDto(
         @Schema(
-                description = "Name of the entity being audited (e.g., 'User', 'Order', 'Product').",
+                description = "Name of the entity being audited (e.g., 'User', 'Account', 'Transaction').",
                 example = "User"
         )
         @NotBlank(message = "Entity name is required.")
@@ -25,7 +25,7 @@ public record CreateAuditLogDto(
 
         @Schema(
                 description = "Action performed on the entity.",
-                example = "UPDATE"
+                example = "UPDATE_PROFILE"
         )
         @NotBlank(message = "Action is required.")
         @Size(max = 50, message = "Action must not exceed 50 characters.")
@@ -33,21 +33,20 @@ public record CreateAuditLogDto(
 
         @Schema(
                 description = "JSON snapshot of the entity BEFORE the action.",
-                example = "{\"name\": \"Old Name\", \"email\": \"old@example.com\"}"
+                example = "{\"email\": \"old@example.com\"}"
         )
         String beforeState,
 
         @Schema(
                 description = "JSON snapshot of the entity AFTER the action.",
-                example = "{\"name\": \"New Name\", \"email\": \"new@example.com\"}"
+                example = "{\"email\": \"new@example.com\"}"
         )
         String afterState,
 
         @Schema(
-                description = "ID of the user who performed the action.",
-                example = "7"
+                description = "Optional structured metadata for additional context.",
+                example = "{\"amount\": 200, \"currency\": \"EUR\"}"
         )
-        @NotNull(message = "User ID is required.")
-        Long userId
+        String metadata
 ) {
 }

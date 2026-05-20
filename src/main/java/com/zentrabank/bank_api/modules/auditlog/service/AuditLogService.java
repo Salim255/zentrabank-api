@@ -1,5 +1,13 @@
 package com.zentrabank.bank_api.modules.auditlog.service;
 
+import com.zentrabank.bank_api.modules.auditlog.dto.CreateAuditLogDto;
+import com.zentrabank.bank_api.modules.auditlog.entity.AuditLog;
+
+import java.util.List;
+
 public interface AuditLogService {
-    public String createAuditLog(CreateAuditDto log);
+    public AuditLog createAuditLog(CreateAuditLogDto log);
+    public List<AuditLog>  getLogsForEntity();
+    public List<AuditLog> getLogsForUser();
+    public List<AuditLog> search();
 }
