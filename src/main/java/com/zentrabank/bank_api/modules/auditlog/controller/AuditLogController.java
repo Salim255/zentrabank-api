@@ -3,6 +3,7 @@ package com.zentrabank.bank_api.modules.auditlog.controller;
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.modules.auditlog.dto.CreateAuditLogDto;
 import com.zentrabank.bank_api.modules.auditlog.dto.CreateAuditLogResponseDto;
+import com.zentrabank.bank_api.modules.auditlog.dto.GetAuditLogResponseDto;
 import com.zentrabank.bank_api.modules.auditlog.service.AuditLogService;
 import com.zentrabank.bank_api.modules.transfer.dto.GetTransferResponseDto;
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class AuditLogController {
     }
 
     @GetMapping("")
-    public  ApiResponseDto<> getLogsForEntity(
+    public  ApiResponseDto<GetAuditLogResponseDto> getLogsForEntity(
             @Valid @RequestBody CreateAuditLogDto log,
             Authentication auth
     ){
