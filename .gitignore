@@ -33,7 +33,6 @@ build/
 .vscode/
 
 secrets.properties
-secrets-prod.properties
-*.properties
+
 .env
 *.env
