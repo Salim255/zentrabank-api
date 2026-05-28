@@ -34,5 +34,6 @@ build/
 
 secrets.properties
 secrets-prod.properties
-
-secrets-prod.properties
+*.properties
+.env
+*.env
