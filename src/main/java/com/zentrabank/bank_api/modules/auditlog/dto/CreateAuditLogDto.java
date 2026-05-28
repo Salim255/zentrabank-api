@@ -2,7 +2,6 @@ package com.zentrabank.bank_api.modules.auditlog.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Schema(description = "Payload used to create an audit log entry.")
@@ -13,7 +12,7 @@ public record CreateAuditLogDto(
         )
         @NotBlank(message = "Entity name is required.")
         @Size(max = 100, message = "Entity name must not exceed 100 characters.")
-        String entityName,
+        AuditedEntityType entityName,
 
         @Schema(
                 description = "Identifier of the entity being audited. Supports UUID, Long, or composite keys.",

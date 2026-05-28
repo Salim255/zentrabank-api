@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 
 @Component // Marks this class as a Spring bean so it can be injected and managed by Spring
 @RequiredArgsConstructor // This is a Lombok annotation that automatically generates a constructor with all final fields.
@@ -63,6 +65,7 @@ public class AuthValidator {
             boolean isPasswordInvalid = password == null || password.isBlank();
 
             if (isUserNameInvalid || isPasswordInvalid){
+                // Audit section
                 throw new UnauthorizedException("Invalid login credentials");
             }
 

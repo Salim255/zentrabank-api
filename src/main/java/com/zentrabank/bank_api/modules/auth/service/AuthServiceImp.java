@@ -4,6 +4,7 @@ import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.config.BankApiConfigProperties;
 import com.zentrabank.bank_api.config.JwtService;
 import com.zentrabank.bank_api.exceptions.UnauthorizedException;
+import com.zentrabank.bank_api.modules.auditlog.service.AuditLogServiceImp;
 import com.zentrabank.bank_api.modules.auth.dto.*;
 import com.zentrabank.bank_api.modules.auth.validation.AuthValidator;
 import com.zentrabank.bank_api.modules.refreshtoken.dto.CreateTokenDto;
@@ -18,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -30,8 +32,10 @@ public class AuthServiceImp implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final RefreshTokenServiceImp refreshTokenServiceImp;
+    private final AuditLogServiceImp auditLogServiceImp;
 
     public AuthServiceImp(
+            AuditLogServiceImp auditLogServiceImp,
             BankApiConfigProperties config,
             RefreshTokenServiceImp refreshTokenServiceImp,
             JwtService jwtService,
@@ -39,6 +43,7 @@ public class AuthServiceImp implements AuthService {
             UserRepository userRepository,
             AuthValidator registerValidator
     ){
+        this.auditLogServiceImp = auditLogServiceImp;
         this.config = config;
         this.refreshTokenServiceImp = refreshTokenServiceImp;
         this.passwordEncoder = passwordEncoder;
@@ -185,10 +190,10 @@ public class AuthServiceImp implements AuthService {
     public  ApiResponseDto<LoginResponseDto> login(LoginDto payload)
     {
         try {
-            // 1 Validate input
+            // 1 Validate input & audit
+            // Validate
             User user = this.authValidator.loginValidate(payload);
             String userId = user.getId().toString();
-
             // 2 Create tokens
             String accessToken = this.jwtService.generateAccessToken(userId, user.getRole());
             String refreshToken = this.jwtService.generateRefreshToken(userId, user.getRole());
