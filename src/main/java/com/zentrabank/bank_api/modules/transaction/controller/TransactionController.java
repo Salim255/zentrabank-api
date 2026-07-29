@@ -29,7 +29,6 @@ import java.util.UUID;
 public class TransactionController {
     private final TransactionService transactionService;
 
-
     // ---------------------------------------------------------
     // GET ALL TRANSACTIONS FOR AUTHENTICATED USER
     // ---------------------------------------------------------

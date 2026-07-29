@@ -34,11 +34,34 @@ public class TransactionServiceImp implements TransactionService {
         try {
             // 1 Fetch account by userId =
             Account account = this.accountService.findAccountByUserId(userId);
+
             List<TransactionDto> transactions = this.transactionRepository
                     .findByAccountAccountNumber(account.getAccountNumber())
                     .stream()
                     .map(transactionMapper::toDto)
                     .toList();
+
+            // ---------------------------------------------------------
+            // 3. Build transaction summary
+            // ---------------------------------------------------------
+            BigDecimal moneyIn = transactions.stream()
+                    .filter(transaction ->
+                            transaction.amount().compareTo(BigDecimal.ZERO) > 0
+                    )
+                    .map(transaction -> transaction.amount())
+                    .reduce(
+                            BigDecimal.ZERO,
+                            BigDecimal::add
+                    );
+
+            BigDecimal moneyOut = transactions.stream()
+                    .filter(transaction ->
+                            transaction.amount().compareTo(BigDecimal.ZERO) < 0)
+                    .map(transaction -> transaction.amount())
+                    .reduce(
+                            BigDecimal.ZERO,
+                            BigDecimal::add
+                    );
 
             return new GetTransactionsResponseDto(transactions);
         } catch (Exception e) {
