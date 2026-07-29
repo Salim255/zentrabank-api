@@ -6,7 +6,7 @@ import com.zentrabank.bank_api.modules.transaction.dto.TransactionsSummaryDto;
 import java.util.List;
 
 public record AccountTransactionsResponseDto(
-        TransactionsSummaryDto summary,
-        List<TransactionDto> transactions
+        List<TransactionDto> transactions,
+        TransactionsSummaryDto summary
 ) {
 }

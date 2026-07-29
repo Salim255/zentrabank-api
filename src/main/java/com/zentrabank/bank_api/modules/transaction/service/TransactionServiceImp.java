@@ -30,7 +30,7 @@ public class TransactionServiceImp implements TransactionService {
     private final TransactionRepository transactionRepository;
 
     @Override
-    public GetTransactionsResponseDto getTransactionsForAccount(UUID userId, int page, int size){
+    public AccountTransactionsResponseDto getTransactionsForAccount(UUID userId, int page, int size){
         try {
             // 1 Fetch account by userId =
             Account account = this.accountService.findAccountByUserId(userId);
@@ -45,25 +45,32 @@ public class TransactionServiceImp implements TransactionService {
             // 3. Build transaction summary
             // ---------------------------------------------------------
             BigDecimal moneyIn = transactions.stream()
-                    .filter(transaction ->
-                            transaction.amount().compareTo(BigDecimal.ZERO) > 0
+                    .map(TransactionDto::amount)
+                    .filter(amount ->
+                            amount.compareTo(BigDecimal.ZERO) > 0
                     )
-                    .map(transaction -> transaction.amount())
                     .reduce(
                             BigDecimal.ZERO,
                             BigDecimal::add
                     );
 
             BigDecimal moneyOut = transactions.stream()
-                    .filter(transaction ->
-                            transaction.amount().compareTo(BigDecimal.ZERO) < 0)
-                    .map(transaction -> transaction.amount())
+                    .map(TransactionDto::amount)
+                    .filter(amount ->
+                            amount.compareTo(BigDecimal.ZERO) < 0)
                     .reduce(
                             BigDecimal.ZERO,
                             BigDecimal::add
                     );
 
-            return new GetTransactionsResponseDto(transactions);
+            TransactionsSummaryDto summary = new TransactionsSummaryDto(
+                    transactions.size(),
+                    moneyIn,
+                    moneyOut,
+                    account.getBalance()
+            );
+
+            return new AccountTransactionsResponseDto(transactions, summary);
         } catch (Exception e) {
             this.logger.error("Error in getting transactions", e);
             throw e;

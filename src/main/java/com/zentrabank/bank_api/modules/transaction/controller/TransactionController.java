@@ -3,10 +3,7 @@ package com.zentrabank.bank_api.modules.transaction.controller;
 import com.zentrabank.bank_api.common.dto.ApiResponseDto;
 import com.zentrabank.bank_api.exceptions.ForbiddenException;
 import com.zentrabank.bank_api.modules.account.dto.CreateAccountDto;
-import com.zentrabank.bank_api.modules.transaction.dto.CreateTransactionDto;
-import com.zentrabank.bank_api.modules.transaction.dto.GetTransactionsResponseDto;
-import com.zentrabank.bank_api.modules.transaction.dto.TransactionResponseDto;
-import com.zentrabank.bank_api.modules.transaction.dto.TransferDto;
+import com.zentrabank.bank_api.modules.transaction.dto.*;
 import com.zentrabank.bank_api.modules.transaction.entity.TransactionType;
 import com.zentrabank.bank_api.modules.transaction.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +45,7 @@ public class TransactionController {
                     )
             }
     )
-    public ApiResponseDto<GetTransactionsResponseDto> getUserTransactions(
+    public ApiResponseDto<AccountTransactionsResponseDto> getUserTransactions(
             Authentication auth,
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "20") @Min(1) int size
